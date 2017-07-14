@@ -1,0 +1,19 @@
+importFrom(utils, packageVersion)
+
+import(SummarizedExperiment, methods, S4Vectors, BiocGenerics)
+
+export(SingleCellExperiment)
+
+exportClasses(SingleCellExperiment)
+
+exportMethods(reducedDims,
+    "reducedDims<-",
+    reducedDim,
+    "reducedDim<-",
+    isSpike,
+    "isSpike<-",
+    spikeNames,
+    objectVersion,
+    colData,
+    rowData
+)

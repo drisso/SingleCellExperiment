@@ -1,0 +1,5 @@
+Changes in Version 0.98.2 (2017-07-10)
+=====================================
+
+* Added methods `colData()` and `rowData()` to optionally include internal
+  metadata.

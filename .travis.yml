@@ -1,0 +1,36 @@
+#----------------------------------------------------------------
+# Travis-CI configuration for Bioconductor packages
+#
+# REFERENCES:
+# * Travis CI: https://travis-ci.org/
+# * tutorial: https://docs.travis-ci.com/user/languages/r
+# * see also: https://blog.rstudio.org/2016/03/09/r-on-travis-ci/
+# * covr: https://github.com/jimhester/covr
+# * Coveralls: https://coveralls.io/
+#
+# Validate your .travis.yml file at http://lint.travis-ci.org/
+#----------------------------------------------------------------
+language: r
+cache: packages
+
+# R versions to be tested on
+r:
+  - bioc-release
+  - bioc-devel
+
+notifications:
+  email:
+    on_success: change
+    on_failure: change
+
+## Code coverage
+r_packages:
+  - covr
+
+## BiocCheck
+bioc_packages:
+  - BiocCheck
+
+after_success:
+  - Rscript -e 'library(covr); codecov()'
+  - R CMD BiocCheck .
