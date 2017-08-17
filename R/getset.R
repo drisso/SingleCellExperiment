@@ -1,4 +1,4 @@
-# Official getter/setter functions.
+# Getter/setter functions for reducedDims.
 
 setMethod("reducedDims", "SingleCellExperiment", function(x) {
     x@reducedDims
@@ -18,26 +18,20 @@ setReplaceMethod("reducedDims", "SingleCellExperiment", function(x, value) {
     return(x)
 })
 
-setMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type) {
-    reducedDims(x)[[type]]
+setMethod("reducedDimNames", "SingleCellExperiment", function(x) {
+    return(names(reducedDims(x)))          
 })
 
-setMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, type) {
-  reducedDims(x)[[type]]
+setMethod("reducedDim", "SingleCellExperiment", function(x, type=1) {
+    r <- reducedDims(x)
+    if(length(r)==0) { return(NULL) }
+    return(r[[type]])
 })
 
-setMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x, type) {
-  r <- reducedDims(x)
-  if(length(r) > 0) {
-    return(r[[1]])
-  } else {
-    return(r)
-  }
-})
-
-setReplaceMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type, ..., value) {
+setReplaceMethod("reducedDim", "SingleCellExperiment", function(x, type=1, ..., value) {
     if (!.not_reddim_mat(value, x)) { rownames(value) <- colnames(x) }
     rd <- reducedDims(x)
+    if (is.numeric(type) && type > length(rd)+1) { stop("subscript is out of bounds") }
     rd[[type]] <- value
     int_reducedDims(x) <- rd
     validObject(x)
@@ -122,31 +116,33 @@ setReplaceMethod("isSpike", c("SingleCellExperiment", "character"), function(x, 
 # colData / rowData
 
 setMethod("colData", "SingleCellExperiment", function(x, internal=FALSE) {
-  if(internal) {
-    if (any(colnames(x@colData) %in% colnames(int_colData(x)))) {
-      cn <- colnames(x@colData)[which(colnames(x@colData) %in%
-                                        colnames(int_colData(x)))]
-      warning("Overlapping column names (", paste(cn, collapse = ", "),
-              ") between internal and external colData.")
-    }
-    cbind(callNextMethod(), int_colData(x))
-  } else {
-    callNextMethod()
+    if(internal) {
+        if (any(colnames(x@colData) %in% colnames(int_colData(x)))) {
+            cn <- colnames(x@colData)[which(colnames(x@colData) %in% colnames(int_colData(x)))]
+            if (length(cn) > 2) {
+                cn <- c(cn[1:2], "...")
+            }
+            warning("overlapping names in internal and external colData (", paste(cn, collapse = ", "), ")")
+        }
+        cbind(callNextMethod(), int_colData(x))
+    } else {
+        callNextMethod()
   }
 })
 
 setMethod("rowData", "SingleCellExperiment", function(x, internal=FALSE) {
-  if(internal) {
-    if (any(colnames(mcols(x)) %in% colnames(int_elementMetadata(x)))) {
-      cn <- colnames(mcols(x))[which(colnames(mcols(x)) %in%
-                                                colnames(int_elementMetadata(x)))]
-      warning("Overlapping column names (", paste(cn, collapse = ", "),
-              ") between internal and external rowData.")
+    if(internal) {
+        if (any(colnames(mcols(x)) %in% colnames(int_elementMetadata(x)))) {
+            cn <- colnames(mcols(x))[which(colnames(mcols(x)) %in% colnames(int_elementMetadata(x)))]
+            if (length(cn) > 2) {
+                cn <- c(cn[1:2], "...")
+            }
+            warning("overlapping names in internal and external rowData (", paste(cn, collapse = ", "), ")")
+        }
+        cbind(callNextMethod(), int_elementMetadata(x))
+    } else {
+      callNextMethod()
     }
-    cbind(callNextMethod(), int_elementMetadata(x))
-  } else {
-    callNextMethod()
-  }
 })
 
 # Other useful functions.
@@ -159,13 +155,10 @@ setMethod("objectVersion", "SingleCellExperiment", function(x) {
     int_metadata(x)$version
 })
 
-setAs("SummarizedExperiment",
-      "SingleCellExperiment",
-      function(from) {
-        SingleCellExperiment(assays = assays(from),
-                             colData = colData(from),
-                             rowData = rowData(from),
-                             metadata = metadata(from)
-                             )
-      }
-)
+setAs("SummarizedExperiment", "SingleCellExperiment", function(from) {
+    SingleCellExperiment(assays = assays(from),
+                         colData = colData(from),
+                         rowData = rowData(from),
+                         metadata = metadata(from)
+                         )
+})

@@ -15,9 +15,6 @@ setClass("SingleCellExperiment",
 
     # Checking dimensions of reduced coordinates.
     rd <- reducedDims(object)
-    if (length(names(rd))!=length(rd)) {
-        stop("'reducedDims' must be a named list")
-    }
     if (length(rd)) {
         if (any(unlist(lapply(rd, .not_reddim_mat, object=object)))) {
             msg <- c(msg,
