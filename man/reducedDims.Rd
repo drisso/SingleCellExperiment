@@ -1,29 +1,26 @@
 \name{Reduced dimensions}
 
 \alias{reducedDim}
-\alias{reducedDim,SingleCellExperiment,character-method}
-\alias{reducedDim,SingleCellExperiment,numeric-method}
-\alias{reducedDim,SingleCellExperiment,missing-method}
+\alias{reducedDim,SingleCellExperiment-method}
 
 \alias{reducedDims}
 \alias{reducedDims,SingleCellExperiment-method}
 
 \alias{reducedDim<-}
-\alias{reducedDim<-,SingleCellExperiment,character-method}
+\alias{reducedDim<-,SingleCellExperiment-method}
 \alias{reducedDims<-}
 \alias{reducedDims<-,SingleCellExperiment-method}
+
+\alias{reducedDimNames}
+\alias{reducedDimNames,SingleCellExperiment-method}
 
 \title{Reduced dimensions methods}
 \description{Methods to get or set the dimensionality reduction results.}
 
 \usage{
-\S4method{reducedDim}{SingleCellExperiment,character}(x, type)
+\S4method{reducedDim}{SingleCellExperiment}(x, type)
 
-\S4method{reducedDim}{SingleCellExperiment,numeric}(x, type)
-
-\S4method{reducedDim}{SingleCellExperiment,missing}(x, type)
-
-\S4method{reducedDim}{SingleCellExperiment,character}(x, type) <- value
+\S4method{reducedDim}{SingleCellExperiment}(x, type) <- value
 
 \S4method{reducedDims}{SingleCellExperiment}(x)
 
@@ -42,6 +39,8 @@ For \code{reducedDims<-}, a named SimpleList object containing such matrices.}
 Dimensionality reduction is often used to interpreting the results of single-cell data analysis.
 These methods allow the results of dimensionality reduction methods to be stored in a SingleCellExperiment object.
 Multiple results can be stored in a single object by assigning to different \code{type} in \code{reducedDim<-}.
+
+If \code{type} is \code{NULL} or missing for \code{reducedDim}, the first set of dimensionality reduction results is returned (or \code{NULL}, if no results are present).
 If \code{value} is \code{NULL} for \code{reducedDim<-}, the set of results corresponding to \code{type} is removed from the object.
 }
 
@@ -51,6 +50,8 @@ For \code{reducedDim}, a numeric matrix is returned containing coordinates for c
 For \code{reducedDims}, a named SimpleList of matrices is returned, with one matrix for each type of dimensionality reduction method.
 
 For \code{reducedDim<-} and \code{reducedDims<-}, a SingleCellExperiment object is returned with updated results in the \code{reducedDims} slot.
+
+For \code{reducedDimNames}, a character vector containing the names of the elements in \code{reducedDims}.
 }
 
 \author{
