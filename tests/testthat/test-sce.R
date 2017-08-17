@@ -65,18 +65,6 @@ expect_equivalent(pca, reducedDim(sce, "PCA"))
 expect_equivalent(tsne, reducedDim(sce, "tSNE"))
 expect_equivalent(reducedDims(sce), combined)
 
-dm <- matrix(runif(ncells*2), ncells)
-reducedDim(sce, "DM") <- dm
-expect_equivalent(dm, reducedDim(sce, "DM"))
-reducedDim(sce, "DM") <- NULL
-expect_equivalent(reducedDims(sce), combined)
-reducedDims(sce) <- SimpleList(DM=dm)
-expect_equivalent(SimpleList(DM=dm), reducedDims(sce))
-
-expect_error(reducedDims(sce) <- SimpleList(dm), "'reducedDims' must be a named list", fixed=TRUE)
-expect_error(reducedDim(sce, "DM") <- dm[1:10,], "each element of 'reducedDims' must be a matrix with nrow equal to 'ncol(object)'", fixed=TRUE)
-expect_error(reducedDim(sce, "DM") <- "huh", "each element of 'reducedDims' must be a matrix with nrow equal to 'ncol(object)'", fixed=TRUE)
-
 # Checking internals.
 sce <- SingleCellExperiment(assay=u)
 expect_identical(nrow(SingleCellExperiment:::int_elementMetadata(sce)), nrow(sce))
