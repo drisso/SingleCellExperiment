@@ -65,8 +65,8 @@ scat <- function(fmt, vals=character(), exdent=2, ...) {
 
 .sce_show <- function(object) {
     callNextMethod()
-    scat("reduced(%d): %s\n", names(reducedDims(object)))
-    scat("spikes(%d): %s\n", spikeNames(object))
+    scat("reducedDimNames(%d): %s\n", names(reducedDims(object)))
+    scat("spikeNames(%d): %s\n", spikeNames(object))
 }
 
 setMethod("show", "SingleCellExperiment", .sce_show)
