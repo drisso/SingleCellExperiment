@@ -69,18 +69,18 @@ Aaron Lun and Davide Risso
 
 \examples{
 ncells <- 100
-v <- matrix(rnorm(20000), ncol=ncells)
 u <- matrix(rpois(20000, 5), ncol=ncells)
+v <- log2(u + 1)
 
 pca <- matrix(runif(ncells*5), ncells)
 tsne <- matrix(rnorm(ncells*2), ncells)
 
-sce <- SingleCellExperiment(assays=list(counts=u, exprs=v),
+sce <- SingleCellExperiment(assays=list(counts=u, logcounts=v),
     reducedDims=SimpleList(PCA=pca, tSNE=tsne))
 sce
 
 ## coercion from SummarizedExperiment
-se <- SummarizedExperiment(assays=list(counts=u, exprs=v))
+se <- SummarizedExperiment(assays=list(counts=u, logcounts=v))
 as(se, "SingleCellExperiment")
 }
 
