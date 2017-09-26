@@ -56,7 +56,7 @@ It extends the `RangedSummarizedExperiment` class with the following additional 
 * `int_metadata`
 * `reducedDims`
 
-The `int_` prefix describes _internal_ slots that are not meant for direct manipulation by the user.
+The `int_` prefix describes _internal_ slots that are **not** meant for direct manipulation by the user or other package developers.
 Instead, they are set by other user-visible methods, which will be discussed in more detail below.
 
 ## Create instances of SingleCellExperiment
@@ -127,6 +127,15 @@ If `isSpike` is used without specifying any name, it will return the union of al
 
 ```{r}
 table(isSpike(sce))
+```
+
+Similarly, running `isSpike<-` without specifying any name will delete all existing spike-in sets from the `SingleCellExperiment`, if the assigned value is `NULL`.
+(If non-`NULL`, the vector will instead be stored as a spike-in set with an empty name, _in addition to removing all existing sets_.)
+
+```{r}
+temp <- sce
+isSpike(temp) <- NULL
+spikeNames(temp)
 ```
 
 Note that the `isSpike` and `isSpike<-` methods get and set columns in `int_elementMetadata` and `int_metadata`.
