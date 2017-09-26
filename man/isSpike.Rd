@@ -7,6 +7,8 @@
 
 \alias{isSpike<-}
 \alias{isSpike<-,SingleCellExperiment,character-method}
+\alias{isSpike<-,SingleCellExperiment,missing-method}
+\alias{isSpike<-,SingleCellExperiment,NULL-method}
 
 \alias{spikeNames}
 \alias{spikeNames,SingleCellExperiment-method}
@@ -22,6 +24,10 @@
 \S4method{isSpike}{SingleCellExperiment,NULL}(x, type)
 
 \S4method{isSpike}{SingleCellExperiment,character}(x, type) <- value
+
+\S4method{isSpike}{SingleCellExperiment,missing}(x, type) <- value
+
+\S4method{isSpike}{SingleCellExperiment,NULL}(x, type) <- value
 
 \S4method{spikeNames}{SingleCellExperiment}(x)
 }
@@ -44,6 +50,10 @@ The \code{type} should be set to the name of the spike-in set, e.g., \code{"ERCC
 In this manner, multiple types of spike-in sets are supported for a single experiment.
 The names of all available spike-in sets can be obtained using \code{spikeNames}.
 To remove spike-ins for a particular set, \code{value} should be set to \code{NULL} when using \code{isSpike<-}.
+
+If \code{type} is missing or \code{NULL} for \code{isSpike<-}, all existing spike-in sets are removed.
+If \code{value} is non-\code{NULL} in such cases, it will be stored in \code{x} with an empty name.
+Otherwise, this will have the effect of removing all spike-in sets from \code{x}.
 
 The \code{isSpike} getter methods will return a logical vector indicatng which rows represent spike-ins of the set specified by \code{type}.
 If \code{type} is missing or \code{NULL}, the vector will instead indicate whether each row is in \emph{any} spike-in set.

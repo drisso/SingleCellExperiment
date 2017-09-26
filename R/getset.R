@@ -113,6 +113,20 @@ setReplaceMethod("isSpike", c("SingleCellExperiment", "character"), function(x, 
     return(x)
 })
 
+for (sig in c("missing", "NULL")) {     
+    setReplaceMethod("isSpike", c("SingleCellExperiment", "missing"), function(x, type, ..., value) {
+        # Wiping existing elements out, so that the union (of 'value') will be equal to 'value'.
+        # This ensures that isSpike(x) will return expected values, if called right after isSpike<-.
+        for (existing in spikeNames(x)) { 
+            isSpike(x, type=existing) <- NULL
+        }
+
+        # Adding self as an unnamed spike-in set.
+        isSpike(x, type="") <- value
+        return(x)
+    })
+}
+
 # colData / rowData
 
 setMethod("colData", "SingleCellExperiment", function(x, internal=FALSE) {

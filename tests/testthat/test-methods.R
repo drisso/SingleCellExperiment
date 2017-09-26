@@ -36,10 +36,16 @@ test_that("spike-in getters/setters are functioning", {
     rownames(sce) <- paste0("Gene", seq_len(nrow(v))) # character setting
     isSpike(sce, "SIRV") <- rownames(sce)[chosen]
     expect_identical(which(isSpike(sce, "SIRV")), sort(chosen))
-    rownames(sce) <- NULL
     
     SingleCellExperiment:::int_metadata(sce)$spike_names <- c("random")
     expect_error(validObject(sce), "no field specifying rows belonging to spike-in set 'random'", fixed=TRUE)
+
+    isSpike(sce) <- 1:10 # Check that it correctly wipes out existing elements.
+    expect_identical(which(isSpike(sce)), 1:10)
+    expect_identical(spikeNames(sce), "")
+    isSpike(sce) <- NULL
+    expect_identical(isSpike(sce), NULL)
+    expect_identical(spikeNames(sce), character(0))
 })
 
 # Adding size factors.
