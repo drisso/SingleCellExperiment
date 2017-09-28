@@ -114,7 +114,7 @@ spikeNames(sce)
 ```
 
 While most experimental designs use a single set of spike-ins, the class has the flexibility of including more than one set of spikes.
-Let us pretend that the members of the _Adam_ gene family have beeen spiked-in as external genes in these data.
+Let us pretend that the members of the _Adam_ gene family have been spiked-in as external genes in these data.
 
 ```{r spikes2}
 isSpike(sce, "Adam") <- grepl("^Adam[0-9]", rownames(sce))
@@ -181,7 +181,7 @@ rowData(sce, internal=TRUE)
 
 See below for some discussion of why an internal storage mechanism is used here.
 
-## Adding low-dimentional representations
+## Adding low-dimensional representations
 
 For simplicity and speed, we work on a subset of 100 genes. 
 To avoid ending up with only uninteresting genes, we extract the 100 genes with maximal variance in the log-transformed counts.
