@@ -106,7 +106,7 @@ spikeNames(sce)
 
 Although for the majority of cases one set of spike-ins should be enough, the
 class has the flexibility of including more than one set of spikes.
-Let us pretend that the members of the Adam gene family have beeen spiked-in as
+Let us pretend that the members of the Adam gene family have been spiked-in as
 external genes in these data.
 
 ```{r spikes2}
@@ -156,7 +156,7 @@ colData(sce, internal=TRUE)
 rowData(sce, internal=TRUE)
 ```
 
-## Adding low-dimentional representations
+## Adding low-dimensional representations
 
 For simplicity and speed we work on a subset of 100 genes. To avoid
 ending up with only uninteresting genes, we extract the 100 genes with maximal 
@@ -199,7 +199,7 @@ If there was a way to reserve a subset of columns (or column names) as "private"
 in `colData()` and `rowData()` we would not need the additional slots.
 
 For the `reducedDims` slot, things are slightly different, since one can imagine
-that different dimentionality techniques will be useful for different aspects
+that different dimensionality techniques will be useful for different aspects
 of the analysis (e.g., t-SNE for visualization, PCA for pseudo-time inference,
 etc.). We see `reducedDims` as a similar slot to `assays()`.
 
