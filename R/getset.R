@@ -70,6 +70,32 @@ setReplaceMethod("sizeFactors", "SingleCellExperiment", function(object, type=NU
     cd <- int_colData(object)
     cd[[field]] <- value
     int_colData(object) <- cd
+
+    if (!is.null(type)) { 
+        md <- int_metadata(object)
+        if (is.null(value)) { 
+            md$size_factor_names <- setdiff(md$size_factor_names, type)
+        } else {
+            md$size_factor_names <- union(md$size_factor_names, type)
+        }
+        int_metadata(object) <- md
+    }
+    return(object)
+})
+
+setMethod("clearSizeFactors", "SingleCellExperiment", function(object) {
+    sizeFactors(object) <- NULL
+
+    cd <- int_colData(object)
+    for (sf in sizeFactorNames(object)) {
+        field <- .get_sf_field(sf)
+        cd[[field]] <- NULL        
+    }
+    int_colData(object) <- cd
+
+    md <- int_metadata(object) 
+    md$size_factor_names <- NULL
+    int_metadata(object) <- md
     return(object)
 })
 
@@ -117,15 +143,32 @@ for (sig in c("missing", "NULL")) {
     setReplaceMethod("isSpike", c("SingleCellExperiment", "missing"), function(x, type, ..., value) {
         # Wiping existing elements out, so that the union (of 'value') will be equal to 'value'.
         # This ensures that isSpike(x) will return expected values, if called right after isSpike<-.
+        .Deprecated(msg="use clearSpikes() to remove all spike-ins instead")
         for (existing in spikeNames(x)) { 
             isSpike(x, type=existing) <- NULL
         }
 
-        # Adding self as an unnamed spike-in set.
+        # Using an empty name for an unnamed spike-in set.
+        message("empty name automatically assigned to unnamed spike-in set")
         isSpike(x, type="") <- value
         return(x)
     })
 }
+
+setMethod("clearSpikes", "SingleCellExperiment", function(x) {
+    spike.sets <- spikeNames(x)
+    rd <- int_elementMetadata(x)
+    for (s in spike.sets) {
+        field <- .get_spike_field(s)
+        rd[[field]] <- NULL
+    }
+    int_elementMetadata(x) <- rd
+    
+    md <- int_metadata(x)
+    md$spike_names <- NULL
+    int_metadata(x) <- md
+    return(x)
+})
 
 # colData / rowData
 
@@ -163,6 +206,10 @@ setMethod("rowData", "SingleCellExperiment", function(x, internal=FALSE) {
 
 setMethod("spikeNames", "SingleCellExperiment", function(x) {
     int_metadata(x)$spike_names
+})
+
+setMethod("sizeFactorNames", "SingleCellExperiment", function(x) {
+    int_metadata(x)$size_factor_names
 })
 
 setMethod("objectVersion", "SingleCellExperiment", function(x) {

@@ -21,9 +21,13 @@ setGeneric("int_metadata<-", function(x, value) standardGeneric("int_metadata<-"
 
 setGeneric("isSpike", function(x, type, ...) standardGeneric("isSpike"))
 setGeneric("isSpike<-", function(x, type, ..., value) standardGeneric("isSpike<-"))
+setGeneric("clearSpikes", function(x, type, ..., value) standardGeneric("clearSpikes"))
+
+setGeneric("clearSizeFactors", function(object) standardGeneric("clearSizeFactors"))
 
 setGeneric("objectVersion", function(x) standardGeneric("objectVersion"))
 setGeneric("spikeNames", function(x) standardGeneric("spikeNames"))
+setGeneric("sizeFactorNames", function(x) standardGeneric("sizeFactorNames"))
 
 # Convenience assay getter/setters.
 
