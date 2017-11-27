@@ -1,11 +1,11 @@
 Package: SingleCellExperiment
-Version: 1.1.0
-Date: 2017-09-26
+Version: 1.1.1
+Date: 2017-11-27
 Title: S4 Classes for Single Cell Data
 Authors@R: c(person("Aaron", "Lun", role=c("aut", "cph"),
         email="alun@wehi.edu.au"), person("Davide","Risso",
         role=c("aut","cre", "cph"), email="risso.davide@gmail.com"))
-Depends: R (>= 3.4), SummarizedExperiment
+Depends: R (>= 3.5), SummarizedExperiment
 Imports: S4Vectors, methods, BiocGenerics, utils
 Suggests: testthat, BiocStyle, knitr, scRNAseq, magrittr, Rtsne
 biocViews: DataRepresentation, DataImport, Infrastructure, SingleCell
