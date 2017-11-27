@@ -59,9 +59,10 @@ The names of all available spike-in sets can be obtained using \code{spikeNames}
 To remove spike-ins for a particular set, \code{value} should be set to \code{NULL} when using \code{isSpike<-}.
 To remove all spike-in information, \code{clearSpikes} should be used to obtain a new SingleCellExperiment object with no spike-ins specified.
 
-If \code{type} is missing or \code{NULL} for \code{isSpike<-}, the spike-in set will be automatically assigned an empty name.
-In previous versions (<= 1.1.1), if \code{value} is \code{NULL} in such cases, all existing spike-in sets would be removed.
+In previous versions (<= 1.1.1), if \code{value} was \code{NULL} in \code{isSpike<-}, all existing spike-in sets would be removed.
 This behaviour is now deprecated, and \code{clearSpikes} should be used instead.
+Also, if \code{type} was missing or \code{NULL} for \code{isSpike<-}, the spike-in set would be automatically assigned an empty name.
+This is also deprecated, and all spike-ins should be given a user-supplied name.
 
 The \code{isSpike} getter methods will return a logical vector indicatng which rows represent spike-ins of the set specified by \code{type}.
 If \code{type} is missing or \code{NULL}, the vector will instead indicate whether each row is in \emph{any} spike-in set.

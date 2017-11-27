@@ -103,9 +103,6 @@ setMethod("clearSizeFactors", "SingleCellExperiment", function(object) {
 
 setMethod("isSpike", c("SingleCellExperiment", "character"), function(x, type) {
     field <- .get_spike_field(type)
-    if (!type %in% spikeNames(x)) {
-        stop("spike-in set '", type, "' does not exist")
-    }
     return(int_elementMetadata(x)[[field]])
 })
 
@@ -141,15 +138,15 @@ setReplaceMethod("isSpike", c("SingleCellExperiment", "character"), function(x, 
 
 for (sig in c("missing", "NULL")) {     
     setReplaceMethod("isSpike", c("SingleCellExperiment", "missing"), function(x, type, ..., value) {
+        .Deprecated(msg="'isSpike<-' with 'type=NULL' is deprecated.\nUse 'clearSpikes' instead.")
+
         # Wiping existing elements out, so that the union (of 'value') will be equal to 'value'.
         # This ensures that isSpike(x) will return expected values, if called right after isSpike<-.
-        .Deprecated(msg="use clearSpikes() to remove all spike-ins instead")
         for (existing in spikeNames(x)) { 
             isSpike(x, type=existing) <- NULL
         }
 
         # Using an empty name for an unnamed spike-in set.
-        message("empty name automatically assigned to unnamed spike-in set")
         isSpike(x, type="") <- value
         return(x)
     })

@@ -26,7 +26,7 @@ test_that("spike-in getters/setters are functioning", {
     # Check what happens when we clear a spike-in set.
     isSpike(sce, "ERCC") <- NULL
     expect_identical(spikeNames(sce), "SIRV")
-    expect_error(isSpike(sce, "ERCC"), "spike-in set 'ERCC' does not exist")
+    expect_identical(isSpike(sce, "ERCC"), NULL)
     expect_identical(isSpike(sce, "SIRV"), is.spike2)
     expect_identical(isSpike(sce), is.spike2)
     
@@ -50,14 +50,14 @@ test_that("spike-in getters/setters are functioning", {
     alt.sce <- clearSpikes(sce)
     expect_identical(spikeNames(alt.sce), character(0))
     expect_identical(isSpike(alt.sce), NULL)
-    expect_error(isSpike(alt.sce, "ERCC"), "does not exist")
-    expect_error(isSpike(alt.sce, "SIRV"), "does not exist")
+    expect_identical(isSpike(alt.sce, "ERCC"), NULL)
+    expect_identical(isSpike(alt.sce, "SIRV"), NULL)
 
     # Check that unnamed spike-ins are correctly handled.
-    expect_message(isSpike(sce) <- 1:10)
+    expect_warning(isSpike(sce) <- 1:10, "deprecated")
     expect_identical(which(isSpike(sce, "")), 1:10)
     expect_identical(spikeNames(sce), "") # for the time being.
-    isSpike(sce) <- NULL
+    expect_warning(isSpike(sce) <- NULL, "deprecated")
     expect_identical(isSpike(sce), NULL)
     expect_identical(spikeNames(sce), character(0))
 })
@@ -81,6 +81,11 @@ test_that("size factor getters/setters are functioning", {
     expect_identical(sizeFactors(alt.sce), NULL)
     expect_identical(sizeFactors(alt.sce, "ERCC"), NULL)
     expect_identical(sizeFactorNames(alt.sce), character(0))
+
+    # Checking that it throws properly if spike-in sets and spike-in fields are not in sync. 
+    alt.sce <- sce 
+    SingleCellExperiment:::int_metadata(alt.sce)$size_factor_names <- c("random")
+    expect_error(validObject(alt.sce), "no field specifying size factors for set 'random'", fixed=TRUE)
 
     # Manual deletion.
     sizeFactors(sce) <- NULL
