@@ -13,6 +13,9 @@
 \alias{spikeNames}
 \alias{spikeNames,SingleCellExperiment-method}
 
+\alias{clearSpikes}
+\alias{clearSpikes,SingleCellExperiment-method}
+
 \title{Spike-in methods}
 \description{Gets or sets the rows corresponding to spike-in transcripts.}
 
@@ -28,6 +31,8 @@
 \S4method{isSpike}{SingleCellExperiment,missing}(x, type) <- value
 
 \S4method{isSpike}{SingleCellExperiment,NULL}(x, type) <- value
+
+\S4method{clearSpikes}{SingleCellExperiment}(x)
 
 \S4method{spikeNames}{SingleCellExperiment}(x)
 }
@@ -48,12 +53,15 @@ This can be a logical or integer subsetting vector, or a vector of row names.
 The \code{type} should be set to the name of the spike-in set, e.g., \code{"ERCC"} or \code{"SIRV"}.
 
 In this manner, multiple types of spike-in sets are supported for a single experiment.
+This is useful not only when different spike-ins are used, but also for different mixtures of the same set (e.g., ERCC mixes 1 and 2).
 The names of all available spike-in sets can be obtained using \code{spikeNames}.
-To remove spike-ins for a particular set, \code{value} should be set to \code{NULL} when using \code{isSpike<-}.
 
-If \code{type} is missing or \code{NULL} for \code{isSpike<-}, all existing spike-in sets are removed.
-If \code{value} is non-\code{NULL} in such cases, it will be stored in \code{x} with an empty name.
-Otherwise, this will have the effect of removing all spike-in sets from \code{x}.
+To remove spike-ins for a particular set, \code{value} should be set to \code{NULL} when using \code{isSpike<-}.
+To remove all spike-in information, \code{clearSpikes} should be used to obtain a new SingleCellExperiment object with no spike-ins specified.
+
+If \code{type} is missing or \code{NULL} for \code{isSpike<-}, the spike-in set will be automatically assigned an empty name.
+In previous versions (<= 1.1.1), if \code{value} is \code{NULL} in such cases, all existing spike-in sets would be removed.
+This behaviour is now deprecated, and \code{clearSpikes} should be used instead.
 
 The \code{isSpike} getter methods will return a logical vector indicatng which rows represent spike-ins of the set specified by \code{type}.
 If \code{type} is missing or \code{NULL}, the vector will instead indicate whether each row is in \emph{any} spike-in set.
@@ -66,6 +74,8 @@ For \code{isSpike}, a logical vector is returned indicating whether each row is 
 For \code{isSpike<-}, a SingleCellExperiment is returned with spike-in information stored in the internal metadata fields.
 
 For \code{spikeNames}, a character vector is returned containing the names of available spike-in sets.
+
+For \code{clearSpikes}, a SingleCellExperiment is returned with no spike-in information.
 }
 
 \seealso{

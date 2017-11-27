@@ -14,7 +14,8 @@ test_that("spike-in getters/setters are functioning", {
     expect_identical(spikeNames(sce), "ERCC")
     expect_identical(isSpike(sce, "ERCC"), is.spike1)
     expect_identical(isSpike(sce), is.spike1)
-    
+
+    # Check what happens when we add another spike-in set.    
     is.spike2 <- rbinom(nrow(v), 1, 0.3)==1
     isSpike(sce, "SIRV") <- is.spike2
     expect_identical(spikeNames(sce), c("ERCC", "SIRV"))
@@ -22,27 +23,40 @@ test_that("spike-in getters/setters are functioning", {
     expect_identical(isSpike(sce, "SIRV"), is.spike2)
     expect_identical(isSpike(sce), is.spike1 | is.spike2)
     
+    # Check what happens when we clear a spike-in set.
     isSpike(sce, "ERCC") <- NULL
     expect_identical(spikeNames(sce), "SIRV")
     expect_error(isSpike(sce, "ERCC"), "spike-in set 'ERCC' does not exist")
     expect_identical(isSpike(sce, "SIRV"), is.spike2)
     expect_identical(isSpike(sce), is.spike2)
     
-    chosen <- sample(nrow(v), 20) # integer setting
+    # Checking that it still behaves with integers.
+    chosen <- sample(nrow(v), 20) 
     isSpike(sce, "ERCC") <- chosen
     expect_identical(which(isSpike(sce, "ERCC")), sort(chosen))
     expect_identical(spikeNames(sce), c("SIRV", "ERCC")) # flipped
-    
-    rownames(sce) <- paste0("Gene", seq_len(nrow(v))) # character setting
+   
+    # Checking that it behaves with character strings.
+    rownames(sce) <- paste0("Gene", seq_len(nrow(v))) 
     isSpike(sce, "SIRV") <- rownames(sce)[chosen]
     expect_identical(which(isSpike(sce, "SIRV")), sort(chosen))
-    
-    SingleCellExperiment:::int_metadata(sce)$spike_names <- c("random")
-    expect_error(validObject(sce), "no field specifying rows belonging to spike-in set 'random'", fixed=TRUE)
+   
+    # Checking that it throws properly if spike-in sets and spike-in fields are not in sync. 
+    alt.sce <- sce 
+    SingleCellExperiment:::int_metadata(alt.sce)$spike_names <- c("random")
+    expect_error(validObject(alt.sce), "no field specifying rows belonging to spike-in set 'random'", fixed=TRUE)
 
-    isSpike(sce) <- 1:10 # Check that it correctly wipes out existing elements.
-    expect_identical(which(isSpike(sce)), 1:10)
-    expect_identical(spikeNames(sce), "")
+    # Checking that clearing the spike-ins works properly.
+    alt.sce <- clearSpikes(sce)
+    expect_identical(spikeNames(alt.sce), character(0))
+    expect_identical(isSpike(alt.sce), NULL)
+    expect_error(isSpike(alt.sce, "ERCC"), "does not exist")
+    expect_error(isSpike(alt.sce, "SIRV"), "does not exist")
+
+    # Check that unnamed spike-ins are correctly handled.
+    expect_message(isSpike(sce) <- 1:10)
+    expect_identical(which(isSpike(sce, "")), 1:10)
+    expect_identical(spikeNames(sce), "") # for the time being.
     isSpike(sce) <- NULL
     expect_identical(isSpike(sce), NULL)
     expect_identical(spikeNames(sce), character(0))

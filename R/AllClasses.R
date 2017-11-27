@@ -85,7 +85,9 @@ SingleCellExperiment <- function(..., reducedDims=SimpleList()) {
     out <- new("SingleCellExperiment", rse, reducedDims=SimpleList(),
                int_elementMetadata=DataFrame(matrix(0, nrow(se), 0)),
                int_colData=DataFrame(matrix(0, ncol(se), 0)),
-               int_metadata=list(version=packageVersion("SingleCellExperiment")))
+               int_metadata=list(version=packageVersion("SingleCellExperiment"),
+                                 spike_names=character(0),
+                                 size_factor_names=character(0)))
     reducedDims(out) <- reducedDims
     return(out)
 }

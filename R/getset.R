@@ -94,7 +94,7 @@ setMethod("clearSizeFactors", "SingleCellExperiment", function(object) {
     int_colData(object) <- cd
 
     md <- int_metadata(object) 
-    md$size_factor_names <- NULL
+    md$size_factor_names <- character(0)
     int_metadata(object) <- md
     return(object)
 })
@@ -162,10 +162,11 @@ setMethod("clearSpikes", "SingleCellExperiment", function(x) {
         field <- .get_spike_field(s)
         rd[[field]] <- NULL
     }
+    rd[[.spike_field]] <- NULL # Emptying out the reference as well.
     int_elementMetadata(x) <- rd
     
     md <- int_metadata(x)
-    md$spike_names <- NULL
+    md$spike_names <- character(0)
     int_metadata(x) <- md
     return(x)
 })
