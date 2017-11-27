@@ -137,19 +137,27 @@ test_that("reduced dimension getters/setters are functioning", {
     reducedDim(sce, 1) <- d1
     expect_identical(reducedDim(sce), d1)
     expect_identical(reducedDim(sce, 1), d1)
+    expect_identical(reducedDimNames(sce), "")
     reducedDim(sce, 2) <- d2
     expect_identical(reducedDim(sce), d1)
     expect_identical(reducedDim(sce, 2), d2)
-    
+    expect_identical(reducedDimNames(sce), character(2))
+
+    mult <- d1 * 5
+    reducedDim(sce, "PCA") <- mult # d1 is the second element.
+    expect_identical(reducedDim(sce, 1), d1)
+    expect_identical(reducedDim(sce, 2), d2)
+    expect_identical(reducedDim(sce, 3), mult)
+    expect_identical(reducedDimNames(sce), c("", "", "PCA")) 
+ 
     reducedDim(sce, 1) <- NULL # d2 becomes the first element now.
     expect_identical(reducedDim(sce), d2)
     expect_identical(reducedDim(sce, 1), d2)
-    reducedDim(sce, "PCA") <- d1 # d1 is the second element.
-    expect_identical(reducedDim(sce, 1), d2)
-    expect_identical(reducedDim(sce, 2), d1)
+    expect_identical(reducedDim(sce, 2), reducedDim(sce, "PCA"))
+    expect_identical(reducedDimNames(sce), c("", "PCA"))
 
-    reducedDim(sce) <- NULL # d1 now becomes the first element again.
-    expect_identical(reducedDim(sce), d1)
+    reducedDim(sce) <- NULL # 'mult' becomes the first element.
+    expect_identical(reducedDim(sce), mult)
     expect_identical(reducedDimNames(sce), "PCA")
     reducedDim(sce) <- d2 # d2 now overwrites the first element.
     expect_identical(reducedDim(sce, 1), d2)

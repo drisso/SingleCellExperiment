@@ -19,7 +19,11 @@ setReplaceMethod("reducedDims", "SingleCellExperiment", function(x, value) {
 })
 
 setMethod("reducedDimNames", "SingleCellExperiment", function(x) {
-    return(names(reducedDims(x)))          
+    rdn <- names(reducedDims(x))
+    if (is.null(rdn)) {
+        rdn <- character(length(reducedDims(x)))
+    }
+    return(rdn)
 })
 
 setMethod("reducedDim", "SingleCellExperiment", function(x, type=1) {
