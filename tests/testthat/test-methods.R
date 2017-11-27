@@ -68,12 +68,21 @@ test_that("size factor getters/setters are functioning", {
     sf1 <- 2^rnorm(ncells)
     sizeFactors(sce) <- sf1
     expect_identical(sizeFactors(sce), sf1)
+    expect_identical(sizeFactorNames(sce), character(0))
     
     sf2 <- 2^rnorm(ncells, sd=2)
     sizeFactors(sce, "ERCC") <- sf2
     expect_identical(sizeFactors(sce), sf1) # check still the same
     expect_identical(sizeFactors(sce, "ERCC"), sf2)
+    expect_identical(sizeFactorNames(sce), "ERCC")
     
+    # Automated deletion.    
+    alt.sce <- clearSizeFactors(sce)
+    expect_identical(sizeFactors(alt.sce), NULL)
+    expect_identical(sizeFactors(alt.sce, "ERCC"), NULL)
+    expect_identical(sizeFactorNames(alt.sce), character(0))
+
+    # Manual deletion.
     sizeFactors(sce) <- NULL
     expect_identical(sizeFactors(sce), NULL)
     expect_identical(sizeFactors(sce, "ERCC"), sf2) # check still the same

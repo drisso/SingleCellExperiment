@@ -27,7 +27,7 @@ setGeneric("clearSizeFactors", function(object) standardGeneric("clearSizeFactor
 
 setGeneric("objectVersion", function(x) standardGeneric("objectVersion"))
 setGeneric("spikeNames", function(x) standardGeneric("spikeNames"))
-setGeneric("sizeFactorNames", function(x) standardGeneric("sizeFactorNames"))
+setGeneric("sizeFactorNames", function(object) standardGeneric("sizeFactorNames"))
 
 # Convenience assay getter/setters.
 

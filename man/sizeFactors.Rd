@@ -1,7 +1,14 @@
 \name{Size factor methods}
+
 \alias{sizeFactors}
 \alias{sizeFactors,SingleCellExperiment-method}
 \alias{sizeFactors<-,SingleCellExperiment-method}
+
+\alias{clearSizeFactors}
+\alias{clearSizeFactors,SingleCellExperiment-method}
+
+\alias{sizeFactorNames}
+\alias{sizeFactorNames,SingleCellExperiment-method}
 
 \title{Size factors methods}
 \description{Gets or sets the size factors for all cells.}
@@ -10,6 +17,10 @@
 \S4method{sizeFactors}{SingleCellExperiment}(object, type=NULL)
 
 \S4method{sizeFactors}{SingleCellExperiment}(object, type=NULL) <- value
+
+\S4method{clearSizeFactors}{SingleCellExperiment}(object)
+
+\S4method{sizeFactorNames}{SingleCellExperiment}(object)
 }
 
 \arguments{
@@ -26,6 +37,10 @@ The \code{type} argument allows storage of multiple vectors of size factors (e.g
 If \code{type} is \code{NULL}, a \dQuote{default} set of size factors is stored or returned.
 
 If \code{value} is \code{NULL} for \code{isSpike<-}, size factors of \code{type} will be removed from \code{object}.
+All size factors can be removed from \code{object} by using the \code{clearSizeFactors} method.
+
+The \code{sizeFactorNames} method will return the names of all stored size factor sets.
+This does not include the default set of size factors (obtained with \code{isSpike(..., type=NULL)}) as these are unnamed.
 }
 
 \value{
@@ -33,6 +48,10 @@ For \code{sizeFactors}, a numeric vector is returned containing size factors of 
 If \code{type} is not available, \code{NULL} is returned instead.
 
 For \code{sizeFactors<-}, a SingleCellExperiment is returned with size factors stored in the internal metadata fields.
+
+For \code{clearSizeFactors}, a SingleCellExperiment is returned with no size factor information.
+
+For \code{sizeFactorNames}, a character vector is returned containing the names of all named size factor sets.
 }
 
 \seealso{

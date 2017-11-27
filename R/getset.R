@@ -209,8 +209,8 @@ setMethod("spikeNames", "SingleCellExperiment", function(x) {
     int_metadata(x)$spike_names
 })
 
-setMethod("sizeFactorNames", "SingleCellExperiment", function(x) {
-    int_metadata(x)$size_factor_names
+setMethod("sizeFactorNames", "SingleCellExperiment", function(object) {
+    int_metadata(object)$size_factor_names
 })
 
 setMethod("objectVersion", "SingleCellExperiment", function(x) {
