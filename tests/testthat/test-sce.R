@@ -69,7 +69,7 @@ expect_equivalent(reducedDims(sce), combined)
 sce <- SingleCellExperiment(assay=u)
 expect_identical(nrow(SingleCellExperiment:::int_elementMetadata(sce)), nrow(sce))
 expect_identical(nrow(SingleCellExperiment:::int_colData(sce)), ncol(sce))
-expect_identical(length(SingleCellExperiment:::int_metadata(sce)), 1L)
+expect_identical(length(SingleCellExperiment:::int_metadata(sce)), 3L)
 
 SingleCellExperiment:::int_elementMetadata(sce)$whee <- rextra
 expect_equal(rextra, SingleCellExperiment:::int_elementMetadata(sce)$whee)

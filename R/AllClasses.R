@@ -5,7 +5,11 @@ setClass("SingleCellExperiment",
                  int_colData = "DataFrame",
                  int_metadata = "list",
                  reducedDims = "SimpleList"),
-         contains = "RangedSummarizedExperiment")
+         contains = "RangedSummarizedExperiment",
+         prototype = prototype(int_metadata=list(version=packageVersion("SingleCellExperiment"),
+                                                 spike_names=character(0),
+                                                 size_factor_names=character(0)))
+)
 
 #############################################
 # Sets the validity checker.
@@ -36,6 +40,14 @@ setClass("SingleCellExperiment",
     if (any(lost.spikes)) {
         was.lost <- spikeNames(object)[lost.spikes][1]
         msg <- c(msg, sprintf("no field specifying rows belonging to spike-in set '%s'", was.lost))
+    }
+
+    # Checking the size factor names as well. 
+    sf.fields <- sapply(sizeFactorNames(object), .get_sf_field)
+    lost.sfs <- ! sf.fields %in% colnames(int_colData(object))
+    if (any(lost.sfs)) {
+        was.lost <- sizeFactorNames(object)[lost.sfs][1]
+        msg <- c(msg, sprintf("no field specifying size factors for set '%s'", was.lost))
     }
 
     # Checking version.
@@ -84,10 +96,7 @@ SingleCellExperiment <- function(..., reducedDims=SimpleList()) {
     }
     out <- new("SingleCellExperiment", rse, reducedDims=SimpleList(),
                int_elementMetadata=DataFrame(matrix(0, nrow(se), 0)),
-               int_colData=DataFrame(matrix(0, ncol(se), 0)),
-               int_metadata=list(version=packageVersion("SingleCellExperiment"),
-                                 spike_names=character(0),
-                                 size_factor_names=character(0)))
+               int_colData=DataFrame(matrix(0, ncol(se), 0)))
     reducedDims(out) <- reducedDims
     return(out)
 }
