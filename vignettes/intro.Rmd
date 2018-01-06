@@ -1,18 +1,14 @@
 ---
 title: "An introduction to the SingleCellExperiment class"
 author: "Davide Risso and Aaron Lun"
-date: "Last modified: June 6, 2017; Compiled: `r format(Sys.time(), '%B %d, %Y')`"
+package: SingleCellExperiment
 output:
-  BiocStyle::html_document:
-    toc: true
+  BiocStyle::html_document
 vignette: >
+  %\VignetteIndexEntry{An introduction to the SingleCellExperiment class}
+  %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
-
-<!--
-%\VignetteEngine{knitr::rmarkdown}
-%\VignetteIndexEntry{SingleCellExperiment Vignette}
--->
 
 ```{r options, include=FALSE, echo=FALSE}
 library(BiocStyle)
@@ -26,23 +22,6 @@ knitr::opts_chunk$set(warning=FALSE, error=FALSE, message=FALSE)
 | Project Status | [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) |
 | Travis CI      | [![Build Status](https://travis-ci.org/drisso/SingleCellExperiment.svg?branch=master)](https://travis-ci.org/drisso/SingleCellExperiment) |
 | Test coverage  | [![Coverage](https://codecov.io/gh/drisso/SingleCellExperiment/branch/master/graph/badge.svg)](https://codecov.io/gh/drisso/SingleCellExperiment) |
-
-# Installation 
-
-This vignette requires the `r Biocpkg("SingleCellExperiment")` and the `r Biocpkg("scRNAseq")` packages.
-To install them:
-
-```{r install, eval=FALSE}
-BiocInstaller::biocLite("SingleCellExperiment")
-BiocInstaller::biocLite("scRNAseq")
-```
-
-To load the packages:
-
-```{r load_packages}
-library(SingleCellExperiment)
-library(scRNAseq)
-```
 
 # The `SingleCellExperiment` class
 
@@ -65,6 +44,7 @@ There are two main ways to create instances of `SingleCellExperiment`.
 The first is via the constructor:
 
 ```{r construct}
+library(SingleCellExperiment)
 counts <- matrix(rpois(100, lambda = 10), ncol=10, nrow=10)
 sce <- SingleCellExperiment(assays = list(counts = counts))
 sce
@@ -82,6 +62,7 @@ as(se, "SingleCellExperiment")
 Here we use a subset of the `allen` data set from the `r Biocpkg("scRNAseq")` package to demonstrate the use of the class.
 
 ```{r fluidigm}
+library(scRNAseq)
 data(allen)
 allen
 ```
