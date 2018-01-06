@@ -172,14 +172,16 @@ setMethod("clearSpikes", "SingleCellExperiment", function(x) {
     return(x)
 })
 
-# colData / rowData
+# colData / rowData getters, with options for accessing internal fields.
 
 setMethod("colData", "SingleCellExperiment", function(x, internal=FALSE) {
     if(internal) {
-        if (any(colnames(x@colData) %in% colnames(int_colData(x)))) {
-            cn <- colnames(x@colData)[which(colnames(x@colData) %in% colnames(int_colData(x)))]
+        cn <- colnames(x@colData) # need explicit slot reference to avoid recursive colData() calling.
+        conflict <- cn %in% colnames(int_colData(x))
+        if (any(conflict)) {
+            cn <- cn[conflict]
             if (length(cn) > 2) {
-                cn <- c(cn[1:2], "...")
+                cn <- c(cn[seq_len(2)], "...")
             }
             warning("overlapping names in internal and external colData (", paste(cn, collapse = ", "), ")")
         }
@@ -191,10 +193,12 @@ setMethod("colData", "SingleCellExperiment", function(x, internal=FALSE) {
 
 setMethod("rowData", "SingleCellExperiment", function(x, internal=FALSE) {
     if(internal) {
-        if (any(colnames(mcols(x)) %in% colnames(int_elementMetadata(x)))) {
-            cn <- colnames(mcols(x))[which(colnames(mcols(x)) %in% colnames(int_elementMetadata(x)))]
+        cn <- colnames(mcols(x))
+        conflict <- cn %in% colnames(int_elementMetadata(x))
+        if (any(conflict)) { 
+            cn <- cn[conflict]
             if (length(cn) > 2) {
-                cn <- c(cn[1:2], "...")
+                cn <- c(cn[seq_len(2)], "...")
             }
             warning("overlapping names in internal and external rowData (", paste(cn, collapse = ", "), ")")
         }

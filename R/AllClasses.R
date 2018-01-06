@@ -43,7 +43,7 @@ setClass("SingleCellExperiment",
     }
 
     # Checking the size factor names as well. 
-    sf.fields <- sapply(sizeFactorNames(object), .get_sf_field)
+    sf.fields <- vapply(sizeFactorNames(object), .get_sf_field, FUN.VALUE="")
     lost.sfs <- ! sf.fields %in% colnames(int_colData(object))
     if (any(lost.sfs)) {
         was.lost <- sizeFactorNames(object)[lost.sfs][1]
