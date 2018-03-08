@@ -7,17 +7,17 @@
 \description{Various methods for the SingleCellExperiment class.}
 
 \usage{
-\S4method{show}{SingleCellExperiment}(x)
+\S4method{show}{SingleCellExperiment}(object)
 
 \S4method{objectVersion}{SingleCellExperiment}(x)
 }
 
 \arguments{
-\item{x}{A SingleCellExperiment class.}
+\item{x, object}{A SingleCellExperiment object.}
 }
 
 \details{
-The \code{show} method will print out information about the data contained in \code{x}.
+The \code{show} method will print out information about the data contained in \code{object}.
 This describes the stored assays and row/column metadata, as done in \code{\link{show,SummarizedExperiment-method}}.
 The names of the \code{reducedDims} slot and the names of the spike-ins (see \code{\link{spikeNames}}) are also reported.
 
@@ -26,7 +26,7 @@ This is useful for checking if the object is up to date relative to the latest v
 }
 
 \value{
-For \code{show}, a message is printed to screen describing the data stored in \code{x}.
+For \code{show}, a message is printed to screen describing the data stored in \code{object}.
 
 For \code{objectVersion}, an object of class \code{\link{package_version}} is returned.
 }
