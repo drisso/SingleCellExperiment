@@ -1,5 +1,6 @@
 # Getter/setter functions for reducedDims.
 
+#' @export
 setMethod("reducedDims", "SingleCellExperiment", function(x) {
     x@reducedDims
 })
@@ -9,6 +10,7 @@ setReplaceMethod("int_reducedDims", "SingleCellExperiment", function(x, value) {
     return(x)
 })
 
+#' @export
 setReplaceMethod("reducedDims", "SingleCellExperiment", function(x, value) {
     for (i in seq_along(value)) {
         if (!.not_reddim_mat(value[[i]], x)) { rownames(value[[i]]) <- colnames(x) }
@@ -18,6 +20,7 @@ setReplaceMethod("reducedDims", "SingleCellExperiment", function(x, value) {
     return(x)
 })
 
+#' @export
 setMethod("reducedDimNames", "SingleCellExperiment", function(x) {
     rdn <- names(reducedDims(x))
     if (is.null(rdn)) {
@@ -26,12 +29,14 @@ setMethod("reducedDimNames", "SingleCellExperiment", function(x) {
     return(rdn)
 })
 
+#' @export
 setMethod("reducedDim", "SingleCellExperiment", function(x, type=1) {
     r <- reducedDims(x)
     if(length(r)==0) { return(NULL) }
     return(r[[type]])
 })
 
+#' @export
 setReplaceMethod("reducedDim", "SingleCellExperiment", function(x, type=1, ..., value) {
     if (!.not_reddim_mat(value, x)) { rownames(value) <- colnames(x) }
     rd <- reducedDims(x)
@@ -42,7 +47,7 @@ setReplaceMethod("reducedDim", "SingleCellExperiment", function(x, type=1, ..., 
     return(x)
 })
 
-# Internal getter/setter functions.
+# Other internal getter/setter functions.
 
 setMethod("int_elementMetadata", "SingleCellExperiment", function(x) x@int_elementMetadata)
 setReplaceMethod("int_elementMetadata", "SingleCellExperiment", function(x, value) {
@@ -64,11 +69,15 @@ setReplaceMethod("int_metadata", "SingleCellExperiment", function(x, value) {
 
 # Size factor getter/setter functions.
 
+#' @export
+#' @importFrom BiocGenerics sizeFactors
 setMethod("sizeFactors", "SingleCellExperiment", function(object, type=NULL) {
     field <- .get_sf_field(type)
     return(int_colData(object)[[field]])
 })
 
+#' @export
+#' @importFrom BiocGenerics "sizeFactors<-"
 setReplaceMethod("sizeFactors", "SingleCellExperiment", function(object, type=NULL, ..., value) {
     field <- .get_sf_field(type)
     cd <- int_colData(object)
@@ -87,6 +96,7 @@ setReplaceMethod("sizeFactors", "SingleCellExperiment", function(object, type=NU
     return(object)
 })
 
+#' @export
 setMethod("clearSizeFactors", "SingleCellExperiment", function(object) {
     sizeFactors(object) <- NULL
 
@@ -105,6 +115,7 @@ setMethod("clearSizeFactors", "SingleCellExperiment", function(object) {
 
 # Spike-in getter/setter functions.
 
+#' @export
 setMethod("isSpike", c("SingleCellExperiment", "character"), function(x, type) {
     field <- .get_spike_field(type)
     return(int_elementMetadata(x)[[field]])
@@ -116,6 +127,7 @@ for (sig in c("missing", "NULL")){
     })
 }
 
+#' @export
 setReplaceMethod("isSpike", c("SingleCellExperiment", "character"), function(x, type, ..., value) {
     md <- int_metadata(x)
     rd <- int_elementMetadata(x)
@@ -156,6 +168,7 @@ for (sig in c("missing", "NULL")) {
     })
 }
 
+#' @export
 setMethod("clearSpikes", "SingleCellExperiment", function(x) {
     spike.sets <- spikeNames(x)
     rd <- int_elementMetadata(x)
@@ -174,6 +187,8 @@ setMethod("clearSpikes", "SingleCellExperiment", function(x) {
 
 # colData / rowData getters, with options for accessing internal fields.
 
+#' @export
+#' @importFrom SummarizedExperiment colData
 setMethod("colData", "SingleCellExperiment", function(x, internal=FALSE) {
     if(internal) {
         cn <- colnames(x@colData) # need explicit slot reference to avoid recursive colData() calling.
@@ -191,6 +206,9 @@ setMethod("colData", "SingleCellExperiment", function(x, internal=FALSE) {
   }
 })
 
+#' @export
+#' @importFrom S4Vectors mcols
+#' @importFrom SummarizedExperiment rowData
 setMethod("rowData", "SingleCellExperiment", function(x, internal=FALSE) {
     if(internal) {
         cn <- colnames(mcols(x))
@@ -210,18 +228,24 @@ setMethod("rowData", "SingleCellExperiment", function(x, internal=FALSE) {
 
 # Other useful functions.
 
+#' @export
 setMethod("spikeNames", "SingleCellExperiment", function(x) {
     int_metadata(x)$spike_names
 })
 
+#' @export
 setMethod("sizeFactorNames", "SingleCellExperiment", function(object) {
     int_metadata(object)$size_factor_names
 })
 
+#' @export
 setMethod("objectVersion", "SingleCellExperiment", function(x) {
     int_metadata(x)$version
 })
 
+#' @exportMethod coerce
+#' @importClassesFrom SummarizedExperiment SummarizedExperiment
+#' @importFrom S4Vectors metadata
 setAs("SummarizedExperiment", "SingleCellExperiment", function(from) {
     SingleCellExperiment(assays = assays(from),
                          colData = colData(from),

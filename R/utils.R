@@ -33,6 +33,7 @@
     return(as.vector(subset))
 }
 
+#' @importFrom utils head
 .standardize_DataFrames <- function(...) {
     all.d <- list(...)
     all.fields <- Reduce(union, lapply(all.d, colnames))

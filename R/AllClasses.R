@@ -1,5 +1,9 @@
 # Defines the SingleCellExperiment class.
 
+#' @export
+#' @importFrom utils packageVersion
+#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
+#' @importClassesFrom S4Vectors DataFrame SimpleList
 setClass("SingleCellExperiment",
          slots=c(int_elementMetadata = "DataFrame",
                  int_colData = "DataFrame",
@@ -63,6 +67,7 @@ setClass("SingleCellExperiment",
     return(!is.matrix(val) || nrow(val)!=ncol(object));
 }
 
+#' @importFrom S4Vectors setValidity2
 setValidity2("SingleCellExperiment", .sce_validity)
 
 #############################################
@@ -81,11 +86,16 @@ scat <- function(fmt, vals=character(), exdent=2, ...) {
     scat("spikeNames(%d): %s\n", spikeNames(object))
 }
 
+#' @export
 setMethod("show", "SingleCellExperiment", .sce_show)
 
 #############################################
 # Defines a constructor.
 
+#' @export
+#' @importFrom S4Vectors SimpleList DataFrame
+#' @importFrom SummarizedExperiment SummarizedExperiment rowData
+#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
 SingleCellExperiment <- function(..., reducedDims=SimpleList()) {
     se <- SummarizedExperiment(...)
     if(!is(se, "RangedSummarizedExperiment")) {
@@ -104,6 +114,7 @@ SingleCellExperiment <- function(..., reducedDims=SimpleList()) {
 #############################################
 # Define subsetting methods.
 
+#' @export
 setMethod("[", c("SingleCellExperiment", "ANY", "ANY"), function(x, i, j, ..., drop=TRUE) {
     if (!missing(i)) {
         ii <- .convert_subset_index(i, rownames(x))
@@ -121,6 +132,7 @@ setMethod("[", c("SingleCellExperiment", "ANY", "ANY"), function(x, i, j, ..., d
     callNextMethod()
 })
 
+#' @export
 setMethod("[<-", c("SingleCellExperiment", "ANY", "ANY", "SingleCellExperiment"), function(x, i, j, ..., value) {
     if (missing(i) && missing(j)) {
         int_elementMetadata(x) <- int_elementMetadata(value)
@@ -154,6 +166,7 @@ setMethod("[<-", c("SingleCellExperiment", "ANY", "ANY", "SingleCellExperiment")
     callNextMethod()
 })
 
+#' @export
 setMethod("subset", "SingleCellExperiment", function(x, i, j) {
     x[i, j]
 })
@@ -161,6 +174,9 @@ setMethod("subset", "SingleCellExperiment", function(x, i, j) {
 #############################################
 # Defining the combining methods.
 
+#' @export
+#' @importFrom S4Vectors SimpleList
+#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
 setMethod("cbind", "SingleCellExperiment", function(..., deparse.level=1) {
     args <- unname(list(...))
     base <- do.call(cbind, lapply(args, function(x) { as(x, "RangedSummarizedExperiment") }))
@@ -177,6 +193,8 @@ setMethod("cbind", "SingleCellExperiment", function(..., deparse.level=1) {
         int_metadata=int_metadata(ans), reducedDims=new.rd)
 })
 
+#' @export
+#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
 setMethod("rbind", "SingleCellExperiment", function(..., deparse.level=1) {
     args <- unname(list(...))
     base <- do.call(rbind, lapply(args, function(x) { as(x, "RangedSummarizedExperiment") }))

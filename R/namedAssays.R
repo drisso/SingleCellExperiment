@@ -15,7 +15,34 @@ SET_FUN <- function(exprs_values) {
     }
 }
 
-for (x in c("counts", "normcounts", "logcounts", "cpm", "tpm")) { 
-    setMethod(x, "SingleCellExperiment", GET_FUN(x))
-    setReplaceMethod(x, c("SingleCellExperiment", "ANY"), SET_FUN(x))
-}
+#' @export
+#' @importFrom BiocGenerics counts
+setMethod("counts", "SingleCellExperiment", GET_FUN("counts"))
+
+#' @export
+#' @importFrom BiocGenerics "counts<-"
+setReplaceMethod("counts", c("SingleCellExperiment", "ANY"), SET_FUN("counts"))
+
+#' @export
+setMethod("logcounts", "SingleCellExperiment", GET_FUN("logcounts"))
+
+#' @export
+setReplaceMethod("logcounts", c("SingleCellExperiment", "ANY"), SET_FUN("logcounts"))
+
+#' @export
+setMethod("normcounts", "SingleCellExperiment", GET_FUN("normcounts"))
+
+#' @export
+setReplaceMethod("normcounts", c("SingleCellExperiment", "ANY"), SET_FUN("normcounts"))
+
+#' @export
+setMethod("cpm", "SingleCellExperiment", GET_FUN("cpm"))
+
+#' @export
+setReplaceMethod("cpm", c("SingleCellExperiment", "ANY"), SET_FUN("cpm"))
+
+#' @export
+setMethod("tpm", "SingleCellExperiment", GET_FUN("tpm"))
+
+#' @export
+setReplaceMethod("tpm", c("SingleCellExperiment", "ANY"), SET_FUN("tpm"))
