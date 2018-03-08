@@ -6,8 +6,6 @@ ncells <- 100
 v <- matrix(rnorm(20000), ncol=ncells)
 sce <- SingleCellExperiment(assay=v)
 
-# Adding spike-ins.
-
 test_that("spike-in getters/setters are functioning", {
     is.spike1 <- rbinom(nrow(v), 1, 0.2)==1
     isSpike(sce, "ERCC") <- is.spike1
@@ -62,8 +60,6 @@ test_that("spike-in getters/setters are functioning", {
     expect_identical(spikeNames(sce), character(0))
 })
 
-# Adding size factors.
-
 test_that("size factor getters/setters are functioning", {
     sf1 <- 2^rnorm(ncells)
     sizeFactors(sce) <- sf1
@@ -95,8 +91,6 @@ test_that("size factor getters/setters are functioning", {
     sizeFactors(sce, "ERCC") <- NULL
     expect_identical(sizeFactors(sce, "ERCC"), NULL)
 })
-
-# Adding reduced dimensions.
 
 test_that("reduced dimension getters/setters are functioning", {
     d1 <- matrix(rnorm(ncells*4), ncol=4)
@@ -166,13 +160,9 @@ test_that("reduced dimension getters/setters are functioning", {
     expect_error(reducedDim(sce, 5) <- d1, "subscript is out of bounds")
 })
 
-# Checking package version.
-
 test_that("object version extraction works", {
     expect_identical(objectVersion(sce), packageVersion("SingleCellExperiment"))
 })
-
-# Checking colData and rowData
 
 test_that("special colData/rowData getters/setters work", {
     isSpike(sce, "ERCC") <- rbinom(nrow(v), 1, 0.2)==1
@@ -200,8 +190,6 @@ test_that("special colData/rowData getters/setters work", {
     expect_warning(colData(sce, internal=TRUE), "overlapping names in internal and external colData")
 })
 
-#  Checking the assay convenience wrappers.
-
 test_that("assay getters/setters work", {
     v2 <- matrix(runif(20000), ncol=ncells)
     counts(sce) <- v2
@@ -211,6 +199,11 @@ test_that("assay getters/setters work", {
     logcounts(sce) <- v3
     expect_equivalent(counts(sce), v2)
     expect_equivalent(logcounts(sce), v3)
+
+    cpm(sce) <- v3 + v2
+    expect_equivalent(cpm(sce), v3+v2)
+    tpm(sce) <- v3 - v2
+    expect_equivalent(tpm(sce), v3-v2)
 
     counts(sce) <- NULL
     expect_equivalent(logcounts(sce), v3) 
