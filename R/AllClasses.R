@@ -189,7 +189,7 @@ setMethod("cbind", "SingleCellExperiment", function(..., deparse.level=1) {
     new.rd <- SimpleList(do.call(mapply, c(all.rd, FUN=rbind, SIMPLIFY=FALSE)))
 
     ans <- args[[1]]
-    new("SingleCellExperiment", base, int_colData=new.col.data, int_elementMetadata=int_elementMetadata(ans),
+    new(class(ans), base, int_colData=new.col.data, int_elementMetadata=int_elementMetadata(ans),
         int_metadata=int_metadata(ans), reducedDims=new.rd)
 })
 
@@ -204,7 +204,7 @@ setMethod("rbind", "SingleCellExperiment", function(..., deparse.level=1) {
     new.row.data <- do.call(rbind, sout)
 
     ans <- args[[1]]
-    new("SingleCellExperiment", base, int_colData=int_colData(ans), int_elementMetadata=new.row.data,
+    new(class(ans), base, int_colData=int_colData(ans), int_elementMetadata=new.row.data,
         int_metadata=int_metadata(ans), reducedDims=reducedDims(ans))
 })
 
