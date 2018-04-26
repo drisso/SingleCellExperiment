@@ -4,7 +4,8 @@ Date: 2017-04-13
 Title: S4 Classes for Single Cell Data
 Authors@R: c(person("Aaron", "Lun", role=c("aut", "cph"),
         email="alun@wehi.edu.au"), person("Davide","Risso",
-        role=c("aut","cre", "cph"), email="risso.davide@gmail.com"))
+        role=c("aut","cre", "cph"), email="risso.davide@gmail.com"),
+        person("Keegan", "Korthauer", role=c("ctb")))
 Depends: R (>= 3.5), SummarizedExperiment
 Imports: S4Vectors, methods, BiocGenerics, utils
 Suggests: testthat, BiocStyle, knitr, rmarkdown, scRNAseq, magrittr, 

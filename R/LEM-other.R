@@ -32,10 +32,35 @@ setValidity2("LinearEmbeddingMatrix", .le_validity)
 # Sets the show method.
 
 .le_show <- function(object) {
-    cat("class: LinearEmbeddingMatrix", "\n")
-    cat(sprintf("Number of factors: %d\n", ncol(sampleFactors(object))))
-    cat(sprintf("Number of samples: %d\n", nrow(sampleFactors(object))))
-    cat(sprintf("Number of features: %d\n", nrow(featureLoadings(object))))
+
+    cat("class:", class(object), "\n")
+    cat("dim:", dim(object), "\n")
+
+    ## metadata
+    expt <- names(metadata(object))
+    if (is.null(expt)) {
+        expt <- character(length(metadata(object)))
+    }
+    scat("metadata(%d): %s\n", expt)
+
+    ## rownames
+    rownames <- rownames(obj)
+    if(is.null(rownames)) {
+        cat("rownames: NULL\n")
+    } else {
+        scat("rownames(%d): %s\n", rownames(object))
+    }
+
+    ## colnames
+    colnames <- colnames(obj)
+    if(is.null(colnames)) {
+        cat("colnames: NULL\n")
+    } else {
+        scat("colnames(%d): %s\n", colnames(object))
+    }
+
+    ## factorData
+    scat("factorData names(%d): %s\n", names(factorData(object)))
 }
 
 #' @export
@@ -48,14 +73,16 @@ setMethod("show", "LinearEmbeddingMatrix", .le_show)
 #' @importClassesFrom S4Vectors DataFrame
 LinearEmbeddingMatrix <- function(sampleFactors = matrix(nrow = 0, ncol = 0),
                             featureLoadings = matrix(nrow = 0, ncol = 0),
-                            factorData = NULL) {
+                            factorData = NULL,
+                            metadata = list()) {
     if (is.null(factorData)) {
         factorData <- new("DataFrame", nrows = ncol(sampleFactors))
     }
     out <- new("LinearEmbeddingMatrix",
                sampleFactors = sampleFactors,
                featureLoadings = featureLoadings,
-               factorData = factorData
+               factorData = factorData,
+               metadata = as.list(metadata)
                )
     return(out)
 }
@@ -106,7 +133,7 @@ setMethod("[<-", c("LinearEmbeddingMatrix", "ANY", "ANY", "LinearEmbeddingMatrix
         j <- .convert_subset_index(j, colnames(x))
     }
 
-    # Inserting sample factors. 
+    # Inserting sample factors.
     if (missing(i) && missing(j)) {
         temp_sf <- sampleFactors(value)
     } else if (missing(i)) {
