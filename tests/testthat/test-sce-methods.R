@@ -1,5 +1,5 @@
 # Checks for proper functioning of the methods.
-# library(SingleCellExperiment); library(testthat); source("test-methods.R")
+# library(SingleCellExperiment); library(testthat); source("test-sce-methods.R")
 
 set.seed(1000)
 ncells <- 100

@@ -1,5 +1,5 @@
 # Checks for proper construction and get/setting of the slots of a SingleCellExperiment.
-# library(SingleCellExperiment); library(testthat); source("test-sce.R")
+# library(SingleCellExperiment); library(testthat); source("test-sce-class.R")
 
 set.seed(1000)
 ncells <- 100

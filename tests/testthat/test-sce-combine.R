@@ -1,5 +1,5 @@
 # Checks the combining methods.
-# library(SingleCellExperiment); library(testthat); source("test-combine.R")
+# library(SingleCellExperiment); library(testthat); source("test-sce-combine.R")
 
 set.seed(1000)
 ncells <- 100

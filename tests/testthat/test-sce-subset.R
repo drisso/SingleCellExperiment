@@ -1,5 +1,5 @@
 # Checks the subsetting methods.
-# library(SingleCellExperiment); library(testthat); source("test-subset.R")
+# library(SingleCellExperiment); library(testthat); source("test-sce-subset.R")
 
 set.seed(1000)
 ncells <- 100
