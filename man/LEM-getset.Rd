@@ -28,11 +28,11 @@
 \description{Getter/setter methods for the LinearEmbeddingMatrix class.}
 
 \usage{
-\S4method{sampleFactors}{LinearEmbeddingMatrix}(x)
+\S4method{sampleFactors}{LinearEmbeddingMatrix}(x, withDimnames=TRUE)
 
 \S4method{sampleFactors}{LinearEmbeddingMatrix}(x) <- value
 
-\S4method{featureLoadings}{LinearEmbeddingMatrix}(x)
+\S4method{featureLoadings}{LinearEmbeddingMatrix}(x, withDimnames=TRUE)
 
 \S4method{featureLoadings}{LinearEmbeddingMatrix}(x) <- value
 
@@ -56,6 +56,7 @@
 \arguments{
 \item{x}{A LinearEmbeddingMatrix object.}
 \item{value}{An appropriate value to assign to the relevant slot.}
+\item{withDimnames}{A logical scalar indicating whether dimension names should be attached to the returned object.}
 \item{name}{A string specifying a field of the \code{factorData} slot.}
 \item{...}{Further arguments, ignored.}
 }
