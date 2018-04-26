@@ -195,3 +195,18 @@ setMethod("rbind", "SingleCellExperiment", function(..., deparse.level=1) {
         int_metadata=int_metadata(ans), reducedDims=reducedDims(ans))
 })
 
+#############################################
+# Defining coercion methods.
+
+#' @exportMethod coerce
+#' @importClassesFrom SummarizedExperiment SummarizedExperiment
+#' @importFrom S4Vectors metadata
+setAs("SummarizedExperiment", "SingleCellExperiment", function(from) {
+    SingleCellExperiment(assays = assays(from),
+                         colData = colData(from),
+                         rowData = rowData(from),
+                         metadata = metadata(from)
+                         )
+})
+
+

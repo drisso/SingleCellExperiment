@@ -35,3 +35,31 @@ setReplaceMethod("factorData", "LinearEmbeddingMatrix", function(x, value) {
     validObject(x)
     return(x)
 })
+
+#############################################
+# Define matrix methods.
+
+#' @export
+setMethod("dim", "LinearEmbeddingMatrix", function(x) {
+    dim(sampleFactors(x))
+})
+
+#' @export
+setMethod("dimnames", "LinearEmbeddingMatrix", function(x) {
+    dimnames(sampleFactors(x))
+})
+
+#' @export
+setReplaceMethod("dimnames", "LinearEmbeddingMatrix", function(x, value) {
+    dimnames(sampleFactors(x)) <- value
+    return(x)
+})
+
+#' @export
+setMethod("as.matrix", "LinearEmbeddingMatrix", function(x) {
+    y <- sampleFactors(x)
+    while (!is.matrix(y)) { # in case of sparsity or other madness.
+        y <- as.matrix(y)
+    }
+    return(y)
+})

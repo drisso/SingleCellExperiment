@@ -61,26 +61,6 @@ LinearEmbeddingMatrix <- function(sampleFactors = matrix(nrow = 0, ncol = 0),
 }
 
 #############################################
-# Define matrix methods.
-
-setMethod("dim", "LinearEmbeddingMatrix", function(x) {
-    dim(sampleFactors(x))
-})
-
-setMethod("dimnames", "LinearEmbeddingMatrix", function(x) {
-    dimnames(sampleFactors(x))
-})
-
-setReplaceMethod("dimnames", "LinearEmbeddingMatrix", function(x, value) {
-    dimnames(sampleFactors(x)) <- value
-    return(x)
-})
-
-setMethod("as.matrix", "LinearEmbeddingMatrix", function(x) {
-    sampleFactors(x)
-})
-
-#############################################
 # Define subsetting methods.
 
 #' @export
