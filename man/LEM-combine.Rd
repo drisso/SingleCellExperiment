@@ -23,9 +23,8 @@ Methods to combine LinearEmbeddingMatrix objects.
 \details{
 For \code{rbind}, LinearEmbeddingMatrix objects are combined row-wise, i.e., rows in successive objects are appended to the first object.
 This corresponds to adding more samples to the first object.
-\code{featureLoadings} and \code{factorData} will only be taken from the first element in the list.
-Matrix-like objects that are \code{not} LinearEmbeddingMatrix objects can also be used in \code{...}, 
-    provided that they are not the first element and that they support \code{rbind}.
+Note that \code{featureLoadings} and \code{factorData} will only be taken from the first element in the list;
+no checks are performed to determine whether they are consistent or not across objects.
 
 For \code{cbind}, LinearEmbeddingMatrix objects are combined columns-wise, i.e., columns in successive objects are appended to the first object.
 This corresponds to adding more factors to the first object.

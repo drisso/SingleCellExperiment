@@ -76,7 +76,7 @@ setMethod("[", c("LinearEmbeddingMatrix", "ANY", "ANY"), function(x, i, j, ..., 
     if(!missing(j)) {
         temp_sf <- temp_sf[,j,drop=drop]
         temp_fl <- temp_fl[,j,drop=drop]
-        temp_fd <- temp_fd[j,]
+        temp_fd <- temp_fd[j,,drop=FALSE]
     }
 
     # Returning a vector, a la drop=TRUE for a full matrix.
@@ -121,25 +121,16 @@ setMethod("[<-", c("LinearEmbeddingMatrix", "ANY", "ANY", "LinearEmbeddingMatrix
 #############################################
 # Defining the combining methods.
 
+#' @importFrom BiocGenerics rbind
 setMethod("rbind", "LinearEmbeddingMatrix", function(..., deparse.level=1) {
     args <- list(...)
     ans <- args[[1]]
-    args <- args[-1]
-
-    all_sf <- vector("list", length(args)+1L)
-    all_sf[[1]] <- sampleFactors(ans)
-    for (x in seq_along(args)) {
-        current <- args[[x]]
-        if (is(current, "LinearEmbeddingMatrix")) {
-            current <- sampleFactors(current)
-        }
-        all_sf[[x+1]] <- current
-    }
-
+    all_sf <- lapply(args, sampleFactors)
     sampleFactors(ans) <- do.call(rbind, all_sf)
     return(ans)
 })
 
+#' @importFrom BiocGenerics cbind
 setMethod("cbind", "LinearEmbeddingMatrix", function(..., deparse.level=1) {
     args <- list(...)
     ans <- args[[1]]
