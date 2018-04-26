@@ -84,5 +84,5 @@ test_that("manipulation of metadata is correct", {
 
 
 test_that("show method works", {
-    expect_known_output(show(LinearEmbeddingMatrix()))
+    expect_output(show(LinearEmbeddingMatrix()))
 })
