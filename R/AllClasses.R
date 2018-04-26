@@ -38,9 +38,9 @@ setValidity2("LinearEmbedding", .le_validity)
 
 .le_show <- function(object) {
     cat("class: LinearEmbedding", "\n")
-    sprintf("Number of factors: %d\n", ncol(sampleFactors(object)))
-    sprintf("Number of samples: %d\n", nrow(sampleFactors(object)))
-    sprintf("Number of features: %d\n", nrow(featureLoadings(object)))
+    cat(sprintf("Number of factors: %d\n", ncol(sampleFactors(object))))
+    cat(sprintf("Number of samples: %d\n", nrow(sampleFactors(object))))
+    cat(sprintf("Number of features: %d\n", nrow(featureLoadings(object))))
 }
 
 #' @export
@@ -64,8 +64,58 @@ LinearEmbedding <- function(sampleFactors = matrix(nrow = 0, ncol = 0),
 
 #' @export
 setMethod("[", c("LinearEmbedding", "ANY", "ANY"), function(x, i, j, ..., drop=TRUE) {
+    temp_sf <- sampleFactors(x)
+    temp_fl <- featureLoadings(x)
+    temp_fd <- factorData(x)
+
+    if(!missing(i)) {
+        temp_sf <- temp_sf[i,]
+    }
+
+    if(!missing(j)) {
+        temp_sf <- temp_sf[,j]
+        temp_fl <- temp_fl[,j]
+        temp_fd <- temp_fd[j,]
+    }
+
+    initialize(x, sampleFactors = temp_sf,
+               featureLoadings = temp_fl,
+               factorData = temp_fd)
+})
+
+# i is samples
+# j is factors
+#' @export
+setMethod("[<-", c("LinearEmbedding", "ANY", "ANY", "LinearEmbedding"), function(x, i, j, ..., value) {
+
+    temp_sf <- sampleFactors(x)
+    temp_fl <- featureLoadings(x)
+    temp_fd <- factorData(x)
+
+    if (missing(i) && missing(j)) {
+        temp_sf <- sampleFactors(value)
+        temp_fl <- featureLoadings(value)
+        temp_fd <- factorData(value)
+    }
+
+    if (!missing(i)) {
+        temp_sf[i,] <- sampleFactors(value)
+    }
+
+    if (!missing(j)) {
+        temp_sf[,j] <- sampleFactors(value)
+        temp_fl[,j] <- featureLoadings(value)
+        temp_fd[j,] <- factorData(value)
+    }
+
+    initialize(x, sampleFactors = temp_sf,
+               featureLoadings = temp_fl,
+               factorData = temp_fd)
 
 })
+
+# Defining the combining methods (cbind and rbind).
+
 
 #############################################
 #############################################
