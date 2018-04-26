@@ -1,3 +1,24 @@
+# Getters/setters for linearEmbedding.
+
+#' @export
+setGeneric("sampleFactors", function(x, ...) standardGeneric("sampleFactors"))
+
+#' @export
+setGeneric("sampleFactors<-", function(x, ..., value) standardGeneric("sampleFactors<-"))
+
+#' @export
+setGeneric("featureLoadings", function(x, ...) standardGeneric("featureLoadings"))
+
+#' @export
+setGeneric("featureLoadings<-", function(x, ..., value) standardGeneric("featureLoadings<-"))
+
+#' @export
+setGeneric("factorData", function(x, ...) standardGeneric("factorData"))
+
+#' @export
+setGeneric("factorData<-", function(x, ..., value) standardGeneric("factorData<-"))
+
+
 # Getter/setters for reducedDim.
 
 #' @export
