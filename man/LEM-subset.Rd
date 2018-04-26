@@ -1,11 +1,11 @@
-\name{Subsetting methods}
+\name{Subsetting LEMs}
 
 \alias{[,LinearEmbeddingMatrix,ANY-method}
 \alias{[,LinearEmbeddingMatrix,ANY,ANY-method}
 \alias{[,LinearEmbeddingMatrix,ANY,ANY,ANY-method}
 \alias{[<-,LinearEmbeddingMatrix,ANY,ANY,LinearEmbeddingMatrix-method}
 
-\title{Subsetting methods}
+\title{LEM subsetting methods}
 
 \description{
 Methods to subset LinearEmbeddingMatrix objects.

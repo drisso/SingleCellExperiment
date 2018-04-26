@@ -1,9 +1,9 @@
-\name{Combining methods}
+\name{Combining SCEs}
 
 \alias{rbind,SingleCellExperiment-method}
 \alias{cbind,SingleCellExperiment-method}
 
-\title{Combining methods}
+\title{SCE combining methods}
 
 \description{
 Methods to combine SingleCellExperiment objects.

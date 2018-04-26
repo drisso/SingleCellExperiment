@@ -1,4 +1,4 @@
-\name{Subsetting methods}
+\name{Subsetting SCEs}
 
 \alias{[,SingleCellExperiment,ANY-method}
 \alias{[,SingleCellExperiment,ANY,ANY-method}
@@ -6,7 +6,7 @@
 \alias{subset,SingleCellExperiment-method}
 \alias{[<-,SingleCellExperiment,ANY,ANY,SingleCellExperiment-method}
 
-\title{Subsetting methods}
+\title{SCE subsetting methods}
 
 \description{
 Methods to subset SingleCellExperiment objects.

@@ -1,11 +1,11 @@
-\name{Miscellaneous methods}
+\name{Miscellaneous SCE}
 \alias{objectVersion} 
 \alias{objectVersion,SingleCellExperiment-method}
 \alias{show,SingleCellExperiment-method} 
 \alias{colData,SingleCellExperiment-method}
 \alias{rowData,SingleCellExperiment-method}
 
-\title{Miscellaneous methods}
+\title{Miscellaneous SCE methods}
 \description{Various methods for the SingleCellExperiment class.}
 
 \usage{

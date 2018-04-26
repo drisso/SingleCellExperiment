@@ -1,9 +1,9 @@
-\name{Combining methods}
+\name{Combining LEMs}
 
 \alias{rbind,LinearEmbeddingMatrix-method}
 \alias{cbind,LinearEmbeddingMatrix-method}
 
-\title{Combining methods}
+\title{LEM combining methods}
 
 \description{
 Methods to combine LinearEmbeddingMatrix objects.

@@ -9,7 +9,7 @@
 }
 
 \arguments{
-\item{x}{A LinearEmbeddingMatrix object.}
+\item{object}{A LinearEmbeddingMatrix object.}
 }
 
 \details{
