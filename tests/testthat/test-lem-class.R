@@ -1,4 +1,4 @@
-# Checks for proper construction and get/setting of the slots of a LinearEmbeddingMatrix. 
+# Checks for proper construction and get/setting of the slots of a LinearEmbeddingMatrix.
 # library(SingleCellExperiment); library(testthat); source("test-lem-class.R")
 
 set.seed(1000)
@@ -23,6 +23,12 @@ test_that("LEM construction works correctly", {
     # Should throw errors if it doesn't make sense.
     expect_error(LinearEmbeddingMatrix(factors, loadings[,1:2]), "must have the same number of columns")
     expect_error(LinearEmbeddingMatrix(factors, loadings, DataFrame(YAY=2)), "one row per factor")
+
+    # Add metadata
+    md <- list(a = 1, b = "two")
+    lem3 <- LinearEmbeddingMatrix(factors, loadings, factorData=fd, metadata=md)
+    expect_identical(md, metadata(lem3))
+
 })
 
 test_that("LEM setters work correctly", {
