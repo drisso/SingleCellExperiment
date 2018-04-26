@@ -1,4 +1,77 @@
-# Defines the SingleCellExperiment class.
+# LinearEmbedding class
+
+#' @export
+#' @importClassesFrom S4Vectors DataFrame SimpleList
+setClass("LinearEmbedding",
+         slots = c(sampleFactors = "ANY",
+                   featureLoadings = "ANY",
+                   factorData = "DataFrame"),
+         contains = "Annotated")
+
+# Validity
+.le_validity <- function(object) {
+    msg <- NULL
+
+    # Check dimensions
+    sf <- sampleFactors(object)
+    fl <- featureLoadings(object)
+    fd <- factorData(object)
+
+    if(NCOL(sf) != NCOL(fl)) {
+        msg <- c(msg,
+                 "'sampleFactors' and 'featureLoadings' must have the same number of columns")
+    }
+
+    if(NROW(fd) != NCOL(sf)) {
+        msg <- c(msg,
+                 "if 'factorData' is specified, it must have one row per factor")
+    }
+
+    if (length(msg)) { return(msg) }
+    return(TRUE)
+}
+
+#' @importFrom S4Vectors setValidity2
+setValidity2("LinearEmbedding", .le_validity)
+
+# Show
+
+.le_show <- function(object) {
+    cat("class: LinearEmbedding", "\n")
+    sprintf("Number of factors: %d\n", ncol(sampleFactors(object)))
+    sprintf("Number of samples: %d\n", nrow(sampleFactors(object)))
+    sprintf("Number of features: %d\n", nrow(featureLoadings(object)))
+}
+
+#' @export
+setMethod("show", "LinearEmbedding", .le_show)
+
+# Constructor
+
+#' @export
+LinearEmbedding <- function(sampleFactors = matrix(nrow = 0, ncol = 0),
+                            featureLoadings = matrix(nrow = 0, ncol = 0),
+                            factorData = DataFrame()) {
+    out <- new("LinearEmbedding",
+               sampleFactors = sampleFactors,
+               featureLoadings = featureLoadings,
+               factorData = factorData
+               )
+    return(out)
+}
+
+# Define subsetting methods.
+
+#' @export
+setMethod("[", c("LinearEmbedding", "ANY", "ANY"), function(x, i, j, ..., drop=TRUE) {
+
+})
+
+#############################################
+#############################################
+#############################################
+#############################################
+# SingleCellExperiment class
 
 #' @export
 #' @importFrom utils packageVersion
@@ -46,7 +119,7 @@ setClass("SingleCellExperiment",
         msg <- c(msg, sprintf("no field specifying rows belonging to spike-in set '%s'", was.lost))
     }
 
-    # Checking the size factor names as well. 
+    # Checking the size factor names as well.
     sf.fields <- vapply(sizeFactorNames(object), .get_sf_field, FUN.VALUE="")
     lost.sfs <- ! sf.fields %in% colnames(int_colData(object))
     if (any(lost.sfs)) {
@@ -72,7 +145,6 @@ setValidity2("SingleCellExperiment", .sce_validity)
 
 #############################################
 # Sets the show method.
-
 scat <- function(fmt, vals=character(), exdent=2, ...) {
     vals <- ifelse(nzchar(vals), vals, "''")
     lbls <- paste(S4Vectors:::selectSome(vals), collapse=" ")
