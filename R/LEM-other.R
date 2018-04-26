@@ -164,7 +164,16 @@ setMethod("[<-", c("LinearEmbeddingMatrix", "ANY", "ANY", "LinearEmbeddingMatrix
     # Dealing with NAMES. 
     temp_rn <- rownames(x)
     if (!missing(i)) {
-        temp_rn[i] <- rownames(value)
+        replace_rn <- rownames(value)
+        if (!is.null(temp_rn) || !is.null(replace_rn)) {
+            if (is.null(temp_rn)) {
+                temp_rn <- character(nrow(x))
+            }
+            if (is.null(replace_rn)) {
+                replace_rn <- character(nrow(value))
+            }
+            temp_rn[i] <- replace_rn
+        }
     }
 
     BiocGenerics:::replaceSlots(x, sampleFactors = temp_sf,
