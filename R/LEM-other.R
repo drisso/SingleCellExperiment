@@ -70,10 +70,12 @@ setMethod("[", c("LinearEmbeddingMatrix", "ANY", "ANY"), function(x, i, j, ..., 
     temp_fd <- factorData(x)
 
     if(!missing(i)) {
+        i <- .convert_subset_index(i, rownames(x))
         temp_sf <- temp_sf[i,,drop=drop]
     }
 
     if(!missing(j)) {
+        j <- .convert_subset_index(j, colnames(x))
         temp_sf <- temp_sf[,j,drop=drop]
         temp_fl <- temp_fl[,j,drop=drop]
         temp_fd <- temp_fd[j,,drop=FALSE]
@@ -97,10 +99,16 @@ setMethod("[<-", c("LinearEmbeddingMatrix", "ANY", "ANY", "LinearEmbeddingMatrix
 
     # i is samples
     # j is factors
+    if (!missing(i)) {
+        i <- .convert_subset_index(i, rownames(x))
+    }
+    if (!missing(j)) {
+        j <- .convert_subset_index(j, colnames(x))
+    }
+
+    # Inserting sample factors. 
     if (missing(i) && missing(j)) {
         temp_sf <- sampleFactors(value)
-        temp_fl <- featureLoadings(value)
-        temp_fd <- factorData(value)
     } else if (missing(i)) {
         temp_sf[,j] <- sampleFactors(value)
     } else if (missing(j)) {
@@ -109,7 +117,11 @@ setMethod("[<-", c("LinearEmbeddingMatrix", "ANY", "ANY", "LinearEmbeddingMatrix
         temp_sf[i,j] <- sampleFactors(value)
     }
 
-    if (!missing(j)) {
+    # Inserting other fields.
+    if (missing(i) && missing(j)) {
+        temp_fl <- featureLoadings(value)
+        temp_fd <- factorData(value)
+    } else if (!missing(j)) {
         temp_fl[,j] <- featureLoadings(value)
         temp_fd[j,] <- factorData(value)
     }
