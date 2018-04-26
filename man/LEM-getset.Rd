@@ -21,6 +21,9 @@
 \alias{dimnames<-,LinearEmbeddingMatrix-method} 
 \alias{dimnames<-,LinearEmbeddingMatrix,ANY-method} 
 
+\alias{$,LinearEmbeddingMatrix-method}
+\alias{$<-,LinearEmbeddingMatrix-method}
+
 \title{LinearEmbeddingMatrix getters/setters}
 \description{Getter/setter methods for the LinearEmbeddingMatrix class.}
 
@@ -44,11 +47,16 @@
 \S4method{dimnames}{LinearEmbeddingMatrix}(x)
 
 \S4method{dimnames}{LinearEmbeddingMatrix}(x) <- value
+
+\S4method{$}{LinearEmbeddingMatrix}(x, name)
+
+\S4method{$}{LinearEmbeddingMatrix}(x, name) <- value
 }
 
 \arguments{
 \item{x}{A LinearEmbeddingMatrix object.}
 \item{value}{An appropriate value to assign to the relevant slot.}
+\item{name}{A string specifying a field of the \code{factorData} slot.}
 \item{...}{Further arguments, ignored.}
 }
 
@@ -64,12 +72,15 @@ For assignment to \code{dimnames}, a list of length 2 should be used containing 
 }
 
 \value{
-For each getter method, the value of the slot with the same name is returned.
-For the setter methods, a LinearEmbeddingMatrix is returned with modifications to the named slot.
+For the getter methods \code{sampleFactors}, \code{featureLoadings} and \code{factorData}, the value of the slot with the same name is returned.
+For the corresponding setter methods, a LinearEmbeddingMatrix is returned with modifications to the named slot.
 
 For \code{dim}, the dimensions of the \code{sampleFactors} slot are returned in an integer vector of length 2.
 For \code{dimnames}, a list of length 2 containing the row and column names is returned.
 For \code{as.matrix}, an ordinary matrix derived from \code{sampleFactors} is returned.
+
+For \code{$}, the value of the named field of the \code{factorData} slot is returned.
+For \code{$<-}, a LinearEmbeddingMatrix is returned with the modified field in \code{factorData}.
 }
 
 \seealso{

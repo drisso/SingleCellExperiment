@@ -36,6 +36,17 @@ setReplaceMethod("factorData", "LinearEmbeddingMatrix", function(x, value) {
     return(x)
 })
 
+#' @export
+setMethod("$", "LinearEmbeddingMatrix", function(x, name) {
+    factorData(x)[[name]]
+})
+
+#' @export
+setReplaceMethod("$", "LinearEmbeddingMatrix", function(x, name, value) {
+    factorData(x)[[name]] <- value
+    return(x)
+})
+
 #############################################
 # Define matrix methods.
 
