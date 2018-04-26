@@ -20,7 +20,7 @@
     if(NROW(fd) != NCOL(sf)) {
         msg <- c(msg, "'factorData' must have one row per factor")
     }
-
+    
     if (length(msg)) { return(msg) }
     return(TRUE)
 }
