@@ -73,14 +73,16 @@ setMethod("show", "LinearEmbeddingMatrix", .le_show)
 #' @importClassesFrom S4Vectors DataFrame
 LinearEmbeddingMatrix <- function(sampleFactors = matrix(nrow = 0, ncol = 0),
                             featureLoadings = matrix(nrow = 0, ncol = 0),
-                            factorData = NULL) {
+                            factorData = NULL,
+                            metadata = list()) {
     if (is.null(factorData)) {
         factorData <- new("DataFrame", nrows = ncol(sampleFactors))
     }
     out <- new("LinearEmbeddingMatrix",
                sampleFactors = sampleFactors,
                featureLoadings = featureLoadings,
-               factorData = factorData
+               factorData = factorData,
+               metadata = as.list(metadata)
                )
     return(out)
 }
