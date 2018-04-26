@@ -101,14 +101,15 @@ setMethod("[<-", c("LinearEmbeddingMatrix", "ANY", "ANY", "LinearEmbeddingMatrix
         temp_sf <- sampleFactors(value)
         temp_fl <- featureLoadings(value)
         temp_fd <- factorData(value)
-    }
-
-    if (!missing(i)) {
+    } else if (missing(i)) {
+        temp_sf[,j] <- sampleFactors(value)
+    } else if (missing(j)) {
         temp_sf[i,] <- sampleFactors(value)
+    } else {
+        temp_sf[i,j] <- sampleFactors(value)
     }
 
     if (!missing(j)) {
-        temp_sf[,j] <- sampleFactors(value)
         temp_fl[,j] <- featureLoadings(value)
         temp_fd[j,] <- factorData(value)
     }
