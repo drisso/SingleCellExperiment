@@ -46,9 +46,13 @@ setMethod("show", "LinearEmbedding", .le_show)
 # Constructor
 
 #' @export
+#' @importClassesFrom S4Vectors DataFrame
 LinearEmbedding <- function(sampleFactors = matrix(nrow = 0, ncol = 0),
                             featureLoadings = matrix(nrow = 0, ncol = 0),
-                            factorData = DataFrame()) {
+                            factorData = NULL) {
+    if (is.null(factorData)) {
+        factorData <- new("DataFrame", nrows = ncol(sampleFactors))
+    }
     out <- new("LinearEmbedding",
                sampleFactors = sampleFactors,
                featureLoadings = featureLoadings,
@@ -66,12 +70,12 @@ setMethod("[", c("LinearEmbedding", "ANY", "ANY"), function(x, i, j, ..., drop=T
     temp_fd <- factorData(x)
 
     if(!missing(i)) {
-        temp_sf <- temp_sf[i,]
+        temp_sf <- temp_sf[i,,drop=FALSE]
     }
 
     if(!missing(j)) {
-        temp_sf <- temp_sf[,j]
-        temp_fl <- temp_fl[,j]
+        temp_sf <- temp_sf[,j,drop=FALSE]
+        temp_fl <- temp_fl[,j,drop=FALSE]
         temp_fd <- temp_fd[j,]
     }
 
