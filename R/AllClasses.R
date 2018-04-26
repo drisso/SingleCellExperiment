@@ -18,13 +18,11 @@ setClass("LinearEmbedding",
     fd <- factorData(object)
 
     if(NCOL(sf) != NCOL(fl)) {
-        msg <- c(msg,
-                 "'sampleFactors' and 'featureLoadings' must have the same number of columns")
+        msg <- c(msg, "'sampleFactors' and 'featureLoadings' must have the same number of columns")
     }
 
     if(NROW(fd) != NCOL(sf)) {
-        msg <- c(msg,
-                 "if 'factorData' is specified, it must have one row per factor")
+        msg <- c(msg, "'factorData' must have one row per factor")
     }
 
     if (length(msg)) { return(msg) }
@@ -35,7 +33,6 @@ setClass("LinearEmbedding",
 setValidity2("LinearEmbedding", .le_validity)
 
 # Show
-
 .le_show <- function(object) {
     cat("class: LinearEmbedding", "\n")
     cat(sprintf("Number of factors: %d\n", ncol(sampleFactors(object))))
@@ -83,15 +80,14 @@ setMethod("[", c("LinearEmbedding", "ANY", "ANY"), function(x, i, j, ..., drop=T
                factorData = temp_fd)
 })
 
-# i is samples
-# j is factors
 #' @export
 setMethod("[<-", c("LinearEmbedding", "ANY", "ANY", "LinearEmbedding"), function(x, i, j, ..., value) {
-
     temp_sf <- sampleFactors(x)
     temp_fl <- featureLoadings(x)
     temp_fd <- factorData(x)
 
+    # i is samples
+    # j is factors
     if (missing(i) && missing(j)) {
         temp_sf <- sampleFactors(value)
         temp_fl <- featureLoadings(value)
@@ -111,11 +107,49 @@ setMethod("[<-", c("LinearEmbedding", "ANY", "ANY", "LinearEmbedding"), function
     initialize(x, sampleFactors = temp_sf,
                featureLoadings = temp_fl,
                factorData = temp_fd)
-
 })
 
 # Defining the combining methods (cbind and rbind).
+setMethod("rbind", "LinearEmbedding", function(..., deparse.level=1) {
+    args <- list(...)
+    ans <- args[[1]]
+    args <- args[-1]
 
+    all_sf <- vector("list", length(args)+1L)
+    all_sf[[1]] <- sampleFactors(ans)
+    for (x in seq_along(args)) {
+        current <- args[[x]]
+        if (is(current, "LinearEmbedding")) {
+            current <- sampleFactors(current)
+        }
+        all_sf[[x+1]] <- current
+    }
+
+    sampleFactors(ans) <- do.call(rbind, all_sf)
+    return(ans)
+})
+
+setMethod("cbind", "LinearEmbedding", function(..., deparse.level=1) {
+    args <- list(...)
+    ans <- args[[1]]
+    args <- args[-1]
+
+    all_sf <- all_fd <- all_fl <- vector("list", length(args)+1L)
+    all_sf[[1]] <- sampleFactors(ans)
+    all_fd[[1]] <- factorData(ans)
+    all_fl[[1]] <- featureLoadings(ans)
+
+    for (x in seq_along(args)) {
+        current <- args[[x]]
+        all_sf[[x+1]] <- sampleFactors(current)
+        all_fd[[x+1]] <- factorData(current)
+        all_fl[[x+1]] <- featureLoadings(current)
+    }
+
+    initialize(ans, sampleFactors = do.call(cbind, all_sf),
+               featureLoadings = do.call(cbind, all_fl),
+               factorData = do.call(rbind, all_fd))
+})
 
 #############################################
 #############################################
