@@ -32,6 +32,11 @@ setReplaceMethod("sampleFactors", "LinearEmbeddingMatrix", function(x, value) {
 
 #' @export
 setReplaceMethod("featureLoadings", "LinearEmbeddingMatrix", function(x, value) {
+    if(!is.null(colnames(value)) && 
+       !identical(colnames(value), colnames(x@sampleFactors))){
+       stop("colnames of featureLoadings must match colnames of sampleFactors")
+    }
+  
     x@featureLoadings <- value
     validObject(x)
     return(x)
@@ -39,6 +44,11 @@ setReplaceMethod("featureLoadings", "LinearEmbeddingMatrix", function(x, value) 
 
 #' @export
 setReplaceMethod("factorData", "LinearEmbeddingMatrix", function(x, value) {
+    if(!is.null(rownames(value)) && 
+       !identical(rownames(value), colnames(x@sampleFactors))){
+      stop("rownames of factorData must match colnames of sampleFactors")
+    }
+    
     x@factorData <- value
     validObject(x)
     return(x)

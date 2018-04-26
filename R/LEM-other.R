@@ -20,14 +20,6 @@
     if(NROW(fd) != NCOL(sf)) {
         msg <- c(msg, "'factorData' must have one row per factor")
     }
-
-    if(!is.null(colnames(fl)) && !identical(colnames(fl), colnames(sf))){
-        msg <- c(msg, "colnames of featureLoadings must match colnames of sampleFactors")
-    }
-    
-    if(!is.null(rownames(fd)) && !identical(rownames(fd), colnames(sf))){
-        msg <- c(msg, "rownames of factorData must match colnames of sampleFactors")
-    }
     
     if (length(msg)) { return(msg) }
     return(TRUE)
