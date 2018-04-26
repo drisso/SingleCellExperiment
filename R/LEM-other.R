@@ -44,7 +44,7 @@ setValidity2("LinearEmbeddingMatrix", .le_validity)
     scat("metadata(%d): %s\n", expt)
 
     ## rownames
-    rownames <- rownames(obj)
+    rownames <- rownames(object)
     if(is.null(rownames)) {
         cat("rownames: NULL\n")
     } else {
@@ -52,7 +52,7 @@ setValidity2("LinearEmbeddingMatrix", .le_validity)
     }
 
     ## colnames
-    colnames <- colnames(obj)
+    colnames <- colnames(object)
     if(is.null(colnames)) {
         cat("colnames: NULL\n")
     } else {
