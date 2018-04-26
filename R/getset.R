@@ -1,3 +1,41 @@
+# Getter/setter functions for linearEmbedding.
+
+#' @export
+setMethod("sampleFactors", "LinearEmbedding", function(x) {
+    x@sampleFactors
+})
+
+#' @export
+setMethod("featureLoadings", "LinearEmbedding", function(x){
+    x@featureLoadings
+})
+
+#' @export
+setMethod("factorData", "LinearEmbedding", function(x){
+    x@factorData
+})
+
+#' @export
+setReplaceMethod("sampleFactors", "LinearEmbedding", function(x, value) {
+    x@sampleFactors <- value
+    validObject(x)
+    return(x)
+})
+
+#' @export
+setReplaceMethod("featureLoadings", "LinearEmbedding", function(x, value) {
+    x@featureLoadings <- value
+    validObject(x)
+    return(x)
+})
+
+#' @export
+setReplaceMethod("factorData", "LinearEmbedding", function(x, value) {
+    x@factorData <- value
+    validObject(x)
+    return(x)
+})
+
 # Getter/setter functions for reducedDims.
 
 #' @export
