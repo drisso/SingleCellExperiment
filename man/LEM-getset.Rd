@@ -37,7 +37,7 @@
 
 \S4method{factorData}{LinearEmbeddingMatrix}(x) <- value
 
-\S4method{as.matrix}{LinearEmbeddingMatrix}(x)
+\S4method{as.matrix}{LinearEmbeddingMatrix}(x, ...)
 
 \S4method{dim}{LinearEmbeddingMatrix}(x)
 
@@ -49,6 +49,7 @@
 \arguments{
 \item{x}{A LinearEmbeddingMatrix object.}
 \item{value}{An appropriate value to assign to the relevant slot.}
+\item{...}{Further arguments, ignored.}
 }
 
 \details{

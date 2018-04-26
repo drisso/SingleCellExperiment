@@ -56,10 +56,14 @@ setReplaceMethod("dimnames", "LinearEmbeddingMatrix", function(x, value) {
 })
 
 #' @export
-setMethod("as.matrix", "LinearEmbeddingMatrix", function(x) {
+#' @method as.matrix LinearEmbeddingMatrix
+as.matrix.LinearEmbeddingMatrix <- function(x, ...) {
     y <- sampleFactors(x)
     while (!is.matrix(y)) { # in case of sparsity or other madness.
         y <- as.matrix(y)
     }
     return(y)
-})
+}
+
+#' @export
+setMethod("as.matrix", "LinearEmbeddingMatrix", as.matrix.LinearEmbeddingMatrix)
