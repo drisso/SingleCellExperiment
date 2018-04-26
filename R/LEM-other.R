@@ -70,13 +70,18 @@ setMethod("[", c("LinearEmbeddingMatrix", "ANY", "ANY"), function(x, i, j, ..., 
     temp_fd <- factorData(x)
 
     if(!missing(i)) {
-        temp_sf <- temp_sf[i,,drop=FALSE]
+        temp_sf <- temp_sf[i,,drop=drop]
     }
 
     if(!missing(j)) {
-        temp_sf <- temp_sf[,j,drop=FALSE]
-        temp_fl <- temp_fl[,j,drop=FALSE]
+        temp_sf <- temp_sf[,j,drop=drop]
+        temp_fl <- temp_fl[,j,drop=drop]
         temp_fd <- temp_fd[j,]
+    }
+
+    # Returning a vector, a la drop=TRUE for a full matrix.
+    if (is.null(dim(temp_sf))) {
+        return(temp_sf)
     }
 
     initialize(x, sampleFactors = temp_sf,
