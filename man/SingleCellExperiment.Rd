@@ -2,8 +2,6 @@
 \alias{SingleCellExperiment}
 \alias{SingleCellExperiment-class}
 \alias{coerce,SummarizedExperiment,SingleCellExperiment-method}
-\alias{colData,SingleCellExperiment-method}
-\alias{rowData,SingleCellExperiment-method}
 
 \docType{class}
 
@@ -12,26 +10,19 @@
 
 \usage{
 SingleCellExperiment(..., reducedDims=SimpleList())
-
-\S4method{colData}{SingleCellExperiment}(x, internal=FALSE)
-\S4method{rowData}{SingleCellExperiment}(x, internal=FALSE)
 }
 
 \arguments{
     \item{...}{Arguments to pass to the \code{SummarizedExperiment} constructor.}
     \item{reducedDims}{A SimpleList object containing matrices of cell coordinates in reduced space.}
-    \item{x}{A \code{SingleCellExperiment} object.}
-    \item{internal}{Whether the information contained in the internal slots should be returned. See details.}
 }
 
 \value{
 A SingleCellExperiment object is returned from the constructor.
-
-\code{colData} and \code{rowData} return a \code{DataFrame}.
 }
 
 \details{
-The SingleCellExperiment class inherits from the \code{\link{SummarizedExperiment}} class, with several additional slots:
+The SingleCellExperiment class inherits from the \linkS4class{SummarizedExperiment} class, with several additional slots:
 \describe{
 \item{\code{reducedDims}:}{A SimpleList containing matrices of cell coordinates.}
 \item{\code{int_elementMetadata}:}{A DataFrame containing internal row metadata (for each genomic feature).}
@@ -50,11 +41,6 @@ The number of rows of each matrix should be equal to the number of cells in the 
 
 The internal metadata slots are not intended for external use.
 Please use the appropriate getter/setter functions instead, such as \code{isSpike} or \code{sizeFactors}.
-
-It may sometimes be useful to return both the visible and the internal \code{colData} in a single \code{DataFrame}. 
-This can be achieved by using \code{colData(x, internal=TRUE)}, which will return the stored \code{colData} along with the \code{int_colData} (currently the \code{sizeFactors}).
-Similarly, \code{rowData(x, internal=TRUE)} will return the stored \code{rowData} along with the \code{int_rowData} (currently the columns corresponding to \code{isSpike}).
-Warnings will be raised in the unlikely event of any name clashes.
 }
 
 \seealso{
