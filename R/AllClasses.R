@@ -14,9 +14,10 @@ setClass("SingleCellExperiment",
 )
 
 #' @export
-#' @importClassesFrom S4Vectors DataFrame Annotated 
+#' @importClassesFrom S4Vectors DataFrame Annotated character_OR_NULL
 setClass("LinearEmbeddingMatrix",
          slots = c(sampleFactors = "ANY",
                    featureLoadings = "ANY",
+                   NAMES = "character_OR_NULL",
                    factorData = "DataFrame"),
          contains = "Annotated")

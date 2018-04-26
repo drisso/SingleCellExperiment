@@ -1,30 +1,38 @@
 # Defines methods for new generics for LinearEmbeddingMatrix.
 
 #' @export
-setMethod("sampleFactors", "LinearEmbeddingMatrix", function(x) {
-    x@sampleFactors
+setMethod("sampleFactors", "LinearEmbeddingMatrix", function(x, withDimnames=TRUE) {
+    sf <- x@sampleFactors
+    if (withDimnames) {
+        dimnames(sf) <- dimnames(x)
+    }
+    return(sf)
 })
 
 #' @export
 setMethod("featureLoadings", "LinearEmbeddingMatrix", function(x, withDimnames=TRUE){
     fl <- x@featureLoadings
     if(withDimnames){
-        colnames(fl) <- colnames(x@sampleFactors)
+        colnames(fl) <- colnames(x)
     }
     return(fl)
 })
 
 #' @export
-setMethod("factorData", "LinearEmbeddingMatrix", function(x, withDimnames=TRUE){
-    fd <- x@factorData
-    if(withDimnames){
-        rownames(fd) <- colnames(x@sampleFactors)
-    }
-    return(fd)
+setMethod("factorData", "LinearEmbeddingMatrix", function(x){
+    x@factorData
 })
 
 #' @export
 setReplaceMethod("sampleFactors", "LinearEmbeddingMatrix", function(x, value) {
+    if (length(dim(value))!=2L) {
+        stop("'value' should be a matrix-like object") 
+    }
+    if ((!is.null(colnames(value)) && !identical(colnames(value), colnames(x))) 
+        || (!is.null(rownames(value)) && !identical(rownames(value), rownames(x))) ) {
+        stop("'dimnames(value)' must match 'dimnames(x)' when setting sampleFactors")
+    }
+
     x@sampleFactors <- value
     validObject(x)
     return(x)
@@ -32,9 +40,11 @@ setReplaceMethod("sampleFactors", "LinearEmbeddingMatrix", function(x, value) {
 
 #' @export
 setReplaceMethod("featureLoadings", "LinearEmbeddingMatrix", function(x, value) {
-    if(!is.null(colnames(value)) && 
-       !identical(colnames(value), colnames(x@sampleFactors))){
-       stop("colnames of featureLoadings must match colnames of sampleFactors")
+    if (length(dim(value))!=2L) {
+        stop("'value' should be a matrix-like object")
+    }
+    if (!is.null(colnames(value)) && !identical(colnames(value), colnames(x))){
+        stop("'colnames(value)' must match 'colnames(x)' when setting featureLoadings")
     }
   
     x@featureLoadings <- value
@@ -44,9 +54,11 @@ setReplaceMethod("featureLoadings", "LinearEmbeddingMatrix", function(x, value) 
 
 #' @export
 setReplaceMethod("factorData", "LinearEmbeddingMatrix", function(x, value) {
-    if(!is.null(rownames(value)) && 
-       !identical(rownames(value), colnames(x@sampleFactors))){
-      stop("rownames of factorData must match colnames of sampleFactors")
+    if (!is(value, "DataFrame")) {
+        stop("'value' should be a DataFrame")
+    }
+    if (!is.null(rownames(value)) && !identical(rownames(value), colnames(x))){
+        stop("'rownames(value)' must match 'colnames(x)' when setting factorData")
     }
     
     x@factorData <- value
@@ -75,13 +87,14 @@ setMethod("dim", "LinearEmbeddingMatrix", function(x) {
 
 #' @export
 setMethod("dimnames", "LinearEmbeddingMatrix", function(x) {
-    dimnames(sampleFactors(x))
+    list(x@NAMES, rownames(factorData(x)))
 })
 
 #' @export
 setReplaceMethod("dimnames", "LinearEmbeddingMatrix", function(x, value) {
-    dimnames(sampleFactors(x)) <- value
-    return(x)
+    fd <- factorData(x)
+    rownames(fd) <- value[[2]]
+    BiocGenerics:::replaceSlots(x, NAMES=value[[1]], factorData=fd, check=FALSE)
 })
 
 #' @export
