@@ -6,13 +6,21 @@ setMethod("sampleFactors", "LinearEmbeddingMatrix", function(x) {
 })
 
 #' @export
-setMethod("featureLoadings", "LinearEmbeddingMatrix", function(x){
-    x@featureLoadings
+setMethod("featureLoadings", "LinearEmbeddingMatrix", function(x, withDimnames=TRUE){
+    fl <- x@featureLoadings
+    if(withDimnames){
+        colnames(fl) <- colnames(x@sampleFactors)
+    }
+    return(fl)
 })
 
 #' @export
-setMethod("factorData", "LinearEmbeddingMatrix", function(x){
-    x@factorData
+setMethod("factorData", "LinearEmbeddingMatrix", function(x, withDimnames=TRUE){
+    fd <- x@factorData
+    if(withDimnames){
+        rownames(fd) <- colnames(x@sampleFactors)
+    }
+    return(fd)
 })
 
 #' @export

@@ -7,13 +7,13 @@ setGeneric("sampleFactors", function(x, ...) standardGeneric("sampleFactors"))
 setGeneric("sampleFactors<-", function(x, ..., value) standardGeneric("sampleFactors<-"))
 
 #' @export
-setGeneric("featureLoadings", function(x, ...) standardGeneric("featureLoadings"))
+setGeneric("featureLoadings", function(x, ..., withDimnames=TRUE) standardGeneric("featureLoadings"))
 
 #' @export
 setGeneric("featureLoadings<-", function(x, ..., value) standardGeneric("featureLoadings<-"))
 
 #' @export
-setGeneric("factorData", function(x, ...) standardGeneric("factorData"))
+setGeneric("factorData", function(x, ..., withDimnames=TRUE) standardGeneric("factorData"))
 
 #' @export
 setGeneric("factorData<-", function(x, ..., value) standardGeneric("factorData<-"))
