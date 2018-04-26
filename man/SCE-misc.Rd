@@ -53,5 +53,10 @@ For \code{objectVersion}, an object of class \code{\link{package_version}} is re
 example(SingleCellExperiment, echo=FALSE) # Using the class example
 show(sce)
 objectVersion(sce)
+
+sizeFactors(sce) <- runif(ncol(sce))
+isSpike(sce, "ERCC") <- rbinom(nrow(sce), 1, 0.2)==1
+rowData(sce, internal=TRUE)
+colData(sce, internal=TRUE)
 }
 
