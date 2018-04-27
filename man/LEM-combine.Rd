@@ -30,6 +30,9 @@ For \code{cbind}, LinearEmbeddingMatrix objects are combined columns-wise, i.e.,
 This corresponds to adding more factors to the first object.
 \code{featureLoadings} will also be combined column-wise across objects, provided that the number of features is the same across objects.
 Similarly, \code{factorData} will be combined row-wise across objects.
+
+Combining objects with and without row names will result in the removal of all row names; similarly for column names.
+Duplicate row names are currently supported by duplicate column names are not, and will be de-duplicated appropriately.
 }
 
 \value{

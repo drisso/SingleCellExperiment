@@ -41,7 +41,8 @@ If \code{drop=TRUE} and the subsetting would produce dimensions of length 1, tho
 This mimics the expected behaviour from a matrix-like object.
 Users should set \code{drop=FALSE} to ensure that a LinearEmbeddingMatrix is returned.
 
-For subset replacement, if neither \code{i} or \code{j} are set, \code{x} will be turned into \code{value}.
+For subset replacement, if neither \code{i} or \code{j} are set, \code{x} will be effectively replaced by \code{value}.
+However, row and column names will \emph{not} change, consistent with replacement in ordinary matrices.
 }
 
 \author{
