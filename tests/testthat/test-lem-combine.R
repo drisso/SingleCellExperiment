@@ -23,14 +23,25 @@ test_that("rbind works correctly", {
                            sampleFactors(lem.alt, withDimnames=FALSE)))
     expect_identical(featureLoadings(lem2), featureLoadings(lem))
     expect_identical(factorData(lem2), factorData(lem))
+    expect_identical(rownames(lem2), NULL)
+    expect_identical(colnames(lem2), NULL)
 
     # Works correctly with names.
+    unnamed <- lem
     rownames(lem) <- paste0("CELL", seq_len(nrow(lem)))
     colnames(lem) <- paste0("FACTOR", seq_len(ncol(lem)))
+
     lem3 <- rbind(lem, lem[shuffled,])
     expect_identical(rownames(lem3), c(rownames(lem), rownames(lem)[shuffled]))
     expect_identical(colnames(lem3), colnames(lem))
     expect_equivalent(sampleFactors(lem3), sampleFactors(lem2))
+
+    lem4 <- rbind(lem, unnamed)
+    expect_identical(rownames(lem4), NULL)
+    expect_identical(colnames(lem4), colnames(lem))
+    lem4 <- rbind(unnamed, lem)
+    expect_identical(rownames(lem4), NULL)
+    expect_identical(colnames(lem4), NULL)
 
     # Throws errors correctly.
     lem.alt <- lem[,1:2]
@@ -51,14 +62,25 @@ test_that("cbind works correctly", {
                            sampleFactors(lem.alt, withDimnames=FALSE)))
     expect_identical(featureLoadings(lem2), cbind(featureLoadings(lem), featureLoadings(lem.alt)))
     expect_identical(factorData(lem2), rbind(factorData(lem), factorData(lem.alt)))
+    expect_identical(rownames(lem2), NULL)
+    expect_identical(colnames(lem2), NULL)
 
     # Works correctly with names.
+    unnamed <- lem
     rownames(lem) <- paste0("CELL", seq_len(nrow(lem)))
     colnames(lem) <- paste0("FACTOR", seq_len(ncol(lem)))
+
     lem3<- cbind(lem, lem[,shuffled])
     expect_identical(rownames(lem3), rownames(lem))
     expect_identical(colnames(lem3), c(colnames(lem), paste0(colnames(lem)[shuffled], "1")))
     expect_equivalent(sampleFactors(lem3), sampleFactors(lem2))
+
+    lem4 <- cbind(unnamed, lem)
+    expect_identical(rownames(lem4), NULL)
+    expect_identical(colnames(lem4), NULL)
+    lem4 <- cbind(lem, unnamed)
+    expect_identical(rownames(lem4), rownames(lem))
+    expect_identical(colnames(lem4), NULL)
 
     # Throws errors correctly.
     lem.alt <- lem[1:5,]

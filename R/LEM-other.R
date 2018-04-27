@@ -181,11 +181,12 @@ setMethod("rbind", "LinearEmbeddingMatrix", function(..., deparse.level=1) {
 
     # Checking what to do with names.
     all_rn <- lapply(args, rownames)
-    unnamed <- sapply(all.names, is.null)
-    for (u in which(unnamed)) {
-        all_rn[[u]] <- character(length(args[[u]]))
+    unnamed <- sapply(all_rn, is.null)
+    if (any(unnamed)) { 
+        all_rn <- NULL
+    } else {
+        all_rn <- unlist(all_rn)
     }
-    all_rn <- unlist(all_rn)
 
     # Replacing the relevant slots.
     BiocGenerics:::replaceSlots(x, NAMES=all_rn, sampleFactors=all_sf, check=FALSE)
