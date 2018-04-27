@@ -97,27 +97,29 @@ LinearEmbeddingMatrix <- function(sampleFactors = matrix(nrow = 0, ncol = 0),
 
 #' @export
 setMethod("[", c("LinearEmbeddingMatrix", "ANY", "ANY"), function(x, i, j, ..., drop=TRUE) {
-    temp_sf <- sampleFactors(x, withDimnames=FALSE)
+    temp_sf <- sampleFactors(x, withDimnames=FALSE) 
     temp_fl <- featureLoadings(x, withDimnames=FALSE)
-    temp_fd <- factorData(x, withDimnames=FALSE)
+    temp_fd <- factorData(x)
     temp_rn <- rownames(x)
 
     if(!missing(i)) {
         i <- .convert_subset_index(i, rownames(x))
-        temp_sf <- temp_sf[i,,drop=drop]
+        temp_sf <- temp_sf[i,,drop=FALSE]
         temp_rn <- temp_rn[i]
     }
 
     if(!missing(j)) {
         j <- .convert_subset_index(j, colnames(x))
-        temp_sf <- temp_sf[,j,drop=drop]
-        temp_fl <- temp_fl[,j,drop=drop]
+        temp_sf <- temp_sf[,j,drop=FALSE]
+        temp_fl <- temp_fl[,j,drop=FALSE]
         temp_fd <- temp_fd[j,,drop=FALSE]
     }
 
     # Returning a vector, a la drop=TRUE for a full matrix.
-    if (is.null(dim(temp_sf))) {
-        return(temp_sf)
+    if (any(dim(temp_sf)==1L) && drop) {
+        colnames(temp_sf) <- rownames(temp_fd)
+        rownames(temp_sf) <- temp_rn
+        return(drop(temp_sf))
     }
 
     BiocGenerics:::replaceSlots(x, sampleFactors = temp_sf,
@@ -154,32 +156,17 @@ setMethod("[<-", c("LinearEmbeddingMatrix", "ANY", "ANY", "LinearEmbeddingMatrix
 
     # Dealing with the factorData, featureLoadings.
     if (missing(i) && missing(j)) {
-        temp_fl <- featureLoadings(value)
-        temp_fd <- factorData(value)
+        temp_fl <- featureLoadings(value, withDimnames=FALSE)
+        temp_fd[] <- factorData(value)
     } else if (!missing(j)) {
-        temp_fl[,j] <- featureLoadings(value)
+        temp_fl[,j] <- featureLoadings(value, withDimnames=FALSE)
         temp_fd[j,] <- factorData(value)
     }
    
-    # Dealing with NAMES. 
-    temp_rn <- rownames(x)
-    if (!missing(i)) {
-        replace_rn <- rownames(value)
-        if (!is.null(temp_rn) || !is.null(replace_rn)) {
-            if (is.null(temp_rn)) {
-                temp_rn <- character(nrow(x))
-            }
-            if (is.null(replace_rn)) {
-                replace_rn <- character(nrow(value))
-            }
-            temp_rn[i] <- replace_rn
-        }
-    }
-
     BiocGenerics:::replaceSlots(x, sampleFactors = temp_sf,
                featureLoadings = temp_fl, 
                factorData = temp_fd, 
-               NAMES = temp_rn, check=FALSE)
+               check=FALSE)
 })
 
 #############################################
@@ -189,7 +176,7 @@ setMethod("[<-", c("LinearEmbeddingMatrix", "ANY", "ANY", "LinearEmbeddingMatrix
 setMethod("rbind", "LinearEmbeddingMatrix", function(..., deparse.level=1) {
     args <- list(...)
     x <- args[[1]]
-    all_sf <- lapply(args, sampleFactors)
+    all_sf <- lapply(args, sampleFactors, withDimnames=FALSE)
     all_sf <- do.call(rbind, all_sf)
 
     # Checking what to do with names.
@@ -210,8 +197,8 @@ setMethod("cbind", "LinearEmbeddingMatrix", function(..., deparse.level=1) {
     x <- args[[1]]
 
     all_sf <- lapply(args, sampleFactors, withDimnames=FALSE)
-    all_fd <- lapply(args, factorData, withDimnames=FALSE)
     all_fl <- lapply(args, featureLoadings, withDimnames=FALSE)
+    all_fd <- lapply(args, factorData)
 
     BiocGenerics:::replaceSlots(x, sampleFactors = do.call(cbind, all_sf),
                featureLoadings = do.call(cbind, all_fl),
