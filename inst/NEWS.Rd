@@ -2,7 +2,7 @@
 \title{SingleCellExperiment News}
 \encoding{UTF-8}
 
-\section{Version 1.1.1}{\itemize{
+\section{Version 1.1.4}{\itemize{
 \item Added the clearSpikes() function to remove all spike-in information.
 
 \item Added the clearSizeFactors() function to remove all size factor information.
@@ -13,6 +13,8 @@
 
 \item isSpike<- with type=NULL is deprecated in favour of clearSpikes() for removing existing spike-in information.
 All spike-in sets must also be explicitly named during assignment.
+
+\item Added the LinearEmbeddingMatrix class for storing dimensionality reduction with loadings.
 }}
 
 \section{Version 1.0.0}{\itemize{
