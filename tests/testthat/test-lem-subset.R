@@ -10,7 +10,8 @@ fdata <- DataFrame(WHEE=sample(LETTERS, ncol(factors)))
 lem <- LinearEmbeddingMatrix(factors, loadings, fdata)
 
 test_that("subsetting works correctly for different index types", {
-    for (x in 1:2) {
+    keep.dimnames <- FALSE
+    for (x in 1:3) {
         if (x==1) {
             by.row <- sample(nrow(factors), nrow(factors)/2)
             by.col <- sample(ncol(factors), ncol(factors)/2)
@@ -25,24 +26,24 @@ test_that("subsetting works correctly for different index types", {
 
             by.row <- sample(rownames(lem), nrow(factors)/2)
             by.col <- sample(colnames(lem), ncol(factors)/2)
-
+            keep.dimnames <- TRUE
         }
 
         # By row.
         lem.alt <- lem[by.row,]
-        expect_identical(sampleFactors(lem.alt, withDimnames=FALSE), factors[by.row,])
+        expect_identical(sampleFactors(lem.alt, withDimnames=keep.dimnames), factors[by.row,])
         expect_identical(featureLoadings(lem.alt), loadings)
         expect_identical(factorData(lem.alt), fdata)
     
         # By column.
         lem.alt <- lem[,by.col]
-        expect_identical(sampleFactors(lem.alt, withDimnames=FALSE), factors[,by.col])
+        expect_identical(sampleFactors(lem.alt, withDimnames=keep.dimnames), factors[,by.col])
         expect_identical(featureLoadings(lem.alt), loadings[,by.col])
         expect_identical(factorData(lem.alt), fdata[by.col,,drop=FALSE])
     
         # By row and column.
         lem.alt <- lem[by.row, by.col]
-        expect_identical(sampleFactors(lem.alt, withDimnames=FALSE), factors[by.row,by.col])
+        expect_identical(sampleFactors(lem.alt, withDimnames=keep.dimnames), factors[by.row,by.col])
         expect_identical(featureLoadings(lem.alt), loadings[,by.col])
         expect_identical(factorData(lem.alt), fdata[by.col,,drop=FALSE])
     }
@@ -67,12 +68,21 @@ test_that("subsetting works correctly with drop=TRUE", {
     expect_identical(featureLoadings(nodrop), loadings[,1,drop=FALSE])
     expect_identical(factorData(nodrop), fdata[1,,drop=FALSE])
 
+    # Handles names correctly.
+    colnames(lem) <- paste0("Factor_", seq_len(ncol(factors)))
+    rownames(lem) <- paste0("Cell_", seq_len(nrow(factors)))
+    expect_identical(lem[,1], sampleFactors(lem)[,1])
+    expect_identical(lem[2,], sampleFactors(lem)[2,])
+    expect_identical(lem[1,2], sampleFactors(lem)[1,2])
+
     # Throws errors correctly.
     expect_error(lem[nrow(lem)+1,], "subscript out of bounds", fixed=TRUE)
+    expect_error(lem["A",], "index out of bounds", fixed=TRUE)
 })
 
 test_that("subsetting assignment works correctly", {
-    for (x in 1:2) {
+    keep.dimnames <- FALSE
+    for (x in 1:3) {
         if (x==1) {
             dest.row <- sample(nrow(factors), nrow(factors)/2)
             src.row <- sample(nrow(factors), nrow(factors)/2)
@@ -93,6 +103,7 @@ test_that("subsetting assignment works correctly", {
             src.row <- sample(rownames(lem), nrow(factors)/2)
             dest.col <- sample(colnames(lem), ncol(factors)/2)
             src.col <- sample(colnames(lem), ncol(factors)/2)
+            keep.dimnames <- TRUE
         }
 
         # By row.
@@ -101,7 +112,7 @@ test_that("subsetting assignment works correctly", {
     
         ref <- factors
         ref[dest.row,] <- ref[src.row,]
-        expect_identical(sampleFactors(lem.alt, withDimnames=FALSE), ref)
+        expect_identical(sampleFactors(lem.alt, withDimnames=keep.dimnames), ref)
         expect_identical(featureLoadings(lem.alt), loadings)
         expect_identical(factorData(lem.alt), fdata)
     
@@ -111,7 +122,7 @@ test_that("subsetting assignment works correctly", {
     
         ref_sf <- factors
         ref_sf[,dest.col] <- ref_sf[,src.col]
-        expect_identical(sampleFactors(lem.alt, withDimnames=FALSE), ref_sf)
+        expect_identical(sampleFactors(lem.alt, withDimnames=keep.dimnames), ref_sf)
     
         ref_fl <- loadings
         ref_fl[,dest.col] <- ref_fl[,src.col]
@@ -127,7 +138,7 @@ test_that("subsetting assignment works correctly", {
     
         ref_sf <- factors
         ref_sf[dest.row,dest.col] <- ref_sf[src.row,src.col]
-        expect_identical(sampleFactors(lem.alt, withDimnames=FALSE), ref_sf)
+        expect_identical(sampleFactors(lem.alt, withDimnames=keep.dimnames), ref_sf)
     
         ref_fl <- loadings
         ref_fl[,dest.col] <- ref_fl[,src.col]
@@ -150,25 +161,25 @@ test_that("subsetting works correctly with names", {
     expect_identical(rownames(out), rownames(lem)[1:5])
     expect_identical(colnames(out), colnames(lem))
 
-    # Repeating with subset assignment.
+    # Repeating with subset assignment; names should NOT change.
     lem2 <- lem
     lem2[1:5,] <- lem[5:1,]
-    expect_identical(rownames(lem2), rownames(lem)[c(5:1, 6:nrow(lem))])
+    expect_identical(rownames(lem2), rownames(lem))
     expect_identical(colnames(lem2), colnames(lem))
 
     lem2 <- lem
     lem2[,1:5] <- lem[,5:1]
-    expect_identical(colnames(lem2), colnames(lem)) # Quietly incoherent!
+    expect_identical(colnames(lem2), colnames(lem)) 
     expect_identical(rownames(lem2), rownames(lem))     
 
     unnamed <- lem
     rownames(unnamed) <- NULL
     lem2 <- lem
     lem2[1:5,] <- unnamed[5:1,]
-    expect_identical(rownames(lem2), c(character(5), rownames(lem)[-seq_len(5)]))
+    expect_identical(rownames(lem2), rownames(lem))
 
     unnamed[1:5,] <- lem[5:1,]
-    expect_identical(rownames(unnamed), c(rownames(lem)[5:1], character(nrow(lem)-5)))
+    expect_identical(rownames(unnamed), NULL)
 })
 
 

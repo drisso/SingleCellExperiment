@@ -12,7 +12,10 @@ lem <- LinearEmbeddingMatrix(factors, loadings, fdata)
 test_that("rbind works correctly", {
     shuffled <- sample(nrow(lem))
     lem.alt <- lem[shuffled,]
-    expect_identical(lem.alt, rbind(lem.alt))
+    samish <- rbind(lem.alt)
+    expect_identical(sampleFactors(lem.alt), sampleFactors(samish))
+    expect_identical(featureLoadings(lem.alt), featureLoadings(samish))
+    expect_identical(factorData(lem.alt), factorData(samish))
 
     lem2 <- rbind(lem, lem.alt)
     expect_identical(sampleFactors(lem2, withDimnames=FALSE), 
@@ -37,7 +40,10 @@ test_that("rbind works correctly", {
 test_that("cbind works correctly", {
     shuffled <- sample(ncol(factors))
     lem.alt <- lem[,shuffled]
-    expect_identical(lem.alt, cbind(lem.alt))
+    samish <- cbind(lem.alt)
+    expect_identical(sampleFactors(lem.alt), sampleFactors(samish))
+    expect_identical(featureLoadings(lem.alt), featureLoadings(samish))
+    expect_identical(factorData(lem.alt), factorData(samish))
     
     lem2 <- cbind(lem, lem.alt)
     expect_identical(sampleFactors(lem2, withDimnames=FALSE), 
