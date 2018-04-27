@@ -25,6 +25,10 @@ A message is printed to screen describing the data stored in \code{object}.
 \code{\link{LinearEmbeddingMatrix}}
 }
 
+\author{
+Davide Risso
+}
+
 \examples{
 example(LinearEmbeddingMatrix, echo=FALSE) # Using the class example
 show(lem)

@@ -39,7 +39,7 @@ This means that feature loadings remain attached to the embedding, allowing it t
 }
 
 \author{
-Aaron Lun and Davide Risso
+Aaron Lun, Davide Risso and Keegan Korthauer
 }
 
 \examples{

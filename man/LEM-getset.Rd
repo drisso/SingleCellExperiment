@@ -88,6 +88,10 @@ For \code{$<-}, a LinearEmbeddingMatrix is returned with the modified field in \
 \code{\link{LinearEmbeddingMatrix}}
 }
 
+\author{
+Keegan Korthauer, Davide Risso and Aaron Lun
+}
+
 \examples{
 example(LinearEmbeddingMatrix, echo=FALSE) # Using the class example
 
