@@ -7,11 +7,7 @@ ncells <- 100
 v <- matrix(rnorm(20000), ncol=ncells)
 pca <- matrix(runif(ncells*5), ncells)
 
-factors <- matrix(rnorm(ncells*2), ncol=2)
-loadings <- matrix(runif(2000), ncol=2)
-lem <- LinearEmbeddingMatrix(factors, loadings)
-
-sce <- SingleCellExperiment(assay=v, reducedDims=SimpleList(PCA=pca, LEM=lem)) # A fully loaded object.
+sce <- SingleCellExperiment(assay=v, reducedDims=SimpleList(PCA=pca)) # A fully loaded object.
 
 isSpike(sce, "ERCC") <- rbinom(nrow(v), 1, 0.2)==1
 sizeFactors(sce) <- 2^rnorm(ncells)
@@ -73,7 +69,6 @@ test_that("subsetting by column works correctly", {
         expect_identical(assay(sce)[,ind,drop=FALSE], assay(sub.sce)) # check SE elements are subsetted.
         expect_identical(sizeFactors(sub.sce), sizeFactors(sce)[ind])
         expect_identical(reducedDim(sub.sce, "PCA"), pca[ind,,drop=FALSE])
-        expect_identical(reducedDim(sub.sce, "LEM"), lem[ind,,drop=FALSE])
 
         # Unchanged elements:
         expect_identical(isSpike(sub.sce), isSpike(sce))

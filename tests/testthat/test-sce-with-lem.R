@@ -12,6 +12,7 @@ lem <- LinearEmbeddingMatrix(factors, loadings)
 v <- matrix(rnorm(20000), ncol=ncells)
 u <- matrix(rpois(20000, 5), ncol=ncells)
 
+sce <- SingleCellExperiment(assay=v, reducedDims=SimpleList(PCA=lem)) # A fully loaded object.
 test_that("SCE construction works correctly with LEM", {
 
     sce1 <- SingleCellExperiment(assay=SimpleList(counts=u, exprs=v),
@@ -35,3 +36,29 @@ test_that("reduced dimension getters/setters are functioning", {
 
 })
 
+
+test_that("subsetting by row works correctly", {
+
+    colData(sce)$indicator <- seq_len(ncells)
+
+    for (j in 1:3) {
+        if (j==1L) {
+            by.col <- sample(ncells, 20)
+            sub.sce <- sce[,by.col]
+            expect_identical(colData(sub.sce)$indicator, by.col)
+        } else if (j==2L) {
+            by.col <- rbinom(ncells, 1, 0.2)==1
+            sub.sce <- sce[,by.col]
+            expect_identical(colData(sub.sce)$indicator, which(by.col))
+        } else if (j==3L) {
+            by.col <- colnames(sce)[sample(ncells, 50)]
+            sub.sce <- sce[,by.col]
+            expect_identical(colData(sub.sce)$indicator, match(by.col, colnames(sce)))
+        }
+        ind <- colData(sub.sce)$indicator
+
+        expect_identical(reducedDim(sub.sce, "PCA"), lem[ind,,drop=FALSE])
+
+    }
+
+})
