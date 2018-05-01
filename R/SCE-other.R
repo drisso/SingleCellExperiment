@@ -13,7 +13,7 @@
     if (length(rd)) {
         if (any(unlist(lapply(rd, .not_reddim_mat, object=object)))) {
             msg <- c(msg,
-                     "each element of 'reducedDims' must be a matrix with nrow equal to 'ncol(object)'")
+                     "each element of 'reducedDims' must be a matrix-like object with nrow equal to 'ncol(object)'")
         }
     }
 
@@ -51,7 +51,7 @@
 }
 
 .not_reddim_mat <- function(val, object) {
-    return(!is.matrix(val) || nrow(val)!=ncol(object));
+    return(is.null(val) || NROW(val)!=NCOL(object));
 }
 
 #' @importFrom S4Vectors setValidity2

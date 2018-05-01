@@ -1,6 +1,6 @@
 # Checks for proper construction and get/setting of the slots of a LinearEmbeddingMatrix.
 # library(SingleCellExperiment); library(testthat); source("test-lem-class.R")
-
+context("LinearEmbeddingMatrix class")
 set.seed(1000)
 ncells <- 100
 
@@ -73,14 +73,14 @@ test_that("getting with names makes sense", {
 
     expect_identical(rn, rownames(lem))
     expect_identical(cn, colnames(lem))
-    
+
     expect_identical(sampleFactors(lem, withDimnames=FALSE), factors)
     ref <- factors
     dimnames(ref) <- list(rn, cn)
     expect_identical(sampleFactors(lem), ref)
 
     expect_identical(featureLoadings(lem, withDimnames=FALSE), loadings)
-    ref <- loadings 
+    ref <- loadings
     colnames(ref) <- cn
     expect_identical(featureLoadings(lem), ref)
 
@@ -125,7 +125,7 @@ test_that("setting with names makes sense", {
     colnames(loading2) <- paste0("Y", cn)
     expect_error(featureLoadings(lem) <- loading2, "must match")
 
-    ref <- new("DataFrame", nrows=ncol(lem)) 
+    ref <- new("DataFrame", nrows=ncol(lem))
     rownames(ref) <- paste0("Y", cn)
     expect_error(factorData(lem) <- ref, "must match")
 })
