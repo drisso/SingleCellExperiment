@@ -13,6 +13,7 @@ v <- matrix(rnorm(20000), ncol=ncells)
 u <- matrix(rpois(20000, 5), ncol=ncells)
 
 sce <- SingleCellExperiment(assay=v, reducedDims=SimpleList(PCA=lem)) # A fully loaded object.
+
 test_that("SCE construction works correctly with LEM", {
 
     sce1 <- SingleCellExperiment(assay=SimpleList(counts=u, exprs=v),
@@ -60,5 +61,25 @@ test_that("subsetting by row works correctly", {
         expect_identical(reducedDim(sub.sce, "PCA"), lem[ind,,drop=FALSE])
 
     }
+
+})
+
+
+test_that("cbind works correctly", {
+    shuffled <- sample(ncells)
+    sce.alt <- sce[,shuffled]
+
+    sce2 <- cbind(sce, sce.alt)
+    expect_identical(reducedDim(sce2, "PCA"), rbind(reducedDim(sce, "PCA"), reducedDim(sce.alt, "PCA")))
+
+    sce.err <- sce
+    reducedDim(sce.err, "PCA") <- NULL
+    expect_error(cbind(sce.err, sce), "object 1 does not have 'PCA' in 'reducedDims'")
+    expect_error(cbind(sce, sce.err), "object 2 does not have 'PCA' in 'reducedDims'")
+
+    sce.err <- sce
+    reducedDim(sce.err, "PCA") <- sampleFactors(reducedDim(sce.err, "PCA"))
+    expect_error(cbind(sce.err, sce), "no method for coercing this S4 class to a vector")
+    expect_error(cbind(sce, sce.err), "no method for coercing this S4 class to a vector")
 
 })
