@@ -1,5 +1,6 @@
 # Checks the combining methods.
 # library(SingleCellExperiment); library(testthat); source("test-lem-combine.R")
+context("LEM combine")
 
 set.seed(1000)
 ncells <- 100
@@ -18,8 +19,8 @@ test_that("rbind works correctly", {
     expect_identical(factorData(lem.alt), factorData(samish))
 
     lem2 <- rbind(lem, lem.alt)
-    expect_identical(sampleFactors(lem2, withDimnames=FALSE), 
-                     rbind(sampleFactors(lem, withDimnames=FALSE), 
+    expect_identical(sampleFactors(lem2, withDimnames=FALSE),
+                     rbind(sampleFactors(lem, withDimnames=FALSE),
                            sampleFactors(lem.alt, withDimnames=FALSE)))
     expect_identical(featureLoadings(lem2), featureLoadings(lem))
     expect_identical(factorData(lem2), factorData(lem))
@@ -55,10 +56,10 @@ test_that("cbind works correctly", {
     expect_identical(sampleFactors(lem.alt), sampleFactors(samish))
     expect_identical(featureLoadings(lem.alt), featureLoadings(samish))
     expect_identical(factorData(lem.alt), factorData(samish))
-    
+
     lem2 <- cbind(lem, lem.alt)
-    expect_identical(sampleFactors(lem2, withDimnames=FALSE), 
-                     cbind(sampleFactors(lem, withDimnames=FALSE), 
+    expect_identical(sampleFactors(lem2, withDimnames=FALSE),
+                     cbind(sampleFactors(lem, withDimnames=FALSE),
                            sampleFactors(lem.alt, withDimnames=FALSE)))
     expect_identical(featureLoadings(lem2), cbind(featureLoadings(lem), featureLoadings(lem.alt)))
     expect_identical(factorData(lem2), rbind(factorData(lem), factorData(lem.alt)))
