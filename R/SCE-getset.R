@@ -155,22 +155,6 @@ setReplaceMethod("isSpike", c("SingleCellExperiment", "character"), function(x, 
     return(x)
 })
 
-for (sig in c("missing", "NULL")) {     
-    setReplaceMethod("isSpike", c("SingleCellExperiment", "missing"), function(x, type, ..., value) {
-        .Deprecated(msg="'isSpike<-' with 'type=NULL' is deprecated.\nUse 'clearSpikes' instead.")
-
-        # Wiping existing elements out, so that the union (of 'value') will be equal to 'value'.
-        # This ensures that isSpike(x) will return expected values, if called right after isSpike<-.
-        for (existing in spikeNames(x)) { 
-            isSpike(x, type=existing) <- NULL
-        }
-
-        # Using an empty name for an unnamed spike-in set.
-        isSpike(x, type="") <- value
-        return(x)
-    })
-}
-
 #' @export
 setMethod("clearSpikes", "SingleCellExperiment", function(x) {
     spike.sets <- spikeNames(x)

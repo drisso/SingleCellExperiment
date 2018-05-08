@@ -51,14 +51,6 @@ test_that("spike-in getters/setters are functioning", {
     expect_identical(isSpike(alt.sce), NULL)
     expect_identical(isSpike(alt.sce, "ERCC"), NULL)
     expect_identical(isSpike(alt.sce, "SIRV"), NULL)
-
-    # Check that unnamed spike-ins are correctly handled.
-    expect_warning(isSpike(sce) <- 1:10, "deprecated")
-    expect_identical(which(isSpike(sce, "")), 1:10)
-    expect_identical(spikeNames(sce), "") # for the time being.
-    expect_warning(isSpike(sce) <- NULL, "deprecated")
-    expect_identical(isSpike(sce), NULL)
-    expect_identical(spikeNames(sce), character(0))
 })
 
 test_that("size factor getters/setters are functioning", {

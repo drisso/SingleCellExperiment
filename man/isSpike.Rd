@@ -7,8 +7,6 @@
 
 \alias{isSpike<-}
 \alias{isSpike<-,SingleCellExperiment,character-method}
-\alias{isSpike<-,SingleCellExperiment,missing-method}
-\alias{isSpike<-,SingleCellExperiment,NULL-method}
 
 \alias{spikeNames}
 \alias{spikeNames,SingleCellExperiment-method}
@@ -27,10 +25,6 @@
 \S4method{isSpike}{SingleCellExperiment,NULL}(x, type)
 
 \S4method{isSpike}{SingleCellExperiment,character}(x, type) <- value
-
-\S4method{isSpike}{SingleCellExperiment,missing}(x, type) <- value
-
-\S4method{isSpike}{SingleCellExperiment,NULL}(x, type) <- value
 
 \S4method{clearSpikes}{SingleCellExperiment}(x)
 

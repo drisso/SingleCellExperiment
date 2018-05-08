@@ -110,12 +110,13 @@ If `isSpike` is used without specifying any name, it will return the union of al
 table(isSpike(sce))
 ```
 
-Similarly, running `isSpike<-` without specifying any name will delete all existing spike-in sets from the `SingleCellExperiment`, if the assigned value is `NULL`.
-(If non-`NULL`, the vector will instead be stored as a spike-in set with an empty name, _in addition to removing all existing sets_.)
+Running `isSpike<-` with `NULL` will clear the specified set from the `SingleCellExperiment`, while running `clearSpikes` will delete all spike-in information.
 
 ```{r}
 temp <- sce
-isSpike(temp) <- NULL
+isSpike(temp, "Adam") <- NULL
+spikeNames(temp)
+temp <- clearSpikes(temp)
 spikeNames(temp)
 ```
 
