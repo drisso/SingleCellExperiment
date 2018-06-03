@@ -208,10 +208,12 @@ setMethod("rowData", "SingleCellExperiment", function(x, internal=FALSE) {
             }
             warning("overlapping names in internal and external rowData (", paste(cn, collapse = ", "), ")")
         }
-        cbind(callNextMethod(), int_elementMetadata(x))
+        rv <- cbind(callNextMethod(), int_elementMetadata(x))
     } else {
-      callNextMethod()
+        rv <- callNextMethod()
     }
+    rownames(rv) <- rownames(x)
+    rv
 })
 
 #############################################
