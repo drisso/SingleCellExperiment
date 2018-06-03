@@ -2,7 +2,11 @@
 \title{SingleCellExperiment News}
 \encoding{UTF-8}
 
-\section{Version 1.1.4}{\itemize{
+\section{Version 1.3.3}{\itemize{
+\item Allow ... arguments to be passed to rowData() and colData().
+}}
+
+\section{Version 1.2.0}{\itemize{
 \item Added the clearSpikes() function to remove all spike-in information.
 
 \item Added the clearSizeFactors() function to remove all size factor information.
