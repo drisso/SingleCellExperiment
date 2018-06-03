@@ -13,14 +13,15 @@
 
 \S4method{objectVersion}{SingleCellExperiment}(x)
 
-\S4method{colData}{SingleCellExperiment}(x, internal=FALSE)
+\S4method{colData}{SingleCellExperiment}(x, ..., internal=FALSE)
 
-\S4method{rowData}{SingleCellExperiment}(x, internal=FALSE)
+\S4method{rowData}{SingleCellExperiment}(x, ..., internal=FALSE)
 }
 
 \arguments{
 \item{x, object}{A SingleCellExperiment object.}
 \item{internal}{Whether the information contained in the internal slots should be returned.}
+\item{...}{Further arguments to be passed to the methods for SummarizedExperiment objects, such as \code{use.names}.}
 }
 
 \details{

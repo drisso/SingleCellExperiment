@@ -177,7 +177,7 @@ setMethod("clearSpikes", "SingleCellExperiment", function(x) {
 
 #' @export
 #' @importFrom SummarizedExperiment colData
-setMethod("colData", "SingleCellExperiment", function(x, internal=FALSE) {
+setMethod("colData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
     if(internal) {
         cn <- colnames(x@colData) # need explicit slot reference to avoid recursive colData() calling.
         conflict <- cn %in% colnames(int_colData(x))
@@ -197,7 +197,7 @@ setMethod("colData", "SingleCellExperiment", function(x, internal=FALSE) {
 #' @export
 #' @importFrom S4Vectors mcols
 #' @importFrom SummarizedExperiment rowData
-setMethod("rowData", "SingleCellExperiment", function(x, internal=FALSE) {
+setMethod("rowData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
     if(internal) {
         cn <- colnames(mcols(x))
         conflict <- cn %in% colnames(int_elementMetadata(x))

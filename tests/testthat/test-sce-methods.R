@@ -176,6 +176,22 @@ test_that("special colData/rowData getters/setters work", {
     expect_identical(rowData(sce, internal=TRUE),
                      cbind(rowData(sce), SingleCellExperiment:::int_elementMetadata(sce)))
 
+    # Returns names if they are present.
+    rout <- rowData(sce)
+    expect_identical(rownames(rout), NULL)
+    cout <- colData(sce)
+    expect_identical(rownames(cout), NULL)
+
+    sceN <- sce
+    colnames(sceN) <- paste("Cell", seq_len(ncol(sceN)))
+    rownames(sceN) <- paste("Cell", seq_len(nrow(sceN)))
+
+    rout <- rowData(sceN, use.names=TRUE)
+    expect_identical(rownames(rout), rownames(sceN))
+    cout <- colData(sceN, use.names=TRUE)
+    expect_identical(rownames(cout), colnames(sceN))
+
+    # Warnings upon overlaps.
     rowData(sce)$is_spike <- rnorm(NROW(sce))
     expect_warning(rowData(sce, internal=TRUE), "overlapping names in internal and external rowData")
 
