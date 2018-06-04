@@ -164,22 +164,22 @@ test_that("special colData/rowData getters/setters work", {
 
     random_coldata <- DataFrame(a=rnorm(ncells), b=runif(ncells, 0, 1))
     colData(sce) <- random_coldata
-    expect_identical(colData(sce), random_coldata)
+    expect_identical(colData(sce, use.names=FALSE), random_coldata)
     expect_identical(colData(sce), colData(sce, internal=FALSE))
     expect_identical(colData(sce, internal=TRUE),
                      cbind(colData(sce), SingleCellExperiment:::int_colData(sce)))
 
     random_rowdata <- DataFrame(a=rnorm(NROW(sce)), b=runif(NROW(sce), 0, 1))
     rowData(sce) <- random_rowdata
-    expect_identical(rowData(sce), random_rowdata)
+    expect_identical(rowData(sce, use.names=FALSE), random_rowdata)
     expect_identical(rowData(sce), rowData(sce, internal=FALSE))
     expect_identical(rowData(sce, internal=TRUE),
                      cbind(rowData(sce), SingleCellExperiment:::int_elementMetadata(sce)))
 
-    # Returns names if they are present.
-    rout <- rowData(sce)
+    # Passes arguments correctly down the line.
+    rout <- rowData(sce, use.names=FALSE)
     expect_identical(rownames(rout), NULL)
-    cout <- colData(sce)
+    cout <- colData(sce, use.names=FALSE)
     expect_identical(rownames(cout), NULL)
 
     sceN <- sce
