@@ -188,9 +188,9 @@ setMethod("colData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
             }
             warning("overlapping names in internal and external colData (", paste(cn, collapse = ", "), ")")
         }
-        cbind(callNextMethod(), int_colData(x))
+        cbind(callNextMethod(x, ...), int_colData(x))
     } else {
-        callNextMethod()
+        callNextMethod(x, ...)
   }
 })
 
@@ -198,7 +198,7 @@ setMethod("colData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
 #' @importFrom S4Vectors mcols
 #' @importFrom SummarizedExperiment rowData
 setMethod("rowData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
-    if(internal) {
+    if (internal) {
         cn <- colnames(mcols(x))
         conflict <- cn %in% colnames(int_elementMetadata(x))
         if (any(conflict)) { 
@@ -208,9 +208,9 @@ setMethod("rowData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
             }
             warning("overlapping names in internal and external rowData (", paste(cn, collapse = ", "), ")")
         }
-        cbind(callNextMethod(), int_elementMetadata(x))
+        cbind(callNextMethod(x, ...), int_elementMetadata(x))
     } else {
-      callNextMethod()
+        callNextMethod(x, ...)
     }
 })
 
