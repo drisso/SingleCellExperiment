@@ -73,7 +73,7 @@ test_that("cbind works correctly", {
 
     lem3<- cbind(lem, lem[,shuffled])
     expect_identical(rownames(lem3), rownames(lem))
-    expect_identical(colnames(lem3), c(colnames(lem), paste0(colnames(lem)[shuffled], "1")))
+    expect_identical(colnames(lem3), c(colnames(lem), colnames(lem)[shuffled]))
     expect_equivalent(sampleFactors(lem3), sampleFactors(lem2))
 
     lem4 <- cbind(unnamed, lem)
