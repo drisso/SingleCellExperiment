@@ -153,11 +153,6 @@ setMethod("[<-", c("SingleCellExperiment", "ANY", "ANY", "SingleCellExperiment")
     callNextMethod()
 })
 
-#' @export
-setMethod("subset", "SingleCellExperiment", function(x, i, j) {
-    x[i, j]
-})
-
 #############################################
 # Defining the combining methods.
 

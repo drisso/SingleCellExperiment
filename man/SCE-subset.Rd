@@ -3,7 +3,6 @@
 \alias{[,SingleCellExperiment,ANY-method}
 \alias{[,SingleCellExperiment,ANY,ANY-method}
 \alias{[,SingleCellExperiment,ANY,ANY,ANY-method}
-\alias{subset,SingleCellExperiment-method}
 \alias{[<-,SingleCellExperiment,ANY,ANY,SingleCellExperiment-method}
 
 \title{SCE subsetting methods}
@@ -14,8 +13,6 @@ Methods to subset SingleCellExperiment objects.
 
 \usage{
 \S4method{[}{SingleCellExperiment,ANY,ANY}(x, i, j, ..., drop=TRUE)
-
-\S4method{subset}{SingleCellExperiment}(x, i, j)
 
 \S4method{[}{SingleCellExperiment,ANY,ANY,SingleCellExperiment}(x, i, j) <- value
 }
@@ -64,7 +61,8 @@ sce2 <- sce
 sce2[1:10,] <- sce[11:20,]
 
 # Can also use subset()
-subset(sce, 1, 1)
+sce$WHEE <- sample(LETTERS, ncol(sce), replace=TRUE)
+subset(sce, , WHEE=="A")
 
 # Can also use split()
 split(sce, sample(LETTERS, nrow(sce), replace=TRUE))
