@@ -15,7 +15,7 @@ cache: packages
 
 # R versions to be tested on
 r:
-  - bioc-release
+#  - bioc-release
   - bioc-devel
 
 notifications:
