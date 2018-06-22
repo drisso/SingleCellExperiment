@@ -154,7 +154,11 @@ setMethod("[<-", c("SingleCellExperiment", "ANY", "ANY", "SingleCellExperiment")
 })
 
 #' @export
-setMethod("subset", "SingleCellExperiment", function(x, i, j) {
+setMethod("subset", "SingleCellExperiment", function(x, i = NULL, j = NULL) {
+    i <- with(rowData(x), i)
+    j <- with(colData(x), j)
+    if (is.null(i)) i <- rep(TRUE, nrow(x))
+    if (is.null(j)) j <- rep(TRUE, ncol(x))
     x[i, j]
 })
 
