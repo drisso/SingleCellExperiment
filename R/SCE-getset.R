@@ -235,17 +235,17 @@ setMethod("objectVersion", "SingleCellExperiment", function(x) {
 #############################################
 # This defines some convenience wrappers for common entires in the assays slot.
 
-GET_FUN <- function(exprs_values) {
+GET_FUN <- function(exprs_values, ...) {
     (exprs_values) # To ensure evaluation
-    function(object) {
-        assay(object, i=exprs_values)
+    function(object, ...) {
+        assay(object, i=exprs_values, ...)
     }
 }
 
-SET_FUN <- function(exprs_values) {
+SET_FUN <- function(exprs_values, ...) {
     (exprs_values) # To ensure evaluation
-    function(object, value) {
-        assay(object, i=exprs_values) <- value
+    function(object, ..., value) {
+        assay(object, i=exprs_values, ...) <- value
         object
     }
 }

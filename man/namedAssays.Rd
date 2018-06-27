@@ -28,29 +28,30 @@
 \description{Convenience methods to get or set named assay fields.}
 
 \usage{
-\S4method{counts}{SingleCellExperiment}(object)
-\S4method{counts}{SingleCellExperiment}(object) <- value
+\S4method{counts}{SingleCellExperiment}(object, ...)
+\S4method{counts}{SingleCellExperiment}(object, ...) <- value
 
-\S4method{normcounts}{SingleCellExperiment}(object)
-\S4method{normcounts}{SingleCellExperiment}(object) <- value
+\S4method{normcounts}{SingleCellExperiment}(object, ...)
+\S4method{normcounts}{SingleCellExperiment}(object, ...) <- value
 
-\S4method{logcounts}{SingleCellExperiment}(object)
-\S4method{logcounts}{SingleCellExperiment}(object) <- value
+\S4method{logcounts}{SingleCellExperiment}(object, ...)
+\S4method{logcounts}{SingleCellExperiment}(object, ...) <- value
 
-\S4method{cpm}{SingleCellExperiment}(object)
-\S4method{cpm}{SingleCellExperiment}(object) <- value
+\S4method{cpm}{SingleCellExperiment}(object, ...)
+\S4method{cpm}{SingleCellExperiment}(object, ...) <- value
 
-\S4method{tpm}{SingleCellExperiment}(object)
-\S4method{tpm}{SingleCellExperiment}(object) <- value
+\S4method{tpm}{SingleCellExperiment}(object, ...)
+\S4method{tpm}{SingleCellExperiment}(object, ...) <- value
 }
 
 \arguments{
 \item{object}{A SingleCellExperiment object.}
 \item{value}{A numeric matrix of the same dimensions as \code{object}.}
+\item{...}{May contain \code{withDimnames}, which is forwarded to \code{\link[SummarizedExperiment]{assays}}}.
 }
 
 \details{
-These are wrapper methods for getting or setting \code{assay(object, i=X)} where \code{X} is the name of the method.
+These are wrapper methods for getting or setting \code{assay(object, i=X, ...)} where \code{X} is the name of the method.
 For example, \code{counts} will get or set \code{X="counts"}.
 This provide some convenience for users as well as encouraging standardization of naming across packages.
 

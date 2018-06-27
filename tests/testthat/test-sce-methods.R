@@ -218,3 +218,28 @@ test_that("assay getters/setters work", {
     expect_equivalent(logcounts(sce), v3)
     expect_error(counts(sce), "invalid subscript")
 })
+
+test_that("assay getters/setters respect withDimnames", {
+    sce_rownames <- paste0("G", seq_len(20000 / ncells))
+    sce_colnames <- paste0("S", seq_len(ncells))
+    v2 <- matrix(runif(20000), ncol=ncells)
+    counts(sce) <- v2
+    rownames(sce) <- sce_rownames
+    colnames(sce) <- sce_colnames
+    expect_identical(dimnames(counts(sce)), list(sce_rownames, sce_colnames))
+    expect_identical(dimnames(counts(sce, withDimnames=FALSE)), NULL)
+
+    v3 <- log2(v2)
+    logcounts(sce) <- v3
+    expect_identical(dimnames(logcounts(sce)), list(sce_rownames, sce_colnames))
+    expect_identical(dimnames(logcounts(sce, withDimnames=FALSE)), NULL)
+
+    cpm(sce) <- v3 + v2
+    expect_identical(dimnames(cpm(sce)), list(sce_rownames, sce_colnames))
+    expect_identical(dimnames(cpm(sce, withDimnames=FALSE)), NULL)
+
+    tpm(sce) <- v3 - v2
+    expect_equivalent(tpm(sce), v3-v2)
+    expect_identical(dimnames(tpm(sce)), list(sce_rownames, sce_colnames))
+    expect_identical(dimnames(tpm(sce, withDimnames=FALSE)), NULL)
+})
