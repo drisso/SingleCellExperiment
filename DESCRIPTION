@@ -1,5 +1,5 @@
 Package: SingleCellExperiment
-Version: 1.3.6
+Version: 1.3.7
 Date: 2018-06-23
 Title: S4 Classes for Single Cell Data
 Authors@R: c(person("Aaron", "Lun", role=c("aut", "cph"),

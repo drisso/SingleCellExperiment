@@ -28,12 +28,11 @@ knitr::opts_chunk$set(warning=FALSE, error=FALSE, message=FALSE)
 
 # Setup
 
-This vignette requires the [SingleCellExperiment](https://github.com/drisso/SingleCellExperiment) package,
-available from GitHub, and the `scRNAseq` package, available from Bioconductor.
+To install the [SingleCellExperiment](https://bioconductor.org/packages/SingleCellExperiment) package, use the following.
 
 ```{r install, eval=FALSE}
-BiocInstaller::biocLite("drisso/SingleCellExperiment")
-BiocInstaller::biocLite("scRNAseq")
+install.packages("BiocManager")
+BiocManager::install("SingleCellExperiment")
 ```
 
 ```{r load_packages}
