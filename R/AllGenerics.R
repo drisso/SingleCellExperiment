@@ -99,3 +99,6 @@ setGeneric("tpm", function(object, ...) standardGeneric("tpm"))
 
 #' @export
 setGeneric("tpm<-", function(object, ..., value) standardGeneric("tpm<-"))
+
+#' @export
+setGeneric("weights<-", function(object, ..., value) standardGeneric("weights<-"))

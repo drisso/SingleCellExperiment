@@ -87,9 +87,9 @@ setReplaceMethod("sizeFactors", "SingleCellExperiment", function(object, type=NU
     cd[[field]] <- value
     int_colData(object) <- cd
 
-    if (!is.null(type)) { 
+    if (!is.null(type)) {
         md <- int_metadata(object)
-        if (is.null(value)) { 
+        if (is.null(value)) {
             md$size_factor_names <- setdiff(md$size_factor_names, type)
         } else {
             md$size_factor_names <- union(md$size_factor_names, type)
@@ -106,11 +106,11 @@ setMethod("clearSizeFactors", "SingleCellExperiment", function(object) {
     cd <- int_colData(object)
     for (sf in sizeFactorNames(object)) {
         field <- .get_sf_field(sf)
-        cd[[field]] <- NULL        
+        cd[[field]] <- NULL
     }
     int_colData(object) <- cd
 
-    md <- int_metadata(object) 
+    md <- int_metadata(object)
     md$size_factor_names <- character(0)
     int_metadata(object) <- md
     return(object)
@@ -165,7 +165,7 @@ setMethod("clearSpikes", "SingleCellExperiment", function(x) {
     }
     rd[[.spike_field]] <- NULL # Emptying out the reference as well.
     int_elementMetadata(x) <- rd
-    
+
     md <- int_metadata(x)
     md$spike_names <- character(0)
     int_metadata(x) <- md
@@ -201,7 +201,7 @@ setMethod("rowData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
     if (internal) {
         cn <- colnames(mcols(x))
         conflict <- cn %in% colnames(int_elementMetadata(x))
-        if (any(conflict)) { 
+        if (any(conflict)) {
             cn <- cn[conflict]
             if (length(cn) > 2) {
                 cn <- c(cn[seq_len(2)], "...")
@@ -281,3 +281,10 @@ setMethod("tpm", "SingleCellExperiment", GET_FUN("tpm"))
 
 #' @export
 setReplaceMethod("tpm", c("SingleCellExperiment", "ANY"), SET_FUN("tpm"))
+
+#' @export
+#' @importFrom BiocGenerics weights
+setMethod("weights", "SingleCellExperiment", GET_FUN("weights"))
+
+#' @export
+setReplaceMethod("weights", c("SingleCellExperiment", "ANY"), SET_FUN("weights"))

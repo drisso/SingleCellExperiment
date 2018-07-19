@@ -24,6 +24,11 @@
 \alias{tpm,SingleCellExperiment-method}
 \alias{tpm<-,SingleCellExperiment-method}
 
+\alias{weights}
+\alias{weights<-}
+\alias{weights,SingleCellExperiment-method}
+\alias{weights<-,SingleCellExperiment-method}
+
 \title{Named assay fields}
 \description{Convenience methods to get or set named assay fields.}
 
@@ -42,6 +47,10 @@
 
 \S4method{tpm}{SingleCellExperiment}(object, ...)
 \S4method{tpm}{SingleCellExperiment}(object, ...) <- value
+
+\S4method{weights}{SingleCellExperiment}(object, ...)
+\S4method{weights}{SingleCellExperiment}(object, ...) <- value
+
 }
 
 \arguments{
@@ -66,6 +75,7 @@ In most cases, this will be defined as log-transformed \code{normcounts}, e.g., 
 This is the read count for each gene in each cell, divided by the library size of each cell in millions.}
 \item{\code{tpm}:}{Transcripts-per-million.
 This is the number of transcripts for each gene in each cell, divided by the total number of transcripts in that cell (in millions).}
+\item{\code{weights}:}{A matrix of weights, e.g., observational weights to be used in differential expression analysis.}
 }
 }
 
@@ -88,7 +98,7 @@ dim(counts(sce))
 
 # One possible way of computing normalized "counts"
 sf <- 2^rnorm(ncol(sce))
-sf <- sf/mean(sf) 
+sf <- sf/mean(sf)
 normcounts(sce) <- t(t(counts(sce))/sf)
 dim(normcounts(sce))
 

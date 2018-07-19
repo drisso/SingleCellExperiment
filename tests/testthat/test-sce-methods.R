@@ -214,6 +214,10 @@ test_that("assay getters/setters work", {
     tpm(sce) <- v3 - v2
     expect_equivalent(tpm(sce), v3-v2)
 
+    v4 <- v2 * v3
+    weights(sce) <- v4
+    expect_equivalent(weights(sce), v4)
+
     counts(sce) <- NULL
     expect_equivalent(logcounts(sce), v3)
     expect_error(counts(sce), "invalid subscript")
