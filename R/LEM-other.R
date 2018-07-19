@@ -181,11 +181,23 @@ setMethod("rbind", "LinearEmbeddingMatrix", function(..., deparse.level=1) {
 
     # Checking what to do with names.
     all_rn <- lapply(args, rownames)
-    unnamed <- sapply(all_rn, is.null)
+    unnamed <- vapply(all_rn, is.null, FUN.VALUE=TRUE)
     if (any(unnamed)) { 
         all_rn <- NULL
     } else {
         all_rn <- unlist(all_rn)
+    }
+
+    # Checking that the feature loadings are equivalent to within the specified tolerance
+    # (relative to the magnitude of the feature loadings).
+    ref_fl <- featureLoadings(x, withDimnames=FALSE)
+    for (y in args[-1]) {
+        cur_fl <- featureLoadings(y, withDimnames=FALSE)
+        if (!identical(dim(cur_fl), dim(ref_fl)) 
+                || !all( abs(ref_fl - cur_fl) < 1e-8 * (abs(cur_fl) + abs(ref_fl)) )
+                ) {
+            stop("featureLoadings are not compatible")
+        }
     }
 
     # Replacing the relevant slots.
