@@ -1,5 +1,16 @@
 # Size factor getter/setter functions.
 
+.get_sf_field <- function(type) {
+    search <- "size_factor"
+    if (!is.null(type)) {
+        if (length(type)!=1L) {
+            stop("'type' must be a character vector of length 1")
+        }
+        search <- paste0(search, "_", type)
+    }
+    return(search)
+}
+
 #' @export
 #' @importFrom BiocGenerics sizeFactors
 setMethod("sizeFactors", "SingleCellExperiment", function(object, type=NULL) {

@@ -1,3 +1,14 @@
+# Spike-in getter/setter functions.
+
+.spike_field <- "is_spike"
+
+.get_spike_field <- function(type, check=TRUE) {
+    if (check && length(type)!=1L) {
+        stop("'type' must be a character vector of length 1")
+    }
+    sprintf("%s_%s", .spike_field, type)
+}
+
 #' @export
 setMethod("isSpike", c("SingleCellExperiment", "character"), function(x, type) {
     field <- .get_spike_field(type)
@@ -21,7 +32,10 @@ setReplaceMethod("isSpike", c("SingleCellExperiment", "character"), function(x, 
         rd[[field]] <- NULL
     } else {
         md$spike_names <- union(md$spike_names, type)
-        rd[[field]] <- .convert_subset_spike(value, .length=nrow(x), .names=rownames(x))
+        output <- logical(nrow(x))
+        names(output) <- rownames(x)
+        output[value] <- TRUE
+        rd[[field]] <- unname(output)
     }
 
     int_metadata(x) <- md
