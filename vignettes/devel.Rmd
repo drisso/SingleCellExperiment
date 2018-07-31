@@ -6,7 +6,7 @@ output:
   BiocStyle::html_document:
     toc_float: true
 vignette: >
-  %\VignetteIndexEntry{Developing around the SingleCellExperiment class}
+  %\VignetteIndexEntry{2. Developing around the SingleCellExperiment class}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
