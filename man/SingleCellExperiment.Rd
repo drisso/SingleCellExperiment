@@ -41,6 +41,7 @@ The number of rows of each matrix should be equal to the number of cells in the 
 
 The internal metadata slots are not intended for external use.
 Please use the appropriate getter/setter functions instead, such as \code{isSpike} or \code{sizeFactors}.
+Package developers should refer to the suggestions in \code{?\link{int_metadata}}.
 }
 
 \seealso{
