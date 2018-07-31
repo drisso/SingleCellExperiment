@@ -10,6 +10,10 @@ setReplaceMethod("int_reducedDims", "SingleCellExperiment", function(x, value) {
     return(x)
 })
 
+.not_reddim_mat <- function(val, object) {
+    return(is.null(val) || NROW(val)!=NCOL(object));
+}
+
 #' @export
 setReplaceMethod("reducedDims", "SingleCellExperiment", function(x, value) {
     for (i in seq_along(value)) {

@@ -1,8 +1,4 @@
 #############################################
-# This file defines the non-get-set methods for the SingleCellExperiment class.
-#############################################
-
-#############################################
 # Sets the validity checker.
 
 .sce_validity <- function(object) {
@@ -12,8 +8,7 @@
     rd <- reducedDims(object)
     if (length(rd)) {
         if (any(unlist(lapply(rd, .not_reddim_mat, object=object)))) {
-            msg <- c(msg,
-                     "each element of 'reducedDims' must be a matrix-like object with nrow equal to 'ncol(object)'")
+            msg <- c(msg, "each element of 'reducedDims' must be a matrix-like object with nrow equal to 'ncol(object)'")
         }
     }
 
@@ -50,10 +45,6 @@
     return(TRUE)
 }
 
-.not_reddim_mat <- function(val, object) {
-    return(is.null(val) || NROW(val)!=NCOL(object));
-}
-
 #' @importFrom S4Vectors setValidity2
 setValidity2("SingleCellExperiment", .sce_validity)
 
@@ -75,133 +66,3 @@ scat <- function(fmt, vals=character(), exdent=2, ...) {
 
 #' @export
 setMethod("show", "SingleCellExperiment", .sce_show)
-
-#############################################
-# Defines a constructor.
-
-#' @export
-#' @importFrom S4Vectors SimpleList DataFrame
-#' @importFrom SummarizedExperiment SummarizedExperiment rowData
-#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
-SingleCellExperiment <- function(..., reducedDims=SimpleList()) {
-    se <- SummarizedExperiment(...)
-    if(!is(se, "RangedSummarizedExperiment")) {
-      rse <- as(se, "RangedSummarizedExperiment")
-      rowData(rse) <- rowData(se)
-    } else {
-      rse <- se
-    }
-    out <- new("SingleCellExperiment", rse, reducedDims=SimpleList(),
-               int_elementMetadata=DataFrame(matrix(0, nrow(se), 0)),
-               int_colData=DataFrame(matrix(0, ncol(se), 0)))
-    reducedDims(out) <- reducedDims
-    return(out)
-}
-
-#############################################
-# Define subsetting methods.
-
-#' @export
-setMethod("[", c("SingleCellExperiment", "ANY", "ANY"), function(x, i, j, ..., drop=TRUE) {
-    if (!missing(i)) {
-        ii <- .convert_subset_index(i, rownames(x))
-        int_elementMetadata(x) <- int_elementMetadata(x)[ii,,drop=FALSE]
-    }
-
-    if (!missing(j)) {
-        jj <- .convert_subset_index(j, colnames(x))
-        int_colData(x) <- int_colData(x)[jj,,drop=FALSE]
-        rd <- reducedDims(x)
-        for (mode in seq_along(rd)) { rd[[mode]] <- rd[[mode]][jj,,drop=FALSE] }
-        int_reducedDims(x) <- rd
-    }
-
-    callNextMethod()
-})
-
-#' @export
-setMethod("[<-", c("SingleCellExperiment", "ANY", "ANY", "SingleCellExperiment"), function(x, i, j, ..., value) {
-    if (missing(i) && missing(j)) {
-        int_elementMetadata(x) <- int_elementMetadata(value)
-        int_colData(x) <- int_colData(value)
-        int_reducedDims(x) <- reducedDims(value)
-    }
-
-    if (!missing(i)) {
-        ii <- .convert_subset_index(i, rownames(x))
-        sout <- .standardize_DataFrames(first=int_elementMetadata(x), last=int_elementMetadata(value))
-        sout$first[ii,] <- sout$last
-        int_elementMetadata(x) <- sout$first
-    }
-
-    if (!missing(j)) {
-        jj <- .convert_subset_index(j, colnames(x))
-        sout <- .standardize_DataFrames(first=int_colData(x), last=int_colData(value))
-        sout$first[jj,] <- sout$last
-        int_colData(x) <- sout$first
-
-        rdout <- .standardize_reducedDims(first=x, last=value)
-        rd <- rdout$first
-        rdv <- rdout$last
-        for (mode in seq_along(rd)) {
-            rd[[mode]][jj,] <- rdv[[mode]]
-        }
-        int_reducedDims(x) <- rd
-    }
-
-    int_metadata(x) <- int_metadata(value)
-    callNextMethod()
-})
-
-#############################################
-# Defining the combining methods.
-
-#' @export
-#' @importFrom S4Vectors SimpleList
-#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
-setMethod("cbind", "SingleCellExperiment", function(..., deparse.level=1) {
-    args <- unname(list(...))
-    base <- do.call(cbind, lapply(args, function(x) { as(x, "RangedSummarizedExperiment") }))
-
-    all.col.data <- lapply(args, int_colData)
-    sout <- do.call(.standardize_DataFrames, all.col.data)
-    new.col.data <- do.call(rbind, sout)
-
-    all.rd <- do.call(.standardize_reducedDims, args)
-    new.rd <- SimpleList(do.call(mapply, c(all.rd, FUN=rbind, SIMPLIFY=FALSE)))
-
-    ans <- args[[1]]
-    new(class(ans), base, int_colData=new.col.data, int_elementMetadata=int_elementMetadata(ans),
-        int_metadata=int_metadata(ans), reducedDims=new.rd)
-})
-
-#' @export
-#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
-setMethod("rbind", "SingleCellExperiment", function(..., deparse.level=1) {
-    args <- unname(list(...))
-    base <- do.call(rbind, lapply(args, function(x) { as(x, "RangedSummarizedExperiment") }))
-
-    all.row.data <- lapply(args, int_elementMetadata)
-    sout <- do.call(.standardize_DataFrames, all.row.data)
-    new.row.data <- do.call(rbind, sout)
-
-    ans <- args[[1]]
-    new(class(ans), base, int_colData=int_colData(ans), int_elementMetadata=new.row.data,
-        int_metadata=int_metadata(ans), reducedDims=reducedDims(ans))
-})
-
-#############################################
-# Defining coercion methods.
-
-#' @exportMethod coerce
-#' @importClassesFrom SummarizedExperiment SummarizedExperiment
-#' @importFrom S4Vectors metadata
-setAs("SummarizedExperiment", "SingleCellExperiment", function(from) {
-    SingleCellExperiment(assays = assays(from),
-                         colData = colData(from),
-                         rowData = rowData(from),
-                         metadata = metadata(from)
-                         )
-})
-
-
