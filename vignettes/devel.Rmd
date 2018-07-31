@@ -1,0 +1,179 @@
+---
+title: "Developing around the SingleCellExperiment class"
+author: "Davide Risso and Aaron Lun"
+package: SingleCellExperiment
+output:
+  BiocStyle::html_document:
+    toc_float: true
+vignette: >
+  %\VignetteIndexEntry{Developing around the SingleCellExperiment class}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r options, include=FALSE, echo=FALSE}
+library(BiocStyle)
+knitr::opts_chunk$set(warning=FALSE, error=FALSE, message=FALSE)
+```
+
+# Introduction
+
+By design, the scope of this package is limited to defining the `SingleCellExperiment` class and some minimal getter and setter methods.
+For this reason, we leave it to developers of specialized packages to provide more advanced methods for the `SingleCellExperiment` class.
+For example, `r Biocpkg("scater")` defines a number of specific methods such as `normalize` and `r CRANpkg("dplyr")`-like verbs.
+We also leave it to the developers of existing packages to provide coercion methods from their classes to `SingleCellExperiment`.
+
+The use of `SingleCellExperiment` objects inside package functions is mostly the same as the use of instances of the base `SummarizedExperiment` class.
+The only exceptions involve direct access to the internal fields of the `SingleCellExperiment` definition.
+Manipulation of these internal fields in other packages is possible but requires some caution, as we shall discuss below.
+
+# Using the internal fields
+
+## Rationale
+
+We use an internal storage mechanism to protect the spike-in and size factor fields from direct manipulation by the user.
+This ensures that, e.g., only a call to `sizeFactors<-` can change the size factors.
+The same effect could be achieved by reserving a subset of columns (or column names) as "private" in `colData()` and `rowData()`, though this is not easily implemented.
+
+The internal storage avoids situations where users or functions can silently overwrite these important metadata fields during manipulations of `rowData` or `colData`.
+This can result in bugs that are difficult to track down, particularly in long workflows involving many functions.
+It also allows us to add new methods and metadata types to `SingleCellExperiment` without worrying about overwriting user-supplied metadata in existing objects.
+
+Methods to get or set the internal fields are exported for use by developers of packages that depend on `r Biocpkg("SingleCellExperiment")`.
+This allows dependent packages to store their own custom fields that are not meant to be directly accessible by the user.
+However, this requires some care to avoid conflicts between packages.
+
+## Conflicts between packages
+
+The concern is that package **A** and **B** both define methods that get/set an internal field `X` in a `SingleCellExperiment` instance.
+Consider the following example object:
+
+```{r construct}
+library(SingleCellExperiment)
+counts <- matrix(rpois(100, lambda = 10), ncol=10, nrow=10)
+sce <- SingleCellExperiment(assays = list(counts = counts))
+sce
+```
+
+Assume that we have functions that set an internal field `X` in packages **A** and **B**.
+
+```{r}
+# Function in package A:
+AsetX <- function(sce) {
+    int_colData(sce)$X <- runif(ncol(sce))
+    sce
+}
+
+# Function in package B:
+BsetX <- function(sce) {
+    int_colData(sce)$X <- sample(LETTERS, ncol(sce), replace=TRUE)
+    sce
+}
+```
+
+If both of these functions are called, one will clobber the output of the other.
+This may lead to nonsensical results in downstream procedures.
+
+```{r}
+sce2 <- AsetX(sce)
+int_colData(sce2)$X
+sce2 <- BsetX(sce2)
+int_colData(sce2)$X
+```
+
+## Using "Inception-style" nesting
+
+We recommend using nested `DataFrame`s to store internal fields in the column-level metadata.
+The name of the nested element should be set to the package name, thus avoiding clashes between fields with the same name from different packages.
+
+```{r}
+AsetX_better <- function(sce) {
+    int_colData(sce)$A <- DataFrame(X=runif(ncol(sce)))
+    sce
+}
+
+BsetX_better <- function(sce) {
+    choice <- sample(LETTERS, ncol(sce), replace=TRUE)
+    int_colData(sce)$B <- DataFrame(X=choice)
+    sce
+}
+
+sce2 <- AsetX_better(sce)
+sce2 <- BsetX_better(sce2)
+int_colData(sce2)$A$X 
+int_colData(sce2)$B$X 
+```
+
+The same approach can be applied to the row-level metadata, e.g., for some per-row field `Y`.
+
+```{r}
+AsetY_better <- function(sce) {
+    int_elementMetadata(sce)$A <- DataFrame(Y=runif(nrow(sce)))
+    sce
+}
+
+BsetY_better <- function(sce) {
+    choice <- sample(LETTERS, nrow(sce), replace=TRUE)
+    int_elementMetadata(sce)$B <- DataFrame(Y=choice)
+    sce
+}
+
+sce2 <- AsetY_better(sce)
+sce2 <- BsetY_better(sce2)
+int_elementMetadata(sce2)$A$Y 
+int_elementMetadata(sce2)$B$Y
+```
+
+For the object-wide metadata, a nested list is usually sufficient.
+
+```{r}
+AsetZ_better <- function(sce) {
+    int_metadata(sce)$A <- list(Z = "Aaron")
+    sce
+}
+
+BsetZ_better <- function(sce) {
+    int_metadata(sce)$B <- list(Z = "Davide")
+    sce
+}
+
+sce2 <- AsetZ_better(sce)
+sce2 <- BsetZ_better(sce2)
+int_metadata(sce2)$A$Z
+int_metadata(sce2)$B$Z
+```
+
+In this manner, both **A** and **B** can set their internal `X`, `Y` and `Z` without interfering with each other.
+Of course, this strategy assumes that packages do not have the same names as some of the in-built internal fields (which would be very unfortunate).
+
+# Contacting us 
+
+If your package accesses the internal fields of the `SingleCellExperiment` class, we suggest you get into contact with us on [GitHub](https://github.com/drisso/SingleCellExperiment).
+This will help us in planning changes to the internal organization of the class.
+It will also allow us to contact you with respect to changes or to get feedback.
+
+We are particularly interested in scenarios where multiple packages are defining internal fields with the same scientific meaning.
+In such cases, it may be valuable to provide getters and setters for this field in `r Biocpkg("SingleCellExperiment")` directly.
+This reduces redundancy in the definitions across packages and promotes interoperability.
+For example, methods from one package can set the field, which can then be used by methods of another package.
+
+# Other design decisions
+
+## What's up with `reducedDims`? 
+
+We use a `SimpleList` as the `reducedDims` slot to allow for multiple dimensionality reduction results.
+One can imagine that different dimensionality reduction techniques will be useful for different aspects of the analysis, e.g., t-SNE for visualization, PCA for pseudo-time inference.
+We see `reducedDims` as a similar slot to `assays()` in that multiple matrices can be stored, though the dimensionality reduction results need not have the same number of dimensions.
+
+## Why derive from a `RangedSummarizedExperiment`?
+
+We decided to extend `RangedSummarizedExperiment` rather than `SummarizedExperiment` because for certain assays it will be essential to have `rowRanges()`. 
+Even for RNA-seq, it is sometimes useful to have `rowRanges()` and other classes to define the genomic coordinates, e.g., `DESeqDataSet` in the `r Biocpkg("DESeq2")` package.
+An alternative would have been to have two classes, `SingleCellExperiment` and `RangedSingleCellExperiment`.
+However, this seems like an unnecessary duplication as having a class with default empty `rowRanges` seems good enough when one does not need `rowRanges`.
+
+# Session information
+
+```{r}
+sessionInfo()
+```
