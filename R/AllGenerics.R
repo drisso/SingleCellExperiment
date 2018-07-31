@@ -39,16 +39,22 @@ setGeneric("int_reducedDims<-", function(x, value) standardGeneric("int_reducedD
 
 # Hidden getter/setters for internal slots.
 
+#' @export
 setGeneric("int_elementMetadata", function(x) standardGeneric("int_elementMetadata"))
 
+#' @export
 setGeneric("int_elementMetadata<-", function(x, value) standardGeneric("int_elementMetadata<-"))
 
+#' @export
 setGeneric("int_colData", function(x) standardGeneric("int_colData"))
 
+#' @export
 setGeneric("int_colData<-", function(x, value) standardGeneric("int_colData<-"))
 
+#' @export
 setGeneric("int_metadata", function(x) standardGeneric("int_metadata"))
 
+#' @export
 setGeneric("int_metadata<-", function(x, value) standardGeneric("int_metadata<-"))
 
 # Loose getter/setters (i.e., with no official slot).
