@@ -3,7 +3,8 @@ title: "An introduction to the SingleCellExperiment class"
 author: "Davide Risso and Aaron Lun"
 package: SingleCellExperiment
 output:
-  BiocStyle::html_document
+  BiocStyle::html_document:
+    toc_float: true
 vignette: >
   %\VignetteIndexEntry{An introduction to the SingleCellExperiment class}
   %\VignetteEngine{knitr::rmarkdown}
@@ -15,33 +16,25 @@ library(BiocStyle)
 knitr::opts_chunk$set(warning=FALSE, error=FALSE, message=FALSE)
 ```
 
-# Package Status
-
-|                |               |
-| -------------- | ------------- |
-| Project Status | [![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](http://www.repostatus.org/badges/latest/active.svg)](http://www.repostatus.org/#active) |
-| Travis CI      | [![Build Status](https://travis-ci.org/drisso/SingleCellExperiment.svg?branch=master)](https://travis-ci.org/drisso/SingleCellExperiment) |
-| Test coverage  | [![Coverage](https://codecov.io/gh/drisso/SingleCellExperiment/branch/master/graph/badge.svg)](https://codecov.io/gh/drisso/SingleCellExperiment) |
-
-# The `SingleCellExperiment` class
-
-## Definition
+# The `SingleCellExperiment` class definition
 
 The `SingleCellExperiment` class is a light-weight container for single-cell genomics data.
-It extends the `RangedSummarizedExperiment` class with the following additional slots:
+It extends the `RangedSummarizedExperiment` class and follows similar conventions, 
+i.e., rows should represent features (genes, transcripts, genomic regions) and columns should represent cells.
+In addition to the slots already present in the `RangedSummarizedExperiment`, the `SingleCellExperiment` class contains:
 
-* `int_elementMetadata` 
-* `int_colData`
-* `int_metadata`
-* `reducedDims`
+* `int_elementMetadata`, to hold internal metadata for each row.
+* `int_colData`, to hold internal metadata for each column.
+* `int_metadata`, to hold internal metadata for the entire object.
+* `reducedDims`, to hold dimensionality reduction results.
 
-The `int_` prefix describes _internal_ slots that are **not** meant for direct manipulation by the user or other package developers.
+The `int_` prefix describes _internal_ slots that are **not** meant for direct manipulation by the user.
 Instead, they are set by other user-visible methods, which will be discussed in more detail below.
+Package developers should see the other vignette for how to define methods to access these internal fields.
 
-## Create instances of SingleCellExperiment
+# Creating SingleCellExperiment instances
 
-There are two main ways to create instances of `SingleCellExperiment`. 
-The first is via the constructor:
+`SingleCellExperiment` objects can be created via the constructor of the same name:
 
 ```{r construct}
 library(SingleCellExperiment)
@@ -50,33 +43,25 @@ sce <- SingleCellExperiment(assays = list(counts = counts))
 sce
 ```
 
-The second is via coercion from `SummarizedExperiment` objects.
+An alternative approach is via coercion from `SummarizedExperiment` objects.
 
 ```{r coerce}
 se <- SummarizedExperiment(list(counts=counts))
 as(se, "SingleCellExperiment")
 ```
 
-## Setting up a simple example
-
-Here we use a subset of the `allen` data set from the `r Biocpkg("scRNAseq")` package to demonstrate the use of the class.
+To demonstrate the use of the class, we will use a subset of the `allen` data set from the `r Biocpkg("scRNAseq")` package.
+These data are stored as a `SummarizedExperiment`, so we will first coerce it into a `SingleCellExperiment`.
 
 ```{r fluidigm}
 library(scRNAseq)
 data(allen)
 allen
-```
-
-These data are stored as a `SummarizedExperiment`, so we will first coerce it into a `SingleCellExperiment`.
-
-```{r}
 sce <- as(allen, "SingleCellExperiment")
 sce
 ```
 
-# Available methods for the `SingleCellExperiment`
-
-## Adding spike-in information
+# Adding spike-in information
 
 One of the main additions to `SummarizedExperiment` is the ability for the user to specify the rows corresponding to spike-in transcripts.
 This is done with the method `isSpike`, using an appropriate name for the spike-in set.
@@ -123,7 +108,7 @@ spikeNames(temp)
 Note that the `isSpike` and `isSpike<-` methods get and set columns in `int_elementMetadata` and `int_metadata`.
 This information is only relevant to package developers and not necessary for routine use of this class.
 
-## Adding size factors
+# Adding size factors
 
 One can also store size factors in the `SingleCellExperiment` object. 
 For illustration, we simply compute the total number of reads as size factors here.
@@ -143,7 +128,7 @@ head(sizeFactors(sce, "ERCC"))
 head(sizeFactors(sce)) # same as before
 ```
 
-## Retrieve `colData` and `rowData` information
+# Extracting `colData` and `rowData` 
 
 The `colData` and `rowData` methods can be used to retrieve the stored sample- and gene-level metadata. 
 By default, this will only return the user-visible metadata fields, i.e., not including the fields stored in the `int_*` slots.
@@ -163,7 +148,7 @@ rowData(sce, internal=TRUE)
 
 See below for some discussion of why an internal storage mechanism is used here.
 
-## Adding low-dimensional representations
+# Adding low-dimensional representations
 
 For simplicity and speed, we work on a subset of 100 genes. 
 To avoid ending up with only uninteresting genes, we extract the 100 genes with maximal variance in the log-transformed counts.
@@ -208,7 +193,7 @@ dim(reducedDim(sce_sub, "PCA"))
 dim(reducedDim(sce_sub[,1:10], "PCA"))
 ```
 
-## Convenient access to named assays
+# Convenient access to named assays
 
 In the `SingleCellExperiment`, users can assign arbitrary names to entries of `assays`.
 To assist interoperability between packages, we provide some suggestions for what the names should be for particular types of data:
@@ -233,38 +218,6 @@ dim(counts(sce))
 ```
 
 This means that functions expecting count data can simply call `counts()` without worrying about package-specific naming conventions.
-
-# Design decisions
-
-## Package scope
-
-By design, the scope of this package is limited to defining the `SingleCellExperiment` class and some minimal getter and setter methods.
-For this reason, we leave it to developers of specialized packages to provide more advanced methods for the `SingleCellExperiment` class.
-For example, `r Biocpkg("scater")` defines a number of specific methods such as `normalize` and `r CRANpkg("dplyr")`-like verbs.
-We also leave it to the developers of existing packages to provide coercion methods from their classes to `SingleCellExperiment`.
-
-## Why internal storage?
-
-We use an internal storage mechanism to protect the spike-in and size factor fields from direct manipulation by the user.
-This ensures that, e.g., only a call to `sizeFactors<-` can change the size factors.
-The same effect could be achieved by reserving a subset of columns (or column names) as "private" in `colData()` and `rowData()`, though this is not easily implemented.
-
-The internal storage avoids situations where users or functions can silently overwrite these important metadata fields during manipulations of `rowData` or `colData`.
-This can result in bugs that are difficult to track down, particularly in long workflows involving many functions.
-It also allows us to add new methods and metadata types to `SingleCellExperiment` without worrying about overwriting user-supplied metadata in existing objects.
-
-## What's up with `reducedDims`? 
-
-We use a `SimpleList` as the `reducedDims` slot to allow for multiple dimensionality reduction results.
-One can imagine that different dimensionality reduction techniques will be useful for different aspects of the analysis, e.g., t-SNE for visualization, PCA for pseudo-time inference.
-We see `reducedDims` as a similar slot to `assays()` in that multiple matrices can be stored, though the dimensionality reduction results need not have the same number of dimensions.
-
-## Why derive from a `RangedSummarizedExperiment`?
-
-We decided to extend `RangedSummarizedExperiment` rather than `SummarizedExperiment` because for certain assays it will be essential to have `rowRanges()`. 
-Even for RNA-seq, it is sometimes useful to have `rowRanges()` and other classes to define the genomic coordinates, e.g., `DESeqDataSet` in the `r Biocpkg("DESeq2")` package.
-An alternative would have been to have two classes, `SingleCellExperiment` and `RangedSingleCellExperiment`.
-However, this seems like an unnecessary duplication as having a class with default empty `rowRanges` seems good enough when one does not need `rowRanges`.
 
 # Session Info
 
