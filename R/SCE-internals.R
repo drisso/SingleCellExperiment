@@ -27,7 +27,3 @@ setReplaceMethod("int_metadata", "SingleCellExperiment", function(x, value) {
     return(x)
 })
 
-#' @export
-setMethod("objectVersion", "SingleCellExperiment", function(x) {
-    int_metadata(x)$version
-})
