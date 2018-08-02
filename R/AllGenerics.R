@@ -30,7 +30,10 @@ setGeneric("reducedDim<-", function(x, ..., value) standardGeneric("reducedDim<-
 setGeneric("reducedDimNames", function(x) standardGeneric("reducedDimNames"))
 
 #' @export
-setGeneric("reducedDims", function(x) standardGeneric("reducedDims"))
+setGeneric("reducedDimNames<-", function(x, value) standardGeneric("reducedDimNames<-"))
+
+#' @export
+setGeneric("reducedDims", function(x, ...) standardGeneric("reducedDims"))
 
 #' @export
 setGeneric("reducedDims<-", function(x, value) standardGeneric("reducedDims<-"))
