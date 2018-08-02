@@ -10,10 +10,13 @@ setClass("SingleCellExperiment",
         int_metadata = "list",
         reducedDims = "SimpleList"),
     contains = "RangedSummarizedExperiment",
-    prototype = prototype(int_metadata=list(version=packageVersion("SingleCellExperiment"),
-        spike_names=character(0),
-        size_factor_names=character(0),
-        reducedDims=setNames(SimpleList(), character(0)))
+    prototype = prototype(
+        int_metadata=list(
+            version=packageVersion("SingleCellExperiment"),
+            spike_names=character(0),
+            size_factor_names=character(0)
+        ),
+        reducedDims=setNames(SimpleList(), character(0))
     )
 )
 

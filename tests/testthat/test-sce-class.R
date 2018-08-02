@@ -4,30 +4,36 @@ context("SingleCellExperiment class")
 
 set.seed(1000)
 ncells <- 100
-
-# Adding assays.
 v <- matrix(rnorm(20000), ncol=ncells)
-sce <- SingleCellExperiment(assay=v)
-expect_equivalent(assay(sce), v)
-
 u <- matrix(rpois(20000, 5), ncol=ncells)
-sce <- SingleCellExperiment(assay=list(counts=u, exprs=v))
-expect_equivalent(assay(sce, "counts"), u)
-expect_equivalent(assay(sce, "exprs"), v)
-
 w <- matrix(runif(20000), ncol=ncells)
-assay(sce, "exprs") <- w
-expect_equivalent(assay(sce, "exprs"), w)
-
 rd <- DataFrame(stuff=runif(nrow(v)))
 cd <- DataFrame(whee=runif(ncells))
-sce <- SingleCellExperiment(u, rowData=rd, colData=cd)
+
+test_that("construction of the SCE works correctly", {
+    sce <- SingleCellExperiment(assay=v)
+    expect_equivalent(assay(sce), v)
+
+    sce <- SingleCellExperiment(assay=list(counts=u, exprs=v))
+    expect_equivalent(assay(sce, "counts"), u)
+    expect_equivalent(assay(sce, "exprs"), v)
+    
+    assay(sce, "exprs") <- w
+    expect_equivalent(assay(sce, "exprs"), w)
+
+    expect_equal(names(sce@reducedDims), character(0))
+})
 
 test_that("coercion from other classes works correctly", {
+    sce <- SingleCellExperiment(u, rowData=rd, colData=cd)
+
     # Coercion from SummarizedExperiment
     se <- SummarizedExperiment(u, rowData = rd, colData = cd)
     sce2 <- as(se, "SingleCellExperiment")
     expect_equal(sce, sce2)
+
+    # Checking that reduced dim names are set correctly.
+    expect_equal(names(sce2@reducedDims), character(0))
 
     # Coercion from RangedSummarizedExperiment
     ranges <- GRanges(rep(c("chr1", "chr2"), c(50, 150)),
@@ -42,7 +48,9 @@ test_that("coercion from other classes works correctly", {
     expect_equal(colData(sce), colData(sce3))
 })
 
-test_that("manipulation of metadata is correct", {
+test_that("manipulation of SE metadata is correct", {
+    sce <- SingleCellExperiment(u, rowData=rd, colData=cd)
+
     # Checking colData and rowData
     expect_equal(rd, rowData(sce))
     expect_equal(cd, colData(sce))

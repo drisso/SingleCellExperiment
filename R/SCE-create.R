@@ -10,9 +10,9 @@ SingleCellExperiment <- function(..., reducedDims=SimpleList()) {
     } else {
       rse <- se
     }
-    out <- new("SingleCellExperiment", rse, reducedDims=SimpleList(),
-               int_elementMetadata=DataFrame(matrix(0, nrow(se), 0)),
-               int_colData=DataFrame(matrix(0, ncol(se), 0)))
+    out <- new("SingleCellExperiment", rse, 
+        int_elementMetadata=DataFrame(matrix(0, nrow(se), 0)),
+        int_colData=DataFrame(matrix(0, ncol(se), 0)))
     reducedDims(out) <- reducedDims
     return(out)
 }
