@@ -8,7 +8,7 @@ setMethod("[", c("SingleCellExperiment", "ANY", "ANY"), function(x, i, j, ..., d
     if (!missing(j)) {
         jj <- .convert_subset_index(j, colnames(x))
         int_colData(x) <- int_colData(x)[jj,,drop=FALSE]
-        rd <- reducedDims(x)
+        rd <- reducedDims(x, withDimnames=FALSE)
         for (mode in seq_along(rd)) { rd[[mode]] <- rd[[mode]][jj,,drop=FALSE] }
         int_reducedDims(x) <- rd
     }
@@ -21,7 +21,7 @@ setMethod("[<-", c("SingleCellExperiment", "ANY", "ANY", "SingleCellExperiment")
     if (missing(i) && missing(j)) {
         int_elementMetadata(x) <- int_elementMetadata(value)
         int_colData(x) <- int_colData(value)
-        int_reducedDims(x) <- reducedDims(value)
+        int_reducedDims(x) <- reducedDims(value, withDimnames=FALSE)
     }
 
     if (!missing(i)) {

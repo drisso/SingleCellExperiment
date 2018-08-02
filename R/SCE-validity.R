@@ -2,7 +2,7 @@
     msg <- NULL
 
     # Checking dimensions of reduced coordinates.
-    rd <- reducedDims(object)
+    rd <- reducedDims(object, withDimnames=FALSE)
     if (length(rd)) {
         if (any(unlist(lapply(rd, .not_reddim_mat, object=object)))) {
             msg <- c(msg, "each element of 'reducedDims' must be a matrix-like object with nrow equal to 'ncol(object)'")

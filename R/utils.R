@@ -27,7 +27,7 @@
 .standardize_reducedDims <- function(...) {
     args <- list(...)
     all.ncells <- lapply(args, ncol)
-    all.rd <- lapply(args, reducedDims)
+    all.rd <- lapply(args, reducedDims, withDimnames=FALSE)
     all.modes <- Reduce(union, lapply(all.rd, names))
 
     for (m in all.modes) {

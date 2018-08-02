@@ -29,5 +29,5 @@ setMethod("rbind", "SingleCellExperiment", function(..., deparse.level=1) {
 
     ans <- args[[1]]
     new(class(ans), base, int_colData=int_colData(ans), int_elementMetadata=new.row.data,
-        int_metadata=int_metadata(ans), reducedDims=reducedDims(ans))
+        int_metadata=int_metadata(ans), reducedDims=reducedDims(ans, withDimnames=FALSE))
 })
