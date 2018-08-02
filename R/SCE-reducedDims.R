@@ -36,7 +36,7 @@ setReplaceMethod("reducedDims", "SingleCellExperiment", function(x, value) {
 
 #' @export
 setMethod("reducedDimNames", "SingleCellExperiment", function(x) {
-    names(reducedDims(x))
+    names(reducedDims(x, withDimnames=FALSE))
 })
 
 #' @export
