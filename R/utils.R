@@ -1,30 +1,3 @@
-.get_sf_field <- function(type) {
-    search <- "size_factor"
-    if (!is.null(type)) {
-        if (length(type)!=1L) {
-            stop("'type' must be a character vector of length 1")
-        }
-        search <- paste0(search, "_", type)
-    }
-    return(search)
-}
-
-.spike_field <- "is_spike"
-
-.get_spike_field <- function(type, check=TRUE) {
-    if (check && length(type)!=1L) {
-        stop("'type' must be a character vector of length 1")
-    }
-    sprintf("%s_%s", .spike_field, type)
-}
-
-.convert_subset_spike <- function(subset, .length, .names) {
-    output <- logical(.length)
-    names(output) <- .names
-    output[subset] <- TRUE
-    return(unname(output))
-}
-
 .convert_subset_index <- function(subset, names) {
     if (is.character(subset)) {
         fmt <- "index out of bounds: %s"
@@ -54,7 +27,7 @@
 .standardize_reducedDims <- function(...) {
     args <- list(...)
     all.ncells <- lapply(args, ncol)
-    all.rd <- lapply(args, reducedDims)
+    all.rd <- lapply(args, reducedDims, withDimnames=FALSE)
     all.modes <- Reduce(union, lapply(all.rd, names))
 
     for (m in all.modes) {

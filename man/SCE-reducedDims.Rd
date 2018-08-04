@@ -13,26 +13,37 @@
 
 \alias{reducedDimNames}
 \alias{reducedDimNames,SingleCellExperiment-method}
+\alias{reducedDimNames<-}
+\alias{reducedDimNames<-,SingleCellExperiment,character-method}
 
 \title{Reduced dimensions methods}
 \description{Methods to get or set the dimensionality reduction results.}
 
 \usage{
-\S4method{reducedDim}{SingleCellExperiment}(x, type)
+\S4method{reducedDim}{SingleCellExperiment}(x, type=1, withDimnames=TRUE)
 
-\S4method{reducedDim}{SingleCellExperiment}(x, type) <- value
+\S4method{reducedDim}{SingleCellExperiment}(x, type=1) <- value
 
-\S4method{reducedDims}{SingleCellExperiment}(x)
+\S4method{reducedDims}{SingleCellExperiment}(x, withDimnames=TRUE)
 
 \S4method{reducedDims}{SingleCellExperiment}(x) <- value
+
+\S4method{reducedDimNames}{SingleCellExperiment}(x)
+
+\S4method{reducedDimNames}{SingleCellExperiment,character}(x) <- value
 }
 
 \arguments{
 \item{x}{A SingleCellExperiment object.}
 \item{type}{A string containing the name for the dimensionality reduction results or a numeric index containing the position of the desired dimenionality reduction result.}
+\item{withDimnames}{A logical scalar indicating whether each set of results should be returned with row names matching \code{colnames(x)}.
+This can be turned off for greater efficiency.}
 \item{value}{
 For \code{reducedDim<-}, a matrix (usually double-precision) of coordinates, for each cell (row) and dimension (column).
-For \code{reducedDims<-}, a named SimpleList object containing such matrices.}
+
+For \code{reducedDims<-}, a named SimpleList object containing such matrices.
+
+For \code{reducedDimNames<-}, a character vector containing the names of all dimensionality reduction results.}
 }
 
 \details{
@@ -40,8 +51,11 @@ Dimensionality reduction is often used to interpreting the results of single-cel
 These methods allow the results of dimensionality reduction methods to be stored in a SingleCellExperiment object.
 Multiple results can be stored in a single object by assigning to different \code{type} in \code{reducedDim<-}.
 
-If \code{type} is \code{NULL} or missing for \code{reducedDim}, the first set of dimensionality reduction results is returned (or \code{NULL}, if no results are present).
 If \code{value} is \code{NULL} for \code{reducedDim<-}, the set of results corresponding to \code{type} is removed from the object.
+If \code{value} is \code{NULL} for \code{reducedDims<-}, all dimensionality reduction results are removed.
+
+Note that the \code{reducedDims} slot must \emph{always} be named for consistency.
+Unnamed results assigned via \code{reducedDim<-} or \code{reducedDims<-} will be assigned empty names.
 }
 
 \value{
@@ -49,9 +63,10 @@ For \code{reducedDim}, a numeric matrix is returned containing coordinates for c
 
 For \code{reducedDims}, a named SimpleList of matrices is returned, with one matrix for each type of dimensionality reduction method.
 
+For \code{reducedDimNames}, a character vector containing the names of the elements in \code{reducedDims}.
+
 For \code{reducedDim<-} and \code{reducedDims<-}, a SingleCellExperiment object is returned with updated results in the \code{reducedDims} slot.
 
-For \code{reducedDimNames}, a character vector containing the names of the elements in \code{reducedDims}.
 }
 
 \author{

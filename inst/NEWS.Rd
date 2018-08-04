@@ -2,8 +2,18 @@
 \title{SingleCellExperiment News}
 \encoding{UTF-8}
 
-\section{Version 1.3.3}{\itemize{
+\section{Version 1.3.10}{\itemize{
 \item Allow ... arguments to be passed to rowData() and colData().
+
+\item Added weights() methods for getting/setting observational weights.
+
+\item Added reducedDimNames<- method to set the names of reduced dimension slots.
+
+\item Added withDimnames= argument to reducedDim() and reducedDims().
+
+\item Exported getters and setters for internal metadata fields.
+
+\item Added developer instructions for making use of internal metadata fields.
 }}
 
 \section{Version 1.2.0}{\itemize{

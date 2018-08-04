@@ -68,7 +68,7 @@ test_that("subsetting by column works correctly", {
 
         expect_identical(assay(sce)[,ind,drop=FALSE], assay(sub.sce)) # check SE elements are subsetted.
         expect_identical(sizeFactors(sub.sce), sizeFactors(sce)[ind])
-        expect_identical(reducedDim(sub.sce, "PCA"), pca[ind,,drop=FALSE])
+        expect_identical(reducedDim(sub.sce, "PCA", withDimnames=FALSE), pca[ind,,drop=FALSE])
 
         # Unchanged elements:
         expect_identical(isSpike(sub.sce), isSpike(sce))
