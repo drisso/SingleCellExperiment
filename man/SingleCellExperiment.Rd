@@ -2,6 +2,7 @@
 \alias{SingleCellExperiment}
 \alias{SingleCellExperiment-class}
 \alias{coerce,SummarizedExperiment,SingleCellExperiment-method}
+\alias{coerce,RangedSummarizedExperiment,SingleCellExperiment-method}
 
 \docType{class}
 
