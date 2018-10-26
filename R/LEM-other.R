@@ -36,6 +36,7 @@ setValidity2("LinearEmbeddingMatrix", .le_validity)
 #############################################
 # Sets the show method.
 
+#' @importFrom S4Vectors metadata
 .le_show <- function(object) {
 
     cat("class:", class(object), "\n")
