@@ -25,15 +25,12 @@ test_that("construction of the SCE works correctly", {
 })
 
 test_that("coercion from other classes works correctly", {
-    sce <- SingleCellExperiment(u, rowData=rd, colData=cd)
-
     # Coercion from SummarizedExperiment
     se <- SummarizedExperiment(u, rowData = rd, colData = cd)
     sce2 <- as(se, "SingleCellExperiment")
-    expect_equal(sce, sce2)
-
-    # Checking that reduced dim names are set correctly.
-    expect_equal(names(sce2@reducedDims), character(0))
+    expect_equal(sce2, SingleCellExperiment(u, rowData=rd, colData=cd)) # equality not identity due to environment in 'assays'.
+    expect_true(validObject(sce2))
+    expect_identical(names(sce2@reducedDims), character(0)) # Checking that reduced dim names are set correctly.
 
     # Coercion from RangedSummarizedExperiment
     ranges <- GRanges(rep(c("chr1", "chr2"), c(50, 150)),
@@ -43,9 +40,8 @@ test_that("coercion from other classes works correctly", {
 
     rse <- SummarizedExperiment(u, colData = cd, rowRanges = ranges)
     sce3 <- as(rse, "SingleCellExperiment")
-    expect_equal(assays(sce), assays(sce3))
-    expect_equal(rowData(sce), rowData(sce3))
-    expect_equal(colData(sce), colData(sce3))
+    expect_equal(sce3, SingleCellExperiment(u, colData=cd, rowRanges=ranges))
+    expect_true(validObject(sce3))
 })
 
 test_that("manipulation of SE metadata is correct", {
