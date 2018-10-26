@@ -2,7 +2,7 @@
 \title{SingleCellExperiment News}
 \encoding{UTF-8}
 
-\section{Version 1.3.10}{\itemize{
+\section{Version 1.4.0}{\itemize{
 \item Allow ... arguments to be passed to rowData() and colData().
 
 \item Added weights() methods for getting/setting observational weights.
