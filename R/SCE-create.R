@@ -1,29 +1,38 @@
 #' @export
-#' @importFrom S4Vectors SimpleList DataFrame
-#' @importFrom SummarizedExperiment SummarizedExperiment rowData
+#' @importFrom S4Vectors SimpleList 
+#' @importFrom methods is as
+#' @importFrom SummarizedExperiment SummarizedExperiment
 #' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
 SingleCellExperiment <- function(..., reducedDims=SimpleList()) {
     se <- SummarizedExperiment(...)
     if(!is(se, "RangedSummarizedExperiment")) {
-      rse <- as(se, "RangedSummarizedExperiment")
-      rowData(rse) <- rowData(se)
-    } else {
-      rse <- se
+        se <- as(se, "RangedSummarizedExperiment")
     }
+    .rse_to_sce(se, reducedDims)
+}
+
+#' @importFrom S4Vectors DataFrame
+#' @importClassesFrom S4Vectors DataFrame
+#' @importFrom methods new
+#' @importFrom BiocGenerics nrow ncol
+.rse_to_sce <- function(rse, reducedDims) {
     out <- new("SingleCellExperiment", rse, 
-        int_elementMetadata=DataFrame(matrix(0, nrow(se), 0)),
-        int_colData=DataFrame(matrix(0, ncol(se), 0)))
+        int_elementMetadata=new("DataFrame", nrows=nrow(rse)),
+        int_colData=new("DataFrame", nrows=ncol(rse)))
     reducedDims(out) <- reducedDims
-    return(out)
+    out
 }
 
 #' @exportMethod coerce
-#' @importClassesFrom SummarizedExperiment SummarizedExperiment
-#' @importFrom S4Vectors metadata
+#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
+#' @importFrom S4Vectors SimpleList
+setAs("RangedSummarizedExperiment", "SingleCellExperiment", function(from) {
+    .rse_to_sce(from, SimpleList())
+})
+
+#' @exportMethod coerce
+#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment SummarizedExperiment
+#' @importFrom S4Vectors SimpleList
 setAs("SummarizedExperiment", "SingleCellExperiment", function(from) {
-    SingleCellExperiment(assays = assays(from),
-                         colData = colData(from),
-                         rowData = rowData(from),
-                         metadata = metadata(from)
-                         )
+    .rse_to_sce(as(from, "RangedSummarizedExperiment"), SimpleList())
 })
