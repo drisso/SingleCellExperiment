@@ -29,8 +29,8 @@ test_that("reducedDim getters/setters are functioning with character 'type'", {
     expect_identical(reducedDimNames(sce), "tSNE")
 
     # Checking for different errors.
-    expect_error(reducedDim(sce, "DM") <- d1[1:10,], "each element of 'reducedDims' must be a matrix-like object with nrow equal to 'ncol(object)'", fixed=TRUE)
-    expect_error(reducedDim(sce, "DM") <- "huh", "each element of 'reducedDims' must be a matrix-like object with nrow equal to 'ncol(object)'", fixed=TRUE)
+    expect_error(reducedDim(sce, "DM") <- d1[1:10,], "each element of 'reducedDims' must be a matrix-like object with nrow\n *equal to 'ncol\\(object\\)'")
+    expect_error(reducedDim(sce, "DM") <- "huh", "each element of 'reducedDims' must be a matrix-like object with nrow\n *equal to 'ncol\\(object\\)'")
 })
 
 test_that("reducedDims getters/setters are functioning", {
@@ -58,8 +58,8 @@ test_that("reducedDims getters/setters are functioning", {
     expect_identical(reducedDim(alt), NULL)
 
     # Checking for errors.
-    expect_error(reducedDims(sce) <- list(d1, d2[1:10,]), "each element of 'reducedDims' must be a matrix-like object with nrow equal to 'ncol(object)'", fixed=TRUE)
-    expect_error(reducedDims(sce) <- list(d1[1:10,], d2[1:10,]), "each element of 'reducedDims' must be a matrix-like object with nrow equal to 'ncol(object)'", fixed=TRUE)
+    expect_error(reducedDims(sce) <- list(d1, d2[1:10,]), "each element of 'reducedDims' must be a matrix-like object with nrow\n *equal to 'ncol\\(object\\)'")
+    expect_error(reducedDims(sce) <- list(d1[1:10,], d2[1:10,]), "each element of 'reducedDims' must be a matrix-like object with nrow\n *equal to 'ncol\\(object\\)'")
 })
 
 test_that("getters/setters respond to dimnames", {

@@ -21,7 +21,7 @@ test_that("LEM construction works correctly", {
     expect_identical(lem2$YAY, fd$YAY)
 
     # Should throw errors if it doesn't make sense.
-    expect_error(LinearEmbeddingMatrix(factors, loadings[,1:2]), "must have the same number of columns")
+    expect_error(LinearEmbeddingMatrix(factors, loadings[,1:2]), "must have the same number of\n *columns")
     expect_error(LinearEmbeddingMatrix(factors, loadings, DataFrame(YAY=2)), "one row per factor")
 
     # Add metadata.
