@@ -6,7 +6,7 @@ Authors@R: c(
         person("Aaron", "Lun", role=c("aut", "cph"), email="infinite.monkeys.with.keyboards@gmail.com"),
         person("Davide","Risso", role=c("aut","cre", "cph"), email="risso.davide@gmail.com"),
         person("Keegan", "Korthauer", role=c("ctb")))
-Depends: R (>= 3.5), SummarizedExperiment
+Depends: SummarizedExperiment
 Imports: S4Vectors, methods, BiocGenerics, utils, stats
 Suggests: testthat, BiocStyle, knitr, rmarkdown, scRNAseq, magrittr, 
         Rtsne, Matrix
