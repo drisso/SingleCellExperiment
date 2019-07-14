@@ -1,74 +1,101 @@
 # Getter/setter functions for reducedDims.
 
+.red_key <- "reducedDims"
+
 #' @export
+#' @importFrom S4Vectors List
+#' @importClassesFrom S4Vectors SimpleList
 setMethod("reducedDims", "SingleCellExperiment", function(x, withDimnames=TRUE) {
-    value <- x@reducedDims
-    if (withDimnames) {
-        for (i in seq_along(value)) {
-            rownames(value[[i]]) <- colnames(x)
+    x <- updateObject(x)
+
+    if (!.red_key %in% colnames(int_colData(x))) {
+        value <- List()
+    } else {
+        value <- as(int_colData(x)[[.red_key]], "SimpleList")
+        if (withDimnames) {
+            for (i in seq_along(value)) {
+                rownames(value[[i]]) <- colnames(x)
+            }
         }
     }
-    return(value)
+    value
 })
-
-setReplaceMethod("int_reducedDims", "SingleCellExperiment", function(x, value) {
-    x@reducedDims <- value
-    return(x)
-})
-
-.not_reddim_mat <- function(val, object) {
-    return(is.null(val) || NROW(val)!=NCOL(object));
-}
 
 #' @export
 #' @importFrom methods as
-#' @importClassesFrom S4Vectors List
+#' @importFrom S4Vectors DataFrame
 setReplaceMethod("reducedDims", "SingleCellExperiment", function(x, value) {
-    value <- as(value, "List")
-    if (is.null(names(value))) {
-        names(value) <- character(length(value))
+    x <- updateObject(x)
+
+    if (is.null(value) || length(value)==0L) {
+        collected <- int_colData(x)[,0]
+    } else {
+        nrows <- vapply(value, nrow, FUN.VALUE = 0L)
+        if (!all(nrows == ncol(x))) {
+            stop("elements of replacement 'reducedDims' do not have the correct number of rows")
+        }
+        collected <- do.call(DataFrame, lapply(value, I))
+        if (is.null(names(value))) {
+            colnames(collected) <- character(length(value))
+        }
     }
 
-    int_reducedDims(x) <- value
-    validObject(x)
-    return(x)
+    int_colData(x)[[.red_key]] <- collected
+    x
 })
 
 #' @export
 setMethod("reducedDimNames", "SingleCellExperiment", function(x) {
-    names(reducedDims(x, withDimnames=FALSE))
+    x <- updateObject(x)
+
+    if (!.red_key %in% colnames(int_colData(x))) {
+        character(0)
+    } else {
+        colnames(int_colData(x)[[.red_key]])
+    }
 })
 
 #' @export
 setReplaceMethod("reducedDimNames", c("SingleCellExperiment", "character"), function(x, value) {
-    out <- reducedDims(x, withDimnames=FALSE)
-    names(out) <- value
-    int_reducedDims(x) <- out
-    return(x)
+    x <- updateObject(x)
+
+    if (!.red_key %in% colnames(int_colData(x)) && length(value) > 0L) {
+        stop("no 'reducedDims' in 'x' to rename")
+    } 
+    colnames(int_colData(x)[[.red_key]]) <- value
+    x
 })
 
 #' @export
 setMethod("reducedDim", "SingleCellExperiment", function(x, type=1, withDimnames=TRUE) {
-    r <- reducedDims(x, withDimnames=FALSE)
-    if (length(r)==0) { 
-        return(NULL)
+    x <- updateObject(x)
+
+    internals <- int_colData(x)
+    if (!.red_key %in% colnames(internals)) {
+        internals <- internals[,0]
+    } else {
+        internals <- internals[[.red_key]]
     }
 
-    out <- r[[type]]
-    if (withDimnames && !is.null(out)) {
+    out <- internals[,type]
+    if (!is.null(out) && withDimnames) {
         rownames(out) <- colnames(x)
     }
-    return(out)
+    out
 })
 
 #' @export
 setReplaceMethod("reducedDim", "SingleCellExperiment", function(x, type=1, ..., value) {
-    rd <- reducedDims(x, withDimnames=FALSE)
-    if (is.numeric(type) && type > length(rd)+1) { 
-        stop("subscript is out of bounds") 
+    x <- updateObject(x)
+
+    internals <- int_colData(x)
+    if (!.red_key %in% colnames(internals)) {
+        internals[[.red_key]] <- internals[,0]
     }
-    rd[[type]] <- value
-    int_reducedDims(x) <- rd
-    validObject(x)
-    return(x)
+    if (!is.null(value) && !identical(nrow(value), ncol(x))) {
+        stop("replacement 'reducedDim' has a different number of rows than 'ncol(x)'")
+    }
+    internals[[.red_key]][[type]] <- value
+    int_colData(x) <- internals
+    x
 })
