@@ -118,3 +118,20 @@ test_that("altRowNames setters work correctly", {
     altRowNames(sce, "Protein") <- rn
     expect_identical(altRowNames(sce, 2), rn)
 })
+
+test_that("splitSCEByAlt works correctly", {
+     feat.type <- sample(c("endog", "ERCC", "CITE"), nrow(empty),
+         replace=TRUE, p=c(0.8, 0.1, 0.1))
+     out <- splitSCEByAlt(empty, feat.type)
+
+     expect_identical(assay(out), assay(empty[feat.type=="endog",]))
+     expect_identical(altExperiment(out, "ERCC"), empty[feat.type=="ERCC",])
+     expect_identical(altExperiment(out, "CITE"), empty[feat.type=="CITE",])
+
+     # Handles alternative reference. 
+     out <- splitSCEByAlt(empty, feat.type, ref="ERCC")
+
+     expect_identical(assay(out), assay(empty[feat.type=="ERCC",]))
+     expect_identical(altExperiment(out, "endog"), empty[feat.type=="endog",])
+     expect_identical(altExperiment(out, "CITE"), empty[feat.type=="CITE",])
+})
