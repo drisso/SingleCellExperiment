@@ -16,15 +16,16 @@ test_that("reducedDim getters/setters are functioning with character 'type'", {
 
     # Clearing values.
     reducedDim(sce, "PCA") <- NULL
-    expect_identical(reducedDim(sce, "PCA"), NULL)
     expect_identical(reducedDim(sce, "tSNE"), d2)
     expect_identical(reducedDim(sce), d2)
     expect_identical(reducedDims(sce), SimpleList(tSNE=d2))
     expect_identical(reducedDimNames(sce), "tSNE")
 
     # Checking for different errors.
-    expect_error(reducedDim(sce, "DM") <- d1[1:10,], "each element of 'reducedDims' must be a matrix-like object with nrow\n *equal to 'ncol\\(object\\)'")
-    expect_error(reducedDim(sce, "DM") <- "huh", "each element of 'reducedDims' must be a matrix-like object with nrow\n *equal to 'ncol\\(object\\)'")
+    expect_error(reducedDim(sce, "PCA"), "invalid names")
+    expect_error(reducedDim(sce, 2), "out-of-bounds indices")
+    expect_error(reducedDim(sce, "DM") <- d1[1:10,], "different number of rows")
+    expect_error(reducedDim(sce, "DM") <- "huh", "different number of rows")
 })
 
 test_that("reducedDims getters/setters are functioning", {
@@ -39,7 +40,6 @@ test_that("reducedDims getters/setters are functioning", {
     alt <- sce
     reducedDims(alt) <- SimpleList()
     expect_identical(reducedDims(alt), setNames(SimpleList(), character(0)))
-    expect_identical(reducedDim(alt), NULL)
 
     # Clearing via NULL.
     reducedDims(sce) <- SimpleList(DM=d1)
@@ -49,11 +49,14 @@ test_that("reducedDims getters/setters are functioning", {
     alt <- sce
     reducedDims(alt) <- NULL
     expect_identical(reducedDims(alt), setNames(SimpleList(), character(0)))
-    expect_identical(reducedDim(alt), NULL)
+
+    # Setting with an unnamed list works. 
+    reducedDims(sce) <- list(d1, d2)
+    expect_identical(length(reducedDimNames(sce)), 2L)
 
     # Checking for errors.
-    expect_error(reducedDims(sce) <- list(d1, d2[1:10,]), "each element of 'reducedDims' must be a matrix-like object with nrow\n *equal to 'ncol\\(object\\)'")
-    expect_error(reducedDims(sce) <- list(d1[1:10,], d2[1:10,]), "each element of 'reducedDims' must be a matrix-like object with nrow\n *equal to 'ncol\\(object\\)'")
+    expect_error(reducedDims(sce) <- list(d1, d2[1:10,]), "do not have the correct number of rows")
+    expect_error(reducedDims(sce) <- list(d1[1:10,], d2[1:10,]), "do not have the correct number of rows")
 })
 
 test_that("getters/setters respond to dimnames", {
@@ -105,7 +108,7 @@ test_that("reducedDim getters/setters work with numeric indices", {
     expect_identical(reducedDim(sce, 1), d2)
     expect_identical(reducedDimNames(sce), "PCA")
 
-    expect_error(reducedDim(sce, 5) <- d1, "subscript is out of bounds")
+    expect_error(reducedDim(sce, 5) <- d1, "subscript out of bounds")
 })
 
 test_that("reducedDimNames getters/setters work correctly", {
@@ -122,5 +125,5 @@ test_that("reducedDimNames getters/setters work correctly", {
     reducedDims(sce) <- NULL
     expect_identical(reducedDimNames(sce), character(0))
 
-    expect_error(reducedDimNames(sce) <- c("A", "B"), "same length")
+    expect_error(reducedDimNames(sce) <- c("A", "B"), "more column names")
 })

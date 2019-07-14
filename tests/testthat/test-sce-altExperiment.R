@@ -7,7 +7,6 @@ test_that("altExperiment getters work correctly", {
     expect_identical(altExperiment(sce), se1)
     expect_identical(altExperiment(sce, 2), se2)
     expect_identical(altExperiment(sce, "Protein"), se2)
-    expect_error(altExperiment(empty), "no alternative experiments")
 
     expect_identical(altExperiments(sce), List(Spike=se1, Protein=se2))
     expect_identical(altExperimentNames(sce), c("Spike", "Protein"))
@@ -28,6 +27,10 @@ test_that("altExperiment getters work correctly", {
     expect_identical(altRowNames(sce), rownames(se1))
     expect_identical(altRowNames(sce, 2), rownames(se2))
     expect_identical(altRowNames(sce, "Protein"), rownames(se2))
+
+    expect_error(altExperiment(empty), "out-of-bounds")
+    expect_error(altExperiment(sce, 3), "out-of-bounds")
+    expect_error(altExperiment(sce, "Whee"), "subscript")
 })
 
 test_that("altExperiment setters work correctly", {
@@ -54,16 +57,23 @@ test_that("altExperiment setters work correctly", {
 test_that("altExperiments setters work correctly", {
     altExperiments(sce) <- NULL
     expect_identical(unname(altExperiments(sce)), List())
+
     altExperiments(sce) <- list(whee=se1, blah=se2)
     expect_identical(altExperimentNames(sce), c("whee", "blah"))
     expect_identical(altExperiment(sce,1), se1)
+
+    altExperiments(sce) <- list(se1, se2)
+    expect_identical(altExperimentNames(sce), character(2))
+    expect_identical(altExperiment(sce,1), se1)
+
+    expect_error(altExperiments(sce) <- list(se1, se2[,1:10]), "correct number of columns")
 })
 
 test_that("altExperimentNames setters work correctly", {
     altExperimentNames(sce) <- c("A", "B")
     expect_identical(altExperimentNames(sce), c("A", "B"))
 
-    expect_error(altExperimentNames(empty) <- c("A", "B"), "no alternative experiments")
+    expect_error(altExperimentNames(empty) <- c("A", "B"), "no 'altExperiments'")
     expect_error(altExperimentNames(sce) <- LETTERS, "more column names")
 })
 
