@@ -89,6 +89,9 @@ setGeneric("sizeFactorNames", function(object) standardGeneric("sizeFactorNames"
 setGeneric("altExperiment", function(x, ...) standardGeneric("altExperiment"))
 
 #' @export
+setGeneric("altExperiments", function(x, ...) standardGeneric("altExperiments"))
+
+#' @export
 setGeneric("altExperimentNames", function(x, ...) standardGeneric("altExperimentNames"))
 
 #' @export
@@ -108,6 +111,9 @@ setGeneric("altRowNames", function(x, ...) standardGeneric("altRowNames"))
 
 #' @export
 setGeneric("altExperiment<-", function(x, ..., value) standardGeneric("altExperiment<-"))
+
+#' @export
+setGeneric("altExperiments<-", function(x, ..., value) standardGeneric("altExperiments<-"))
 
 #' @export
 setGeneric("altExperimentNames<-", function(x, ..., value) standardGeneric("altExperimentNames<-"))

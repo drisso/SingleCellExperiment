@@ -2,6 +2,8 @@
 
 \alias{altExperiment}
 \alias{altExperiment,SingleCellExperiment-method}
+\alias{altExperiments}
+\alias{altExperiments,SingleCellExperiment-method}
 \alias{altExperimentNames}
 \alias{altExperimentNames,SingleCellExperiment-method}
 \alias{altAssays}
@@ -17,6 +19,8 @@
 
 \alias{altExperiment<-}
 \alias{altExperiment<-,SingleCellExperiment-method}
+\alias{altExperiments<-}
+\alias{altExperiments<-,SingleCellExperiment-method}
 \alias{altExperimentNames<-}
 \alias{altExperimentNames<-,SingleCellExperiment-method}
 \alias{altAssays<-}
@@ -36,17 +40,25 @@
 }
 
 \usage{
+\S4method{altExperiments}{SingleCellExperiment}(x)
+
+\S4method{altExperimentNames}{SingleCellExperiment}(x)
+
 \S4method{altExperiment}{SingleCellExperiment}(x, e=1)
 
 \S4method{altAssays}{SingleCellExperiment}(x, e=1, ...)
 
-\S4method{altAssayNames}{SingleCellExperiment}(x, e=1, ...)
+\S4method{altAssayNames}{SingleCellExperiment}(x)
 
 \S4method{altAssay}{SingleCellExperiment}(x, e=1, i=1, ...)
 
 \S4method{altRowData}{SingleCellExperiment}(x, e=1, ...)
 
 \S4method{altRowNames}{SingleCellExperiment}(x, e=1)
+
+\S4method{altExperiments}{SingleCellExperiment}(x) <- value
+
+\S4method{altExperimentNames}{SingleCellExperiment}(x) <- value
 
 \S4method{altExperiment}{SingleCellExperiment}(x, e=1, ...) <- value
 
@@ -89,6 +101,9 @@ For other methods, these are ignored.
 
 For \code{altExperimentNames<-}, a character vector of length equal to the number of alternative experiments.
 
+For \code{altExperiments<-}, a named list-like object where each element is a \linkS4class{SummarizedExperiment} object with the same number of rows.
+Alternatively, a \code{NULL} value to remove all alternativeExperiments from \code{x}.
+
 For \code{altExperiment<-}, a SummarizedExperiment instance with number of samples equal to \code{ncol(x)}.
 Alternatively, a \code{NULL} value to remove the Experiment specified by \code{e}.
 
@@ -122,6 +137,8 @@ Column-level metadata should rightfully be stored in the \code{colData} of the \
 
 \value{
 \code{altExperimentNames} returns a character vector of names for the alternative Experiments.
+
+\code{altExperiments} returns a named \linkS4class{SimpleList} of SummarizedExperiment objects.
 
 \code{altExperiment} returns a SummarizedExperiment instance or a subclass thereof.
 

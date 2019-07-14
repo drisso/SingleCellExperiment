@@ -38,6 +38,17 @@ setMethod("altExperimentNames", "SingleCellExperiment", function(x) {
 })
 
 #' @export
+#' @importClassesFrom S4Vectors SimpleList
+setMethod("altExperiments", "SingleCellExperiment", function(x) {
+    if (!.alt_key %in% colnames(int_colData(x))) {
+        List()
+    }  else {
+        out <- lapply(int_colData(x)[[.alt_key]], .get_se)
+        as(out, "SimpleList")
+    }
+})
+
+#' @export
 setMethod("altExperiment", "SingleCellExperiment", function(x, e=1) {
     .get_alt_experiment(x, e)
 })
@@ -80,6 +91,17 @@ setReplaceMethod("altExperimentNames", "SingleCellExperiment", function(x, value
         stop("no alternative experiments in 'x' to rename")
     } 
     colnames(int_colData(x)[[.alt_key]]) <- value
+    x
+})
+
+#' @export
+#' @importClassesFrom S4Vectors SimpleList
+setReplaceMethod("altExperiments", "SingleCellExperiment", function(x, value) {
+    collected <- int_colData(x)[,0]
+    for (i in names(value)) {
+        collected[[i]] <- SummarizedExperimentByColumn(value[[i]])
+    }
+    int_colData(x)[[.alt_key]] <- collected
     x
 })
 

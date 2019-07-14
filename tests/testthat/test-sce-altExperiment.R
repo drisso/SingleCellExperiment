@@ -9,6 +9,7 @@ test_that("altExperiment getters work correctly", {
     expect_identical(altExperiment(sce, "Protein"), se2)
     expect_error(altExperiment(empty), "no alternative experiments")
 
+    expect_identical(altExperiments(sce), List(Spike=se1, Protein=se2))
     expect_identical(altExperimentNames(sce), c("Spike", "Protein"))
 
     expect_identical(altAssay(sce), assay(se1))
@@ -48,6 +49,14 @@ test_that("altExperiment setters work correctly", {
     expect_identical(altExperimentNames(sce), character(0))
 
     expect_error(altExperiment(sce, 5) <- se3, "out of bounds")
+})
+
+test_that("altExperiments setters work correctly", {
+    altExperiments(sce) <- NULL
+    expect_identical(unname(altExperiments(sce)), List())
+    altExperiments(sce) <- list(whee=se1, blah=se2)
+    expect_identical(altExperimentNames(sce), c("whee", "blah"))
+    expect_identical(altExperiment(sce,1), se1)
 })
 
 test_that("altExperimentNames setters work correctly", {
