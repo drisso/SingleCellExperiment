@@ -51,6 +51,12 @@ setMethod("altAssay", "SingleCellExperiment", function(x, e=1, i=1, ...) {
 })
 
 #' @export
+#' @importFrom SummarizedExperiment assayNames
+setMethod("altAssayNames", "SingleCellExperiment", function(x, e=1, ...) {
+    assayNames(.get_alt_experiment(x, e), ...)
+})
+
+#' @export
 #' @importFrom SummarizedExperiment rowData
 setMethod("altRowData", "SingleCellExperiment", function(x, e=1, ...) {
     rowData(.get_alt_experiment(x, e), ...)
@@ -91,6 +97,14 @@ setReplaceMethod("altAssays", "SingleCellExperiment", function(x, e=1, ..., valu
 setReplaceMethod("altAssay", "SingleCellExperiment", function(x, e=1, i=1, ..., value) {
     se <- .get_alt_experiment(x, e)    
     assay(se, i, ...) <- value
+    .set_alt_experiment(x, e, se)
+})
+
+#' @export
+#' @importFrom SummarizedExperiment assayNames<-
+setReplaceMethod("altAssayNames", "SingleCellExperiment", function(x, e=1, ..., value) {
+    se <- .get_alt_experiment(x, e)
+    assayNames(se, ...) <- value
     .set_alt_experiment(x, e, se)
 })
 

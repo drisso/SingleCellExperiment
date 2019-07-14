@@ -86,40 +86,46 @@ setGeneric("sizeFactorNames", function(object) standardGeneric("sizeFactorNames"
 # Alternative experiment getter/setters.
 
 #' @export
-setGeneric("altExperiment", function(x, e) standardGeneric("altExperiment"))
+setGeneric("altExperiment", function(x, ...) standardGeneric("altExperiment"))
 
 #' @export
-setGeneric("altExperimentNames", function(x, e) standardGeneric("altExperimentNames"))
+setGeneric("altExperimentNames", function(x, ...) standardGeneric("altExperimentNames"))
 
 #' @export
-setGeneric("altAssays", function(x, e, ...) standardGeneric("altAssays"))
+setGeneric("altAssays", function(x, ...) standardGeneric("altAssays"))
 
 #' @export
-setGeneric("altAssay", function(x, e, i, ...) standardGeneric("altAssay"))
+setGeneric("altAssayNames", function(x, ...) standardGeneric("altAssayNames"))
 
 #' @export
-setGeneric("altRowData", function(x, e, ...) standardGeneric("altRowData"))
+setGeneric("altAssay", function(x, ...) standardGeneric("altAssay"))
 
 #' @export
-setGeneric("altRowNames", function(x, e, ...) standardGeneric("altRowNames"))
+setGeneric("altRowData", function(x, ...) standardGeneric("altRowData"))
 
 #' @export
-setGeneric("altExperiment<-", function(x, e, ..., value) standardGeneric("altExperiment<-"))
+setGeneric("altRowNames", function(x, ...) standardGeneric("altRowNames"))
 
 #' @export
-setGeneric("altExperimentNames<-", function(x, e, ..., value) standardGeneric("altExperimentNames<-"))
+setGeneric("altExperiment<-", function(x, ..., value) standardGeneric("altExperiment<-"))
 
 #' @export
-setGeneric("altAssays<-", function(x, e, ..., value) standardGeneric("altAssays<-"))
+setGeneric("altExperimentNames<-", function(x, ..., value) standardGeneric("altExperimentNames<-"))
 
 #' @export
-setGeneric("altAssay<-", function(x, e, i, ..., value) standardGeneric("altAssay<-"))
+setGeneric("altAssays<-", function(x, ..., value) standardGeneric("altAssays<-"))
 
 #' @export
-setGeneric("altRowData<-", function(x, e, ..., value) standardGeneric("altRowData<-"))
+setGeneric("altAssayNames<-", function(x, ..., value) standardGeneric("altAssayNames<-"))
 
 #' @export
-setGeneric("altRowNames<-", function(x, e, ..., value) standardGeneric("altRowNames<-"))
+setGeneric("altAssay<-", function(x, ..., value) standardGeneric("altAssay<-"))
+
+#' @export
+setGeneric("altRowData<-", function(x, ..., value) standardGeneric("altRowData<-"))
+
+#' @export
+setGeneric("altRowNames<-", function(x, ..., value) standardGeneric("altRowNames<-"))
 
 # Convenience assay getter/setters.
 
