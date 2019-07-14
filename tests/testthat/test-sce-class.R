@@ -20,8 +20,6 @@ test_that("construction of the SCE works correctly", {
     
     assay(sce, "exprs") <- w
     expect_equivalent(assay(sce, "exprs"), w)
-
-    expect_equal(names(sce@reducedDims), character(0))
 })
 
 test_that("coercion from other classes works correctly", {
@@ -30,7 +28,6 @@ test_that("coercion from other classes works correctly", {
     sce2 <- as(se, "SingleCellExperiment")
     expect_equal(sce2, SingleCellExperiment(u, rowData=rd, colData=cd)) # equality not identity due to environment in 'assays'.
     expect_true(validObject(sce2))
-    expect_identical(names(sce2@reducedDims), character(0)) # Checking that reduced dim names are set correctly.
 
     # Coercion from RangedSummarizedExperiment
     ranges <- GRanges(rep(c("chr1", "chr2"), c(50, 150)),

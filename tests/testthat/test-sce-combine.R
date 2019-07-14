@@ -53,6 +53,11 @@ test_that("cbind works correctly", {
     expect_error(cbind(sce.err, sce), "object 1 does not have 'PCA' in 'reducedDims'")
     expect_error(cbind(sce, sce.err), "object 2 does not have 'PCA' in 'reducedDims'")
 
+    sce.err <- sce
+    altExperiment(sce.err, 1) <- NULL
+    expect_error(cbind(sce.err, sce), "object 1 does not have 'Spike' in 'altExperiments'")
+    expect_error(cbind(sce, sce.err), "object 2 does not have 'Spike' in 'altExperiments'")
+
     sce.lost <- sce
     isSpike(sce.lost, "ERCC") <- NULL
     sce2 <- cbind(sce.lost, sce)
