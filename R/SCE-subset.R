@@ -8,9 +8,6 @@ setMethod("[", c("SingleCellExperiment", "ANY", "ANY"), function(x, i, j, ..., d
     if (!missing(j)) {
         jj <- .convert_subset_index(j, colnames(x))
         int_colData(x) <- int_colData(x)[jj,,drop=FALSE]
-        rd <- reducedDims(x, withDimnames=FALSE)
-        for (mode in seq_along(rd)) { rd[[mode]] <- rd[[mode]][jj,,drop=FALSE] }
-        int_reducedDims(x) <- rd
     }
 
     callNextMethod()
@@ -21,7 +18,6 @@ setMethod("[<-", c("SingleCellExperiment", "ANY", "ANY", "SingleCellExperiment")
     if (missing(i) && missing(j)) {
         int_elementMetadata(x) <- int_elementMetadata(value)
         int_colData(x) <- int_colData(value)
-        int_reducedDims(x) <- reducedDims(value, withDimnames=FALSE)
     }
 
     if (!missing(i)) {
@@ -36,14 +32,6 @@ setMethod("[<-", c("SingleCellExperiment", "ANY", "ANY", "SingleCellExperiment")
         sout <- .standardize_DataFrames(first=int_colData(x), last=int_colData(value))
         sout$first[jj,] <- sout$last
         int_colData(x) <- sout$first
-
-        rdout <- .standardize_reducedDims(first=x, last=value)
-        rd <- rdout$first
-        rdv <- rdout$last
-        for (mode in seq_along(rd)) {
-            rd[[mode]][jj,] <- rdv[[mode]]
-        }
-        int_reducedDims(x) <- rd
     }
 
     int_metadata(x) <- int_metadata(value)

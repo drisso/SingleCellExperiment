@@ -1,15 +1,6 @@
 .sce_validity <- function(object) {
     msg <- NULL
 
-    # Checking dimensions of reduced coordinates.
-    rd <- reducedDims(object, withDimnames=FALSE)
-    if (length(rd)) {
-        if (any(unlist(lapply(rd, .not_reddim_mat, object=object)))) {
-            msg <- c(msg, "each element of 'reducedDims' must be a matrix-like object with nrow equal to 'ncol(object)'")
-        }
-    }
-
-    # Checking dimensions of internal objects.
     if (nrow(int_elementMetadata(object))!=nrow(object)) {
         msg <- c(msg, "'nrow' of internal 'rowData' not equal to 'nrow(object)'")
     }
