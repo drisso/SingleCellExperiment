@@ -3,9 +3,12 @@
 .get_alt_experiment <- function(x, e) {
     internals <- int_colData(x)
     if (!.alt_key %in% colnames(internals)) {
-        stop("no alternative experiments in 'x'")
+        internals <- internals[,0]
+    } else {
+        internals <- internals[,.alt_key]
     }
-    out <- .get_se(internals[,.alt_key][,e])
+
+    out <- .get_se(internals[,e])
     colnames(out) <- colnames(x)
     out
 }
@@ -89,7 +92,7 @@ setMethod("altRowNames", "SingleCellExperiment", function(x, e=1) {
 #' @export
 setReplaceMethod("altExperimentNames", "SingleCellExperiment", function(x, value) {
     if (!.alt_key %in% colnames(int_colData(x)) && length(value) > 0L) {
-        stop("no alternative experiments in 'x' to rename")
+        stop("no 'altExperiments' in 'x' to rename")
     } 
     colnames(int_colData(x)[[.alt_key]]) <- value
     x
