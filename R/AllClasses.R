@@ -28,3 +28,5 @@ setClass("LinearEmbeddingMatrix",
                    NAMES = "character_OR_NULL",
                    factorData = "DataFrame"),
          contains = "Annotated")
+
+setClass("SummarizedExperimentByColumn", slots=c(se="SummarizedExperiment"))

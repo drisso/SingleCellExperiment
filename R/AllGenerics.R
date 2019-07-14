@@ -83,6 +83,44 @@ setGeneric("spikeNames", function(x) standardGeneric("spikeNames"))
 #' @export
 setGeneric("sizeFactorNames", function(object) standardGeneric("sizeFactorNames"))
 
+# Alternative experiment getter/setters.
+
+#' @export
+setGeneric("altExperiment", function(x, e) standardGeneric("altExperiment"))
+
+#' @export
+setGeneric("altExperimentNames", function(x, e) standardGeneric("altExperimentNames"))
+
+#' @export
+setGeneric("altAssays", function(x, e, ...) standardGeneric("altAssays"))
+
+#' @export
+setGeneric("altAssay", function(x, e, i, ...) standardGeneric("altAssay"))
+
+#' @export
+setGeneric("altRowData", function(x, e, ...) standardGeneric("altRowData"))
+
+#' @export
+setGeneric("altRowNames", function(x, e, ...) standardGeneric("altRowNames"))
+
+#' @export
+setGeneric("altExperiment<-", function(x, e, ..., value) standardGeneric("altExperiment<-"))
+
+#' @export
+setGeneric("altExperimentNames<-", function(x, e, ..., value) standardGeneric("altExperimentNames<-"))
+
+#' @export
+setGeneric("altAssays<-", function(x, e, ..., value) standardGeneric("altAssays<-"))
+
+#' @export
+setGeneric("altAssay<-", function(x, e, i, ..., value) standardGeneric("altAssay<-"))
+
+#' @export
+setGeneric("altRowData<-", function(x, e, ..., value) standardGeneric("altRowData<-"))
+
+#' @export
+setGeneric("altRowNames<-", function(x, e, ..., value) standardGeneric("altRowNames<-"))
+
 # Convenience assay getter/setters.
 
 #' @export
