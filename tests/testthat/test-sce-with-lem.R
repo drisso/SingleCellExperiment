@@ -1,18 +1,12 @@
 # Checks that LEM can be used inside a SCE object.
-# library(SingleCellExperiment); library(testthat); source("test-sce-with-lem.R")
-context("Test LEM in reducedDim()")
-
-set.seed(1000)
-ncells <- 100
+# library(SingleCellExperiment); library(testthat); source("setup.R"); source("test-sce-with-lem.R")
 
 factors <- matrix(rnorm(1000), ncol=10)
 loadings <- matrix(runif(10000), ncol=10)
 lem <- LinearEmbeddingMatrix(factors, loadings)
 
-v <- matrix(rnorm(20000), ncol=ncells)
-u <- matrix(rpois(20000, 5), ncol=ncells)
-
-sce <- SingleCellExperiment(assay=v, reducedDims=SimpleList(PCA=lem)) # A fully loaded object.
+sce <- loaded
+reducedDim(sce) <- lem
 
 test_that("SCE construction works correctly with LEM", {
 

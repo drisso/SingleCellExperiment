@@ -1,14 +1,7 @@
 # Checks the combining methods.
-# library(SingleCellExperiment); library(testthat); source("test-sce-combine.R")
-context("SCE combine")
+# library(SingleCellExperiment); library(testthat); source("setup.R"); source("test-sce-combine.R")
 
-set.seed(1000)
-ncells <- 100
-v <- matrix(rnorm(20000), ncol=ncells)
-pca <- matrix(runif(ncells*5), ncells)
-sce <- SingleCellExperiment(assay=v, reducedDims=SimpleList(PCA=pca)) # A fully loaded object.
-isSpike(sce, "ERCC") <- rbinom(nrow(v), 1, 0.2)==1
-sizeFactors(sce) <- 2^rnorm(ncells)
+sce <- loaded
 
 test_that("rbind works correctly", {
     shuffled <- sample(nrow(v))
@@ -33,7 +26,7 @@ test_that("rbind works correctly", {
     expect_identical(sizeFactors(sce2), sizeFactors(sce))
 
     sce.lost <- sce
-    reducedDim(sce.lost, "PCA") <- NULL
+    reducedDims(sce.lost) <- NULL
     sce2 <- rbind(sce.lost, sce)
     expect_equivalent(reducedDims(sce2), SimpleList())
     sce2 <- rbind(sce, sce.lost)
