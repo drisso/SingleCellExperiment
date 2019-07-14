@@ -34,6 +34,14 @@
 \alias{altRowNames<-}
 \alias{altRowNames<-,SingleCellExperiment-method}
 
+% Dumped here to avoid problems with CHECK.
+\alias{[,SummarizedExperimentByColumn,ANY,ANY,ANY-method}
+\alias{[<-,SummarizedExperimentByColumn,ANY,ANY,ANY-method}
+\alias{c,SummarizedExperimentByColumn-method}
+\alias{length,SummarizedExperimentByColumn-method}
+\alias{names,SummarizedExperimentByColumn-method}
+\alias{names<-,SummarizedExperimentByColumn-method}
+
 \title{Alternative experiments}
 
 \description{Store alternative \linkS4class{SummarizedExperiment} objects inside a \linkS4class{SingleCellExperiment}, containing data for a different set of features but the same samples.
@@ -48,7 +56,7 @@
 
 \S4method{altAssays}{SingleCellExperiment}(x, e=1, ...)
 
-\S4method{altAssayNames}{SingleCellExperiment}(x)
+\S4method{altAssayNames}{SingleCellExperiment}(x, e=1, ...)
 
 \S4method{altAssay}{SingleCellExperiment}(x, e=1, i=1, ...)
 

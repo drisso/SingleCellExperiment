@@ -38,6 +38,7 @@ setMethod("altExperimentNames", "SingleCellExperiment", function(x) {
 })
 
 #' @export
+#' @importFrom S4Vectors List
 #' @importClassesFrom S4Vectors SimpleList
 setMethod("altExperiments", "SingleCellExperiment", function(x) {
     if (!.alt_key %in% colnames(int_colData(x))) {
