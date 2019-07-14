@@ -16,6 +16,9 @@
 .set_alt_experiment <- function(x, e, se) {
     internals <- int_colData(x)
     if (!is.null(se)) {
+       if (!identical(ncol(se), ncol(x))) {
+           stop("replacement 'altExperiment' has a different number of columns than 'ncol(x)'")
+        }
         y <- SummarizedExperimentByColumn(se)
     } else {
         y <- NULL
@@ -99,12 +102,22 @@ setReplaceMethod("altExperimentNames", "SingleCellExperiment", function(x, value
 })
 
 #' @export
-#' @importClassesFrom S4Vectors SimpleList
+#' @importFrom S4Vectors DataFrame
 setReplaceMethod("altExperiments", "SingleCellExperiment", function(x, value) {
-    collected <- int_colData(x)[,0]
-    for (i in names(value)) {
-        collected[[i]] <- SummarizedExperimentByColumn(value[[i]])
+    if (length(value)==0L) {
+        collected <- int_colData(x)[,0]
+    } else {
+        ncols <- vapply(value, ncol, FUN.VALUE = 0L)
+        if (!all(ncols == ncol(x))) {
+            stop("elements of replacement 'altExperiments' do not have the correct number of columns")
+        }
+
+        collected <- do.call(DataFrame, lapply(value, SummarizedExperimentByColumn))
+        if (is.null(names(value))) {
+            colnames(collected) <- character(length(value))
+        }
     }
+
     int_colData(x)[[.alt_key]] <- collected
     x
 })
