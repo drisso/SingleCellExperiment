@@ -12,7 +12,11 @@
 
 .set_alt_experiment <- function(x, e, se) {
     internals <- int_colData(x)
-    y <- SummarizedExperimentByColumn(se)
+    if (!is.null(se)) {
+        y <- SummarizedExperimentByColumn(se)
+    } else {
+        y <- NULL
+    }
     if (!.alt_key %in% colnames(internals)) {
         internals[[.alt_key]] <- internals[,0]
     }

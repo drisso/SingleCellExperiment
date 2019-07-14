@@ -90,6 +90,7 @@ For other methods, these are ignored.
 For \code{altExperimentNames<-}, a character vector of length equal to the number of alternative experiments.
 
 For \code{altExperiment<-}, a SummarizedExperiment instance with number of samples equal to \code{ncol(x)}.
+Alternatively, a \code{NULL} value to remove the Experiment specified by \code{e}.
 
 For \code{altAssays<-}, a \linkS4class{Assays} object where each element has number of columns equal to \code{ncol(x)}.
 
