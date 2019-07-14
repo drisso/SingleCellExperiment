@@ -141,6 +141,10 @@ The replacement methods return a SingleCellExperiment with the same dimensions a
 Aaron Lun
 }
 
+\seealso{
+\code{\link{splitSCEByAlt}}, for a convenient way of adding alternative Experiments from existing features.
+}
+
 \examples{
 example(SingleCellExperiment, echo=FALSE) # Using the class example
 dim(counts(sce))
