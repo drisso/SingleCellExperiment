@@ -20,10 +20,9 @@ knitr::opts_chunk$set(warning=FALSE, error=FALSE, message=FALSE)
 
 By design, the scope of this package is limited to defining the `SingleCellExperiment` class and some minimal getter and setter methods.
 For this reason, we leave it to developers of specialized packages to provide more advanced methods for the `SingleCellExperiment` class.
-For example, `r Biocpkg("scater")` defines a number of specific methods such as `normalize` and `r CRANpkg("dplyr")`-like verbs.
-We also leave it to the developers of existing packages to provide coercion methods from their classes to `SingleCellExperiment`.
+If packages define their own data structure, it is their responsibility to provide coercion methods to/from their classes to `SingleCellExperiment`.
 
-The use of `SingleCellExperiment` objects inside package functions is mostly the same as the use of instances of the base `SummarizedExperiment` class.
+For developers, the use of `SingleCellExperiment` objects within package functions is mostly the same as the use of instances of the base `SummarizedExperiment` class.
 The only exceptions involve direct access to the internal fields of the `SingleCellExperiment` definition.
 Manipulation of these internal fields in other packages is possible but requires some caution, as we shall discuss below.
 
@@ -31,8 +30,8 @@ Manipulation of these internal fields in other packages is possible but requires
 
 ## Rationale
 
-We use an internal storage mechanism to protect the spike-in and size factor fields from direct manipulation by the user.
-This ensures that, e.g., only a call to `sizeFactors<-` can change the size factors.
+We use an internal storage mechanism to protect certain fields from direct manipulation by the user.
+This ensures that only a call to the provided setter methods can change the size factors.
 The same effect could be achieved by reserving a subset of columns (or column names) as "private" in `colData()` and `rowData()`, though this is not easily implemented.
 
 The internal storage avoids situations where users or functions can silently overwrite these important metadata fields during manipulations of `rowData` or `colData`.
@@ -171,6 +170,14 @@ We decided to extend `RangedSummarizedExperiment` rather than `SummarizedExperim
 Even for RNA-seq, it is sometimes useful to have `rowRanges()` and other classes to define the genomic coordinates, e.g., `DESeqDataSet` in the `r Biocpkg("DESeq2")` package.
 An alternative would have been to have two classes, `SingleCellExperiment` and `RangedSingleCellExperiment`.
 However, this seems like an unnecessary duplication as having a class with default empty `rowRanges` seems good enough when one does not need `rowRanges`.
+
+## Why not use a `MultiAssayExperiment`?
+
+Another approach to storing alternative Experiments would be to use a `MultiAssayExperiment`.
+We do not do so as the vast majority of scRNA-seq data analyses operate on the endogenous genes.
+Switching to a `MultiAssayExperiment` introduces an additional layer of indirection with no benefit in most cases.
+Indeed, the methods of this class are largely unnecessary when the alternative Experiments contain data for the same samples. 
+By storing nested Experiments, we maintain the familiar `SummarizedExperiment` interface for better compatibility and ease of use.
 
 # Session information
 

@@ -1,15 +1,26 @@
 Package: SingleCellExperiment
-Version: 1.5.2
-Date: 2018-12-16
+Version: 1.5.3
+Date: 2019-07-14
 Title: S4 Classes for Single Cell Data
 Authors@R: c(
         person("Aaron", "Lun", role=c("aut", "cph"), email="infinite.monkeys.with.keyboards@gmail.com"),
         person("Davide","Risso", role=c("aut","cre", "cph"), email="risso.davide@gmail.com"),
         person("Keegan", "Korthauer", role=c("ctb")))
 Depends: SummarizedExperiment
-Imports: S4Vectors, methods, BiocGenerics, utils, stats
-Suggests: testthat, BiocStyle, knitr, rmarkdown, scRNAseq, magrittr, 
-        Rtsne, Matrix
+Imports: 
+    S4Vectors,
+    methods,
+    BiocGenerics,
+    utils,
+    stats
+Suggests: 
+    testthat, 
+    BiocStyle, 
+    knitr, 
+    rmarkdown, 
+    scRNAseq, 
+    Rtsne, 
+    Matrix
 biocViews: ImmunoOncology, DataRepresentation, DataImport, Infrastructure, SingleCell
 Description: Defines a S4 class for storing data from single-cell
         experiments. This includes specialized methods to store and
