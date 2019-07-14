@@ -6,6 +6,7 @@ setMethod("cbind", "SingleCellExperiment", function(..., deparse.level=1) {
     base <- do.call(cbind, lapply(args, function(x) { as(x, "RangedSummarizedExperiment") }))
 
     all.col.data <- lapply(args, int_colData)
+    all.col.data$int.col.data <- TRUE
     sout <- do.call(.standardize_DataFrames, all.col.data)
     new.col.data <- do.call(rbind, sout)
 

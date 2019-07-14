@@ -29,7 +29,7 @@ setMethod("[<-", c("SingleCellExperiment", "ANY", "ANY", "SingleCellExperiment")
 
     if (!missing(j)) {
         jj <- .convert_subset_index(j, colnames(x))
-        sout <- .standardize_DataFrames(first=int_colData(x), last=int_colData(value))
+        sout <- .standardize_DataFrames(first=int_colData(x), last=int_colData(value), int.col.data=TRUE)
         sout$first[jj,] <- sout$last
         int_colData(x) <- sout$first
     }

@@ -7,7 +7,7 @@
 }
 
 #' @importFrom utils head
-.standardize_DataFrames <- function(...) {
+.standardize_DataFrames <- function(..., int.col.data=FALSE) {
     all.d <- list(...)
     all.fields <- Reduce(union, lapply(all.d, colnames))
 
@@ -21,14 +21,28 @@
         all.d[[d]] <- cur.d[,all.fields,drop=FALSE]
     }
 
-    return(all.d)
+    if (int.col.data) {
+        if (.red_key %in% all.fields) {
+            all.rd <- lapply(all.d, "[[", i=.red_key)
+            all.rd <- .standardize_reducedDims(all.rd)
+            for (d in seq_along(all.d)) {
+                all.d[[d]][[.red_key]] <- all.rd[[d]]
+            }
+        }
+        if (.alt_key %in% all.fields) {
+            all.alt <- lapply(all.d, "[[", i=.alt_key)
+            all.alt <- .standardize_altExperiments(all.alt)
+            for (d in seq_along(all.d)) {
+                all.d[[d]][[.alt_key]] <- all.alt[[d]]
+            }
+        }
+    }
+
+    all.d
 }
 
-.standardize_reducedDims <- function(...) {
-    args <- list(...)
-    all.ncells <- lapply(args, ncol)
-    all.rd <- lapply(args, reducedDims, withDimnames=FALSE)
-    all.modes <- Reduce(union, lapply(all.rd, names))
+.standardize_reducedDims <- function(all.rd) {
+    all.modes <- Reduce(union, lapply(all.rd, colnames))
 
     for (m in all.modes) {
         all.dims <- integer(length(all.rd))
@@ -51,6 +65,32 @@
     for (d in seq_along(all.rd)) {
         all.rd[[d]] <- all.rd[[d]][all.modes]
     }
-    return(all.rd)
+    all.rd
 }
 
+.standardize_altExperiments <- function(all.alt) {
+    all.modes <- Reduce(union, lapply(all.alt, colnames))
+
+    for (m in all.modes) {
+        all.dims <- integer(length(all.alt))
+        for (d in seq_along(all.alt)) {
+            current <- all.alt[[d]][[m]]
+            if (is.null(current)) {
+                stop("object ", d, " does not have '", m, "' in 'altExperiments'")
+            }
+            all.dims[d] <- nrow(.get_se(current))
+        }
+
+        # Checking consistency of dimensions between objects.
+        udim <- unique(all.dims)
+        if (length(udim)!=1) {
+            stop("dimensions of '", m, "' are not consistent between objects")
+        }
+    }
+
+    # Standardizing the order.
+    for (d in seq_along(all.alt)) {
+        all.alt[[d]] <- all.alt[[d]][all.modes]
+    }
+    all.alt
+}
