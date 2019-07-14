@@ -27,7 +27,7 @@ setMethod("reducedDims", "SingleCellExperiment", function(x, withDimnames=TRUE) 
 setReplaceMethod("reducedDims", "SingleCellExperiment", function(x, value) {
     x <- updateObject(x)
 
-    if (is.null(value) || length(value)==0L) {
+    if (length(value)==0L) {
         collected <- int_colData(x)[,0]
     } else {
         nrows <- vapply(value, nrow, FUN.VALUE = 0L)
