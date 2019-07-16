@@ -135,13 +135,13 @@ We move the corresponding rows out of the assays of the `SingleCellExperiment` a
 ```{r}
 is.spike <- grepl("^ERCC-", rownames(sce))
 sce <- splitSCEByAlt(sce, ifelse(is.spike, "ERCC", "gene"))
-altExperimentNames(sce)
+altExpNames(sce)
 ```
 
-This data is easily retrieved with the `altExperiment()` method in functions that need to use spike-in information.
+This data is easily retrieved with the `altExp()` method in functions that need to use spike-in information.
 
 ```{r}
-altExperiment(sce)
+altExp(sce)
 ```
 
 Each alternative Experiment can have a different set of assays from the `SingleCellExperiment`.
@@ -154,7 +154,7 @@ dim(altAssay(sce, i="logcounts"))
 Similarly, the alternative Experiments can have different `rowData()` from the main `SingleCellExperiment`.
 
 ```{r}
-altRowData(sce)$concentration <- runif(nrow(altExperiment(sce)))
+altRowData(sce)$concentration <- runif(nrow(altExp(sce)))
 altRowData(sce)
 rowData(sce)
 ```

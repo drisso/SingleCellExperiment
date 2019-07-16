@@ -1,4 +1,4 @@
-.alt_key <- "altExperiments"
+.alt_key <- "altExps"
 
 .get_alt_experiment <- function(x, e) {
     internals <- int_colData(x)
@@ -29,7 +29,7 @@
 # Getters.
 
 #' @export
-setMethod("altExperimentNames", "SingleCellExperiment", function(x) {
+setMethod("altExpNames", "SingleCellExperiment", function(x) {
     if (!.alt_key %in% colnames(int_colData(x))) {
         character(0)
     }  else {
@@ -40,7 +40,7 @@ setMethod("altExperimentNames", "SingleCellExperiment", function(x) {
 #' @export
 #' @importFrom S4Vectors List
 #' @importClassesFrom S4Vectors SimpleList
-setMethod("altExperiments", "SingleCellExperiment", function(x) {
+setMethod("altExps", "SingleCellExperiment", function(x) {
     if (!.alt_key %in% colnames(int_colData(x))) {
         List()
     }  else {
@@ -50,7 +50,7 @@ setMethod("altExperiments", "SingleCellExperiment", function(x) {
 })
 
 #' @export
-setMethod("altExperiment", "SingleCellExperiment", function(x, e=1) {
+setMethod("altExp", "SingleCellExperiment", function(x, e=1) {
     .get_alt_experiment(x, e)
 })
 
@@ -87,7 +87,7 @@ setMethod("altRowNames", "SingleCellExperiment", function(x, e=1) {
 # Setters.
 
 #' @export
-setReplaceMethod("altExperimentNames", "SingleCellExperiment", function(x, value) {
+setReplaceMethod("altExpNames", "SingleCellExperiment", function(x, value) {
     if (!.alt_key %in% colnames(int_colData(x)) && length(value) > 0L) {
         stop("no alternative experiments in 'x' to rename")
     } 
@@ -97,7 +97,7 @@ setReplaceMethod("altExperimentNames", "SingleCellExperiment", function(x, value
 
 #' @export
 #' @importClassesFrom S4Vectors SimpleList
-setReplaceMethod("altExperiments", "SingleCellExperiment", function(x, value) {
+setReplaceMethod("altExps", "SingleCellExperiment", function(x, value) {
     collected <- int_colData(x)[,0]
     for (i in names(value)) {
         collected[[i]] <- SummarizedExperimentByColumn(value[[i]])
@@ -107,7 +107,7 @@ setReplaceMethod("altExperiments", "SingleCellExperiment", function(x, value) {
 })
 
 #' @export
-setReplaceMethod("altExperiment", "SingleCellExperiment", function(x, e=1, ..., value) 
+setReplaceMethod("altExp", "SingleCellExperiment", function(x, e=1, ..., value) 
     .set_alt_experiment(x, e, value)
 )
 

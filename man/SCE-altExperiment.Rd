@@ -1,11 +1,11 @@
-\name{altExperiment}
+\name{altExp}
 
-\alias{altExperiment}
-\alias{altExperiment,SingleCellExperiment-method}
-\alias{altExperiments}
-\alias{altExperiments,SingleCellExperiment-method}
-\alias{altExperimentNames}
-\alias{altExperimentNames,SingleCellExperiment-method}
+\alias{altExp}
+\alias{altExp,SingleCellExperiment-method}
+\alias{altExps}
+\alias{altExps,SingleCellExperiment-method}
+\alias{altExpNames}
+\alias{altExpNames,SingleCellExperiment-method}
 \alias{altAssays}
 \alias{altAssays,SingleCellExperiment-method}
 \alias{altAssayNames}
@@ -17,12 +17,12 @@
 \alias{altRowNames}
 \alias{altRowNames,SingleCellExperiment-method}
 
-\alias{altExperiment<-}
-\alias{altExperiment<-,SingleCellExperiment-method}
-\alias{altExperiments<-}
-\alias{altExperiments<-,SingleCellExperiment-method}
-\alias{altExperimentNames<-}
-\alias{altExperimentNames<-,SingleCellExperiment-method}
+\alias{altExp<-}
+\alias{altExp<-,SingleCellExperiment-method}
+\alias{altExps<-}
+\alias{altExps<-,SingleCellExperiment-method}
+\alias{altExpNames<-}
+\alias{altExpNames<-,SingleCellExperiment-method}
 \alias{altAssays<-}
 \alias{altAssays<-,SingleCellExperiment-method}
 \alias{altAssayNames<-}
@@ -48,11 +48,11 @@
 }
 
 \usage{
-\S4method{altExperiments}{SingleCellExperiment}(x)
+\S4method{altExps}{SingleCellExperiment}(x)
 
-\S4method{altExperimentNames}{SingleCellExperiment}(x)
+\S4method{altExpNames}{SingleCellExperiment}(x)
 
-\S4method{altExperiment}{SingleCellExperiment}(x, e=1)
+\S4method{altExp}{SingleCellExperiment}(x, e=1)
 
 \S4method{altAssays}{SingleCellExperiment}(x, e=1, ...)
 
@@ -64,11 +64,11 @@
 
 \S4method{altRowNames}{SingleCellExperiment}(x, e=1)
 
-\S4method{altExperiments}{SingleCellExperiment}(x) <- value
+\S4method{altExps}{SingleCellExperiment}(x) <- value
 
-\S4method{altExperimentNames}{SingleCellExperiment}(x) <- value
+\S4method{altExpNames}{SingleCellExperiment}(x) <- value
 
-\S4method{altExperiment}{SingleCellExperiment}(x, e=1, ...) <- value
+\S4method{altExp}{SingleCellExperiment}(x, e=1, ...) <- value
 
 \S4method{altAssays}{SingleCellExperiment}(x, e=1, ...) <- value
 
@@ -107,12 +107,12 @@ For other methods, these are ignored.
 }
 \item{value}{An appropriate replacement value.
 
-For \code{altExperimentNames<-}, a character vector of length equal to the number of alternative experiments.
+For \code{altExpNames<-}, a character vector of length equal to the number of alternative experiments.
 
-For \code{altExperiments<-}, a named list-like object where each element is a \linkS4class{SummarizedExperiment} object with the same number of rows.
+For \code{altExps<-}, a named list-like object where each element is a \linkS4class{SummarizedExperiment} object with the same number of rows.
 Alternatively, a \code{NULL} value to remove all alternativeExperiments from \code{x}.
 
-For \code{altExperiment<-}, a SummarizedExperiment instance with number of samples equal to \code{ncol(x)}.
+For \code{altExp<-}, a SummarizedExperiment instance with number of samples equal to \code{ncol(x)}.
 Alternatively, a \code{NULL} value to remove the Experiment specified by \code{e}.
 
 For \code{altAssays<-}, a \linkS4class{Assays} object where each element has number of columns equal to \code{ncol(x)}.
@@ -144,11 +144,11 @@ Column-level metadata should rightfully be stored in the \code{colData} of the \
 }
 
 \value{
-\code{altExperimentNames} returns a character vector of names for the alternative Experiments.
+\code{altExpNames} returns a character vector of names for the alternative Experiments.
 
-\code{altExperiments} returns a named \linkS4class{SimpleList} of SummarizedExperiment objects.
+\code{altExps} returns a named \linkS4class{SimpleList} of SummarizedExperiment objects.
 
-\code{altExperiment} returns a SummarizedExperiment instance or a subclass thereof.
+\code{altExp} returns a SummarizedExperiment instance or a subclass thereof.
 
 \code{altAssays} returns a \linkS4class{Assays} instance. 
 
@@ -182,22 +182,22 @@ se2 <- SummarizedExperiment(matrix(rpois(500, 5), ncol=ncol(se)))
 rowData(se2)$blah <- sample(letters, nrow(se2), replace=TRUE)
 
 # Setting the alternative Experiments.
-altExperiment(sce, "spike-in") <- se1
-altExperiment(sce, "CRISPR") <- se2
+altExp(sce, "spike-in") <- se1
+altExp(sce, "CRISPR") <- se2
 altRowNames(sce, 2) <- paste0("TAG_", seq_len(nrow(se2)))
 
 # Getting alternative Experimental data.
-altExperimentNames(sce)
-altExperiment(sce, "spike-in")
-altExperiment(sce, 2)
+altExpNames(sce)
+altExp(sce, "spike-in")
+altExp(sce, 2)
 
 altAssay(sce, "CRISPR", 1)
 altRowData(sce, "CRISPR")
 altRowNames(sce, "CRISPR")
 
 # Setting alternative Experimental data.
-altExperimentNames(sce) <- c("ERCC", "Ab")
-altExperiment(sce, "ERCC") <- se1[1:2,]
+altExpNames(sce) <- c("ERCC", "Ab")
+altExp(sce, "ERCC") <- se1[1:2,]
 
 altAssay(sce, "Ab", 2) <- matrix(rnorm(500), ncol=ncol(se2))
 altRowData(sce, "Ab")$blah <- toupper(altRowData(sce, "Ab")$blah)

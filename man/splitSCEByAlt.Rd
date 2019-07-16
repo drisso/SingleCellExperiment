@@ -16,7 +16,7 @@ splitSCEByAlt(x, f, ref=NULL)
 
 \value{
 A SingleCellExperiment where each row corresponds to a feature in the main set.
-Each other feature type is stored as an alternative Experiment, accessible by \code{\link{altExperiment}}.
+Each other feature type is stored as an alternative Experiment, accessible by \code{\link{altExp}}.
 }    
 
 \details{
@@ -31,7 +31,7 @@ Aaron Lun
 }
 
 \seealso{
-\code{\link{altExperiment}}, to access and manipulate the alternative Experiment fields.
+\code{\link{altExp}}, to access and manipulate the alternative Experiment fields.
 }
 
 \examples{

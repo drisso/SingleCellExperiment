@@ -1,16 +1,16 @@
-# Tests for proper functioning of the altExperiment methods.
-# library(SingleCellExperiment); library(testthat); source("setup.R"); source("test-sce-altExperiment.R")
+# Tests for proper functioning of the altExp methods.
+# library(SingleCellExperiment); library(testthat); source("setup.R"); source("test-sce-altExp.R")
 
 sce <- loaded
 
-test_that("altExperiment getters work correctly", {
-    expect_identical(altExperiment(sce), se1)
-    expect_identical(altExperiment(sce, 2), se2)
-    expect_identical(altExperiment(sce, "Protein"), se2)
-    expect_error(altExperiment(empty), "no alternative experiments")
+test_that("altExp getters work correctly", {
+    expect_identical(altExp(sce), se1)
+    expect_identical(altExp(sce, 2), se2)
+    expect_identical(altExp(sce, "Protein"), se2)
+    expect_error(altExp(empty), "no alternative experiments")
 
-    expect_identical(altExperiments(sce), List(Spike=se1, Protein=se2))
-    expect_identical(altExperimentNames(sce), c("Spike", "Protein"))
+    expect_identical(altExps(sce), List(Spike=se1, Protein=se2))
+    expect_identical(altExpNames(sce), c("Spike", "Protein"))
 
     expect_identical(altAssay(sce), assay(se1))
     expect_identical(altAssay(sce, i=2), assay(se1, 2))
@@ -30,41 +30,41 @@ test_that("altExperiment getters work correctly", {
     expect_identical(altRowNames(sce, "Protein"), rownames(se2))
 })
 
-test_that("altExperiment setters work correctly", {
+test_that("altExp setters work correctly", {
     se3 <- se2
     assay(se3) <- assay(se3) + 1
-    altExperiment(sce) <- se3
+    altExp(sce) <- se3
 
-    expect_identical(altExperiment(sce), se3)
-    expect_identical(altExperiment(sce, 1), se3)
-    expect_identical(altExperiment(sce, "Spike"), se3)
+    expect_identical(altExp(sce), se3)
+    expect_identical(altExp(sce, 1), se3)
+    expect_identical(altExp(sce, "Spike"), se3)
 
-    altExperiment(sce, 2) <- se3
-    expect_identical(altExperiment(sce, 2), se3)
-    expect_identical(altExperiment(sce, "Protein"), se3)
+    altExp(sce, 2) <- se3
+    expect_identical(altExp(sce, 2), se3)
+    expect_identical(altExp(sce, "Protein"), se3)
 
-    altExperiment(sce, 1) <- NULL
-    expect_identical(altExperimentNames(sce), "Protein")
-    altExperiment(sce, 1) <- NULL
-    expect_identical(altExperimentNames(sce), character(0))
+    altExp(sce, 1) <- NULL
+    expect_identical(altExpNames(sce), "Protein")
+    altExp(sce, 1) <- NULL
+    expect_identical(altExpNames(sce), character(0))
 
-    expect_error(altExperiment(sce, 5) <- se3, "out of bounds")
+    expect_error(altExp(sce, 5) <- se3, "out of bounds")
 })
 
-test_that("altExperiments setters work correctly", {
-    altExperiments(sce) <- NULL
-    expect_identical(unname(altExperiments(sce)), List())
-    altExperiments(sce) <- list(whee=se1, blah=se2)
-    expect_identical(altExperimentNames(sce), c("whee", "blah"))
-    expect_identical(altExperiment(sce,1), se1)
+test_that("altExps setters work correctly", {
+    altExps(sce) <- NULL
+    expect_identical(unname(altExps(sce)), List())
+    altExps(sce) <- list(whee=se1, blah=se2)
+    expect_identical(altExpNames(sce), c("whee", "blah"))
+    expect_identical(altExp(sce,1), se1)
 })
 
-test_that("altExperimentNames setters work correctly", {
-    altExperimentNames(sce) <- c("A", "B")
-    expect_identical(altExperimentNames(sce), c("A", "B"))
+test_that("altExpNames setters work correctly", {
+    altExpNames(sce) <- c("A", "B")
+    expect_identical(altExpNames(sce), c("A", "B"))
 
-    expect_error(altExperimentNames(empty) <- c("A", "B"), "no alternative experiments")
-    expect_error(altExperimentNames(sce) <- LETTERS, "more column names")
+    expect_error(altExpNames(empty) <- c("A", "B"), "no alternative experiments")
+    expect_error(altExpNames(sce) <- LETTERS, "more column names")
 })
 
 test_that("altAssay setters work correctly", {
@@ -125,13 +125,13 @@ test_that("splitSCEByAlt works correctly", {
      out <- splitSCEByAlt(empty, feat.type)
 
      expect_identical(assay(out), assay(empty[feat.type=="endog",]))
-     expect_identical(altExperiment(out, "ERCC"), empty[feat.type=="ERCC",])
-     expect_identical(altExperiment(out, "CITE"), empty[feat.type=="CITE",])
+     expect_identical(altExp(out, "ERCC"), empty[feat.type=="ERCC",])
+     expect_identical(altExp(out, "CITE"), empty[feat.type=="CITE",])
 
      # Handles alternative reference. 
      out <- splitSCEByAlt(empty, feat.type, ref="ERCC")
 
      expect_identical(assay(out), assay(empty[feat.type=="ERCC",]))
-     expect_identical(altExperiment(out, "endog"), empty[feat.type=="endog",])
-     expect_identical(altExperiment(out, "CITE"), empty[feat.type=="CITE",])
+     expect_identical(altExp(out, "endog"), empty[feat.type=="endog",])
+     expect_identical(altExp(out, "CITE"), empty[feat.type=="CITE",])
 })

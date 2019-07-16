@@ -86,13 +86,13 @@ setGeneric("sizeFactorNames", function(object) standardGeneric("sizeFactorNames"
 # Alternative experiment getter/setters.
 
 #' @export
-setGeneric("altExperiment", function(x, ...) standardGeneric("altExperiment"))
+setGeneric("altExp", function(x, ...) standardGeneric("altExp"))
 
 #' @export
-setGeneric("altExperiments", function(x, ...) standardGeneric("altExperiments"))
+setGeneric("altExps", function(x, ...) standardGeneric("altExps"))
 
 #' @export
-setGeneric("altExperimentNames", function(x, ...) standardGeneric("altExperimentNames"))
+setGeneric("altExpNames", function(x, ...) standardGeneric("altExpNames"))
 
 #' @export
 setGeneric("altAssays", function(x, ...) standardGeneric("altAssays"))
@@ -110,13 +110,13 @@ setGeneric("altRowData", function(x, ...) standardGeneric("altRowData"))
 setGeneric("altRowNames", function(x, ...) standardGeneric("altRowNames"))
 
 #' @export
-setGeneric("altExperiment<-", function(x, ..., value) standardGeneric("altExperiment<-"))
+setGeneric("altExp<-", function(x, ..., value) standardGeneric("altExp<-"))
 
 #' @export
-setGeneric("altExperiments<-", function(x, ..., value) standardGeneric("altExperiments<-"))
+setGeneric("altExps<-", function(x, ..., value) standardGeneric("altExps<-"))
 
 #' @export
-setGeneric("altExperimentNames<-", function(x, ..., value) standardGeneric("altExperimentNames<-"))
+setGeneric("altExpNames<-", function(x, ..., value) standardGeneric("altExpNames<-"))
 
 #' @export
 setGeneric("altAssays<-", function(x, ..., value) standardGeneric("altAssays<-"))

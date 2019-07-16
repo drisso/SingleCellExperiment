@@ -7,7 +7,7 @@ splitSCEByAlt <- function(x, f, ref=NULL) {
 
     x0 <- x[by.feat[[ref]],]
     for (other in setdiff(names(by.feat), ref)) {
-        altExperiment(x0, other) <- x[by.feat[[other]],]
+        altExp(x0, other) <- x[by.feat[[other]],]
     }
     x0
 }
