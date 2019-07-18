@@ -1,0 +1,73 @@
+.alt_key <- "altExps"
+
+#############################
+# Getters.
+
+#' @export
+setMethod("altExpNames", "SingleCellExperiment", function(x) {
+    if (!.alt_key %in% colnames(int_colData(x))) {
+        character(0)
+    }  else {
+        colnames(int_colData(x)[[.alt_key]]) 
+    }
+})
+
+#' @export
+#' @importFrom S4Vectors List
+#' @importClassesFrom S4Vectors SimpleList
+setMethod("altExps", "SingleCellExperiment", function(x) {
+    if (!.alt_key %in% colnames(int_colData(x))) {
+        List()
+    }  else {
+        out <- lapply(int_colData(x)[[.alt_key]], .get_se)
+        as(out, "SimpleList")
+    }
+})
+
+#' @export
+setMethod("altExp", "SingleCellExperiment", function(x, e=1) {
+    internals <- int_colData(x)
+    if (!.alt_key %in% colnames(internals)) {
+        stop("no alternative experiments in 'x'")
+    }
+    out <- .get_se(internals[,.alt_key][,e])
+    colnames(out) <- colnames(x)
+    out
+})
+
+#############################
+# Setters.
+
+#' @export
+setReplaceMethod("altExpNames", "SingleCellExperiment", function(x, value) {
+    if (!.alt_key %in% colnames(int_colData(x)) && length(value) > 0L) {
+        stop("no alternative experiments in 'x' to rename")
+    } 
+    colnames(int_colData(x)[[.alt_key]]) <- value
+    x
+})
+
+#' @export
+#' @importClassesFrom S4Vectors SimpleList
+setReplaceMethod("altExps", "SingleCellExperiment", function(x, value) {
+    collected <- int_colData(x)[,0]
+    for (i in names(value)) {
+        collected[[i]] <- SummarizedExperimentByColumn(value[[i]])
+    }
+    int_colData(x)[[.alt_key]] <- collected
+    x
+})
+
+#' @export
+setReplaceMethod("altExp", "SingleCellExperiment", function(x, e=1, ..., value) {
+    internals <- int_colData(x)
+    if (!is.null(value)) {
+        value <- SummarizedExperimentByColumn(value)
+    }
+    if (!.alt_key %in% colnames(internals)) {
+        internals[[.alt_key]] <- internals[,0]
+    }
+    internals[[.alt_key]][[e]] <- value
+    int_colData(x) <- internals
+    x
+})

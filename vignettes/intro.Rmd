@@ -130,7 +130,7 @@ These are nested `SummarizedExperiment` instances that are guaranteed to have th
 Data for endogenous genes and other features can thus be kept separate, which is often desirable as they need to be processed differently.
 
 To illustrate, consider the case of the spike-in transcripts in the Allen data. 
-We move the corresponding rows out of the assays of the `SingleCellExperiment` and into a nested `SummarizedExperiment` object.
+We move the corresponding rows out of the assays of the main `SingleCellExperiment` and into a nested alternative Experiment.
 
 ```{r}
 is.spike <- grepl("^ERCC-", rownames(sce))
@@ -138,24 +138,19 @@ sce <- splitSCEByAlt(sce, ifelse(is.spike, "ERCC", "gene"))
 altExpNames(sce)
 ```
 
-This data is easily retrieved with the `altExp()` method in functions that need to use spike-in information.
+The `altExp()` method returns a self-contained `SingleCellExperiment` instance containing only the spike-in transcripts.
 
 ```{r}
 altExp(sce)
 ```
 
-Each alternative Experiment can have a different set of assays from the `SingleCellExperiment`.
+Each alternative Experiment can have a different set of assays from the main `SingleCellExperiment`.
 This is useful in cases where the other feature types must be normalized or transformed differently.
+Similarly, the alternative Experiments can have different `rowData()` from the main object.
 
 ```{r}
-dim(altAssay(sce, i="logcounts"))
-```
-
-Similarly, the alternative Experiments can have different `rowData()` from the main `SingleCellExperiment`.
-
-```{r}
-altRowData(sce)$concentration <- runif(nrow(altExp(sce)))
-altRowData(sce)
+rowData(altExp(sce))$concentration <- runif(nrow(altExp(sce)))
+rowData(altExp(sce))
 rowData(sce)
 ```
 
