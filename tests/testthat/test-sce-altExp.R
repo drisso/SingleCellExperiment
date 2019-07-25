@@ -9,8 +9,16 @@ test_that("altExp getters work correctly", {
     expect_identical(altExp(sce, "Protein"), se2)
     expect_error(altExp(empty), "no alternative experiments")
 
-    expect_identical(altExps(sce), List(Spike=se1, Protein=se2))
+    expect_identical(altExps(sce, withColData=FALSE), List(Spike=se1, Protein=se2))
     expect_identical(altExpNames(sce), c("Spike", "Protein"))
+
+    # Carries over colData.
+    colData(sce)$stuff <- runif(ncol(sce))
+    expect_identical(sce$stuff, altExp(sce)$stuff)
+    expect_identical(NULL, altExp(sce, withColData=FALSE)$stuff)
+
+    expect_identical(sce$stuff, altExps(sce)[[1]]$stuff)
+    expect_identical(NULL, altExps(sce, withColData=FALSE)[[1]]$stuff)
 })
 
 test_that("altExp setters work correctly", {

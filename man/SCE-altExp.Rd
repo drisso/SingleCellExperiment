@@ -28,11 +28,11 @@
 }
 
 \usage{
-\S4method{altExps}{SingleCellExperiment}(x)
+\S4method{altExps}{SingleCellExperiment}(x, withColData=TRUE)
 
 \S4method{altExpNames}{SingleCellExperiment}(x)
 
-\S4method{altExp}{SingleCellExperiment}(x, e=1)
+\S4method{altExp}{SingleCellExperiment}(x, e=1, withColData=TRUE)
 
 \S4method{altExps}{SingleCellExperiment}(x) <- value
 
@@ -43,6 +43,7 @@
 
 \arguments{
 \item{x}{A \linkS4class{SingleCellExperiment} object.}
+\item{withColData}{Logical scalar indicating whether the column metadata of \code{x} should replace that of the output object.}
 \item{e}{An integer scalar or string specifying the alternative experiment to get or set.}
 \item{...}{Ignored.}
 \item{value}{An appropriate replacement value.
@@ -68,8 +69,9 @@ To facilitate this, the \linkS4class{SingleCellExperiment} allows for \dQuote{al
 This stores nested \linkS4class{SummarizedExperiment}-class objects inside a SingleCellExperiment object \code{x}, in a manner that guarantees that the nested objects have the same columns in the same order as those in \code{x}.
 Methods are provided to enable convenient access to and manipulation of these alternative Experiments.
 
-Note that an \code{altColData} method is \emph{not} provided.
-Column-level metadata should rightfully be stored in the \code{colData} of the \linkS4class{SingleCellExperiment}, given that the same set of samples is shared across the main and nested Experiment objects.
+By default, \code{withColData=TRUE} will replace the column metadata in each alternative Experiment with that from the main object \code{x} during access to the former.
+This is based on the rationale that relevant column metadata should be stored in \code{colData(x)}, given that samples are shared across the main and alternative Experiments.
+Users can set this to \code{FALSE} for efficiency if they are not interested in copying the column metadata, or in the rarer case where the alternative Experiment has its own column metadata fields that are of interest.
 }
 
 \value{

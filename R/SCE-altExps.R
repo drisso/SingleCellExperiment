@@ -15,22 +15,30 @@ setMethod("altExpNames", "SingleCellExperiment", function(x) {
 #' @export
 #' @importFrom S4Vectors List
 #' @importClassesFrom S4Vectors SimpleList
-setMethod("altExps", "SingleCellExperiment", function(x) {
+setMethod("altExps", "SingleCellExperiment", function(x, withColData=TRUE) {
     if (!.alt_key %in% colnames(int_colData(x))) {
         List()
     }  else {
         out <- lapply(int_colData(x)[[.alt_key]], .get_se)
+        if (withColData) {
+            for (i in seq_along(out)) {
+                colData(out[[i]]) <- colData(x)
+            }
+        }
         as(out, "SimpleList")
     }
 })
 
 #' @export
-setMethod("altExp", "SingleCellExperiment", function(x, e=1) {
+setMethod("altExp", "SingleCellExperiment", function(x, e=1, withColData=TRUE) {
     internals <- int_colData(x)
     if (!.alt_key %in% colnames(internals)) {
         stop("no alternative experiments in 'x'")
     }
     out <- .get_se(internals[,.alt_key][,e])
+    if (withColData) {
+        colData(out) <- colData(x)
+    }
     colnames(out) <- colnames(x)
     out
 })
