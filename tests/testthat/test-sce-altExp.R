@@ -48,6 +48,12 @@ test_that("altExps setters work correctly", {
     altExps(sce) <- list(whee=se1, blah=se2)
     expect_identical(altExpNames(sce), c("whee", "blah"))
     expect_identical(altExp(sce,1), se1)
+    
+    # Works without names.
+    altExps(sce) <- list(se1, se2)
+    expect_identical(altExpNames(sce), character(2))
+    expect_identical(altExp(sce,1), se1)
+    expect_identical(altExp(sce,2), se2)
 })
 
 test_that("altExpNames setters work correctly", {
@@ -55,6 +61,7 @@ test_that("altExpNames setters work correctly", {
     expect_identical(altExpNames(sce), c("A", "B"))
 
     expect_error(altExpNames(empty) <- c("A", "B"), "no alternative experiments")
+    expect_error(altExpNames(empty) <- NULL, NA) # coerces the character.
     expect_error(altExpNames(sce) <- LETTERS, "more column names")
 })
 
