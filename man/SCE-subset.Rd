@@ -35,8 +35,12 @@ For \code{[<-}, a modified SingleCellExperiment object is returned.
 
 \details{
 Subsetting yields a SingleCellExperiment object containing the specified rows (features) and columns (cells).
-Internal row and column metadata fields will also be subsetted so that methods such as \code{\link{isSpike}} are still valid.
-If column subsetting is performed, values of the \code{reducedDims} will be modified to retain only the selected cells.
+\itemize{
+\item If column subsetting is performed, dimensionality reduction results in \code{\link{reducedDims}} will be modified to retain only the selected cells.
+The same applies for any alternative experiments in \code{\link{altExps}}, and size factors in \code{\link{sizeFactors}}.
+\item Row subsetting will not affect \code{\link{reducedDims}}, \code{\link{sizeFactors}} or \code{\link{altExps}} fields.
+In the case of \code{\link{altExps}}, it should be stressed that row subsetting of the SingleCellExperiment only affects features in the main assays, hence the lack of any change to features in alternative Experiments.
+}
 
 Subset assignment will replace the assay values and metadata of the specified rows or columns in \code{x} with those in \code{value}.
 If both \code{i} and \code{j} are set, the relevant block of assay values will be replaced, along with the metadata for the affected rows and columns.
