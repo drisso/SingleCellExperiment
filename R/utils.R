@@ -31,7 +31,7 @@
         }
         if (.alt_key %in% all.fields) {
             all.alt <- lapply(all.d, "[[", i=.alt_key)
-            all.alt <- .standardize_altExperiments(all.alt)
+            all.alt <- .standardize_altExps(all.alt)
             for (d in seq_along(all.d)) {
                 all.d[[d]][[.alt_key]] <- all.alt[[d]]
             }
@@ -68,7 +68,7 @@
     all.rd
 }
 
-.standardize_altExperiments <- function(all.alt) {
+.standardize_altExps <- function(all.alt) {
     all.modes <- Reduce(union, lapply(all.alt, colnames))
 
     for (m in all.modes) {
@@ -76,7 +76,7 @@
         for (d in seq_along(all.alt)) {
             current <- all.alt[[d]][[m]]
             if (is.null(current)) {
-                stop("object ", d, " does not have '", m, "' in 'altExperiments'")
+                stop("object ", d, " does not have '", m, "' in 'altExps'")
             }
             all.dims[d] <- nrow(.get_se(current))
         }

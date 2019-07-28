@@ -11,21 +11,21 @@
 
 #' @export
 setMethod("isSpike", c("SingleCellExperiment", "character"), function(x, type) {
-    .Deprecated(new="altExperiment")
+    .Deprecated()
     field <- .get_spike_field(type)
     return(int_elementMetadata(x)[[field]])
 })
 
 for (sig in c("missing", "NULL")){
     setMethod("isSpike", c("SingleCellExperiment", sig), function(x, type) {
-        .Deprecated(new="altExperiment")
+        .Deprecated()
         return(int_elementMetadata(x)[[.spike_field]])
     })
 }
 
 #' @export
 setReplaceMethod("isSpike", c("SingleCellExperiment", "character"), function(x, type, ..., value) {
-    .Deprecated(new="altExperiment")
+    .Deprecated()
     md <- int_metadata(x)
     rd <- int_elementMetadata(x)
     field <- .get_spike_field(type)
