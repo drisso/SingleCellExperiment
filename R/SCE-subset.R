@@ -14,24 +14,37 @@ setMethod("[", c("SingleCellExperiment", "ANY", "ANY"), function(x, i, j, ..., d
 })
 
 #' @export
+#' @importClassesFrom SummarizedExperiment SummarizedExperiment
+#' @importFrom SummarizedExperiment rowData colData
 setMethod("[<-", c("SingleCellExperiment", "ANY", "ANY", "SingleCellExperiment"), function(x, i, j, ..., value) {
     if (missing(i) && missing(j)) {
-        int_elementMetadata(x) <- int_elementMetadata(value)
-        int_colData(x) <- int_colData(value)
+        return(value)
     }
 
     if (!missing(i)) {
+        left <- .create_shell_rowdata(x)
+        right <- .create_shell_rowdata(value)
         ii <- .convert_subset_index(i, rownames(x))
-        sout <- .standardize_DataFrames(first=int_elementMetadata(x), last=int_elementMetadata(value))
-        sout$first[ii,] <- sout$last
-        int_elementMetadata(x) <- sout$first
+
+        tryCatch({
+            left[ii,] <- right
+        }, error=function(err) {
+            stop("failed to replace 'int_elementMetadata'")
+        })
+        int_elementMetadata(x) <- rowData(left)
     }
 
     if (!missing(j)) {
+        left <- .create_shell_coldata(x)
+        right <- .create_shell_coldata(value)
         jj <- .convert_subset_index(j, colnames(x))
-        sout <- .standardize_DataFrames(first=int_colData(x), last=int_colData(value), int.col.data=TRUE)
-        sout$first[jj,] <- sout$last
-        int_colData(x) <- sout$first
+
+        tryCatch({
+            left[,jj] <- right
+        }, error=function(err) {
+            stop("failed to replace 'int_colData'")
+        })
+        int_colData(x) <- colData(left)
     }
 
     int_metadata(x) <- int_metadata(value)

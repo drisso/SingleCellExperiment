@@ -73,7 +73,7 @@ test_that("subsetting by column works correctly", {
     expect_error(sce[,"A"], "index out of bounds: A")
 })
 
-test_that("subset replacement by row works correctly", {
+test_that("subset replacement by row works correctly for basic cases", {
     sce.alt <- sce
     rownames(sce.alt) <- paste0(rownames(sce), "x")
     SingleCellExperiment:::int_metadata(sce.alt)$whee <- 1
@@ -87,24 +87,28 @@ test_that("subset replacement by row works correctly", {
     expect_equivalent(assay(scex)[-to,,drop=FALSE], assay(sce)[-to,,drop=FALSE])
     expect_identical(isSpike(scex)[to], isSpike(sce)[from])
     expect_identical(isSpike(scex)[-to], isSpike(sce)[-to])
-    expect_identical(SingleCellExperiment:::int_metadata(scex), SingleCellExperiment:::int_metadata(sce))
+    expect_identical(int_metadata(scex), int_metadata(sce))
     expect_identical(sizeFactors(scex), sizeFactors(sce))
 
-    scex2 <- sce.alt
-    isSpike(scex2, "ERCC") <- NULL
-    expect_error(scex2[to,] <- sce[from,], "DataFrame 1 does not have 'is_spike_ERCC', 'is_spike'")
-    scex2 <- scex3 <- sce.alt
-    isSpike(scex3, "ERCC") <- NULL
-    expect_error(scex2[to,] <- scex3[from,], "DataFrame 2 does not have 'is_spike_ERCC', 'is_spike'")
-
-    scex2 <- sce.alt # Again for character
+    # Again for character
+    scex2 <- sce.alt 
     to <- rownames(scex2)[1:10]
     from <- rownames(sce)[21:30]
     scex2[to,] <- sce[from,]
     expect_equal(scex, scex2)
 })
 
-test_that("subset replacement by column works correctly", {
+test_that("subset replacement by row handles internal fields correctly", {
+    to <- 1:10
+    from <- 21:30
+
+    # Handles mismatch.
+    scex2 <- sce
+    isSpike(scex2, "ERCC") <- NULL
+    expect_error(scex2[to,] <- sce[from,], "'int_elementMetadata'")
+})
+
+test_that("subset replacement by column works correctly for basic cases", {
     sce.alt <- sce
     colnames(sce.alt) <- paste0(colnames(sce), "x")
 
@@ -119,31 +123,53 @@ test_that("subset replacement by column works correctly", {
     expect_identical(sizeFactors(scex)[-to], sizeFactors(sce)[-to])
     expect_identical(SingleCellExperiment:::int_metadata(scex), SingleCellExperiment:::int_metadata(sce))
     expect_identical(isSpike(scex), isSpike(sce))
+})
 
-    scex2 <- sce.alt
-    sizeFactors(scex2) <- NULL
-    expect_error(scex2[,to] <- sce[,from], "DataFrame 1 does not have 'size_factor'")
-    scex2 <- scex3 <- sce.alt
-    sizeFactors(scex3) <- NULL
-    expect_error(scex2[,to] <- scex3[,from], "DataFrame 2 does not have 'size_factor'")
-    scex2 <- sce.alt
-    reducedDim(scex2, "PCA") <- NULL
-    expect_error(scex2[,to] <- sce[,from], "object 1 does not have 'PCA' in 'reducedDims'")
+test_that("subset replacement by column handles internal fields", {
+    to <- 1:10
+    from <- 21:30
 
-    scex2 <- sce.alt # Again for character
-    to <- colnames(scex2)[1:10]
-    from <- colnames(sce)[21:30]
-    scex2[,to] <- sce[,from]
-    expect_equal(scex, scex2)
+    # Handles mismatch.
+    scex2 <- sce
+    reducedDims(scex2) <- NULL
+    expect_error(scex2[,to] <- sce[,from], "'int_colData'")
+
+    # Respects missing vs empty internal nested fields. 
+    empty1 <- sce
+    empty2 <- sce
+    int_colData(empty1) <- int_colData(empty1)[,0]
+    int_colData(empty2) <- int_colData(empty2)[,0]
+    int_colData(empty2)$reducedDims <- int_colData(empty2)[,0]
+    int_colData(empty2)$altExps <- int_colData(empty2)[,0]
+
+    before <- empty1
+    empty1[,to] <- empty2[,from]
+    expect_identical(int_colData(empty1), int_colData(empty2))
 })
 
 test_that("subset replacement by both rows and columns work correctly", {
+    # Wholesale replacement!
     sce.alt <- sce
     rownames(sce.alt) <- paste0(rownames(sce), "x")
     colnames(sce.alt) <- paste0(colnames(sce), "x")
-    SingleCellExperiment:::int_metadata(sce.alt)$whee <- 1
+    int_metadata(sce.alt)$whee <- 1
 
     scex <- sce.alt
     scex[] <- sce
     expect_equal(scex, sce)
+
+    # Partial replacement.
+    to <- 1:10
+    from <- 21:30
+
+    scex <- sce.alt
+    scex[to,to] <- sce[from,from]
+    
+    ref <- sce.alt
+    ref[to,] <- sce[from,]
+    expect_identical(int_elementMetadata(ref), int_elementMetadata(scex))
+
+    ref <- sce.alt
+    ref[,to] <- sce[,from]
+    expect_identical(int_colData(ref), int_colData(scex))
 })

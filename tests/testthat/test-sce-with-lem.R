@@ -71,8 +71,7 @@ test_that("cbind works correctly", {
 
     sce.err <- sce
     reducedDim(sce.err, "PCA") <- NULL
-    expect_error(cbind(sce.err, sce), "object 1 does not have 'PCA' in 'reducedDims'")
-    expect_error(cbind(sce, sce.err), "object 2 does not have 'PCA' in 'reducedDims'")
+    expect_error(cbind(sce.err, sce), "'int_colData'")
 
     sce.err <- sce
     reducedDim(sce.err, "PCA") <- sampleFactors(reducedDim(sce.err, "PCA"))
