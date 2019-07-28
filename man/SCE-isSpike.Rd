@@ -18,7 +18,7 @@
 \description{Gets or sets the rows corresponding to spike-in transcripts.
 
 \strong{Note:} these methods have been deprecated in favour of storing spike-in information as alternative Experiments,
-see \code{\link{altExperiments}} for details.
+see \code{\link{altExps}} for details.
 }
 
 \usage{
