@@ -1,0 +1,44 @@
+\name{splitSCEByAlt}
+\alias{splitSCEByAlt}
+
+\title{Split by alternative features}
+\description{Split a \linkS4class{SingleCellExperiment} based on the feature type, creating alternative Experiments to hold features other than the main set.}
+
+\usage{
+splitSCEByAlt(x, f, ref=NULL)
+}
+
+\arguments{
+    \item{x}{A \linkS4class{SingleCellExperiment} object.}
+    \item{f}{A character vector or factor of length equal to \code{nrow(x)}, specifying the feature type of each row.}
+    \item{ref}{String indicating which level of \code{f} should be treated as the main set.}
+}
+
+\value{
+A SingleCellExperiment where each row corresponds to a feature in the main set.
+Each other feature type is stored as an alternative Experiment, accessible by \code{\link{altExp}}.
+}    
+
+\details{
+This function provides a convenient way to create a SingleCellExperiment with alternative Experiments.
+For example, a SingleCellExperiment with rows corresponding to all features can be quickly split into endogenous genes (main) and other alternative features like spike-in transcripts and antibody tags.
+
+By default, the most frequent level of \code{f} is treated as the \code{ref} if the latter is not specified.
+}
+
+\author{
+Aaron Lun
+}
+
+\seealso{
+\code{\link{altExp}}, to access and manipulate the alternative Experiment fields.
+}
+
+\examples{
+example(SingleCellExperiment, echo=FALSE)
+feat.type <- sample(c("endog", "ERCC", "CITE"), nrow(sce),
+    replace=TRUE, p=c(0.8, 0.1, 0.1))
+
+sce2 <- splitSCEByAlt(sce, feat.type)
+sce2
+}

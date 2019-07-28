@@ -1,3 +1,4 @@
+########################################
 # Getters/setters for linearEmbedding.
 
 #' @export
@@ -18,6 +19,7 @@ setGeneric("factorData", function(x, ..., withDimnames=TRUE) standardGeneric("fa
 #' @export
 setGeneric("factorData<-", function(x, ..., value) standardGeneric("factorData<-"))
 
+########################################
 # Getter/setters for reducedDim.
 
 #' @export
@@ -40,6 +42,7 @@ setGeneric("reducedDims<-", function(x, value) standardGeneric("reducedDims<-"))
 
 setGeneric("int_reducedDims<-", function(x, value) standardGeneric("int_reducedDims<-"))
 
+########################################
 # Hidden getter/setters for internal slots.
 
 #' @export
@@ -60,6 +63,7 @@ setGeneric("int_metadata", function(x) standardGeneric("int_metadata"))
 #' @export
 setGeneric("int_metadata<-", function(x, value) standardGeneric("int_metadata<-"))
 
+########################################
 # Loose getter/setters (i.e., with no official slot).
 
 #' @export
@@ -83,6 +87,28 @@ setGeneric("spikeNames", function(x) standardGeneric("spikeNames"))
 #' @export
 setGeneric("sizeFactorNames", function(object) standardGeneric("sizeFactorNames"))
 
+########################################
+# Alternative experiment getter/setters.
+
+#' @export
+setGeneric("altExp", function(x, ...) standardGeneric("altExp"))
+
+#' @export
+setGeneric("altExps", function(x, ...) standardGeneric("altExps"))
+
+#' @export
+setGeneric("altExpNames", function(x, ...) standardGeneric("altExpNames"))
+
+#' @export
+setGeneric("altExp<-", function(x, ..., value) standardGeneric("altExp<-"))
+
+#' @export
+setGeneric("altExps<-", function(x, ..., value) standardGeneric("altExps<-"))
+
+#' @export
+setGeneric("altExpNames<-", function(x, ..., value) standardGeneric("altExpNames<-"))
+
+########################################
 # Convenience assay getter/setters.
 
 #' @export

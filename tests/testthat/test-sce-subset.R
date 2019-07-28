@@ -1,16 +1,7 @@
 # Checks the subsetting methods.
-# library(SingleCellExperiment); library(testthat); source("test-sce-subset.R")
-context("SCE subsetting")
+# library(SingleCellExperiment); library(testthat); source("setup.R"); source("test-sce-subset.R")
 
-set.seed(1000)
-ncells <- 100
-v <- matrix(rnorm(20000), ncol=ncells)
-pca <- matrix(runif(ncells*5), ncells)
-
-sce <- SingleCellExperiment(assay=v, reducedDims=SimpleList(PCA=pca)) # A fully loaded object.
-
-isSpike(sce, "ERCC") <- rbinom(nrow(v), 1, 0.2)==1
-sizeFactors(sce) <- 2^rnorm(ncells)
+sce <- loaded
 rownames(sce) <- paste0("Gene", seq_len(nrow(v)))
 colnames(sce) <- paste0("Cell", seq_len(ncells))
 
@@ -68,7 +59,8 @@ test_that("subsetting by column works correctly", {
 
         expect_identical(assay(sce)[,ind,drop=FALSE], assay(sub.sce)) # check SE elements are subsetted.
         expect_identical(sizeFactors(sub.sce), sizeFactors(sce)[ind])
-        expect_identical(reducedDim(sub.sce, "PCA", withDimnames=FALSE), pca[ind,,drop=FALSE])
+        expect_identical(reducedDim(sub.sce, "PCA", withDimnames=FALSE), d1[ind,,drop=FALSE])
+        expect_identical(reducedDim(sub.sce, "TSNE", withDimnames=FALSE), d2[ind,,drop=FALSE])
 
         # Unchanged elements:
         expect_identical(isSpike(sub.sce), isSpike(sce))

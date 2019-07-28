@@ -16,21 +16,13 @@ library(BiocStyle)
 knitr::opts_chunk$set(warning=FALSE, error=FALSE, message=FALSE)
 ```
 
-# The `SingleCellExperiment` class definition
+# Motivation
 
 The `SingleCellExperiment` class is a light-weight container for single-cell genomics data.
 It extends the `RangedSummarizedExperiment` class and follows similar conventions, 
 i.e., rows should represent features (genes, transcripts, genomic regions) and columns should represent cells.
-In addition to the slots already present in the `RangedSummarizedExperiment`, the `SingleCellExperiment` class contains:
-
-* `int_elementMetadata`, to hold internal metadata for each row.
-* `int_colData`, to hold internal metadata for each column.
-* `int_metadata`, to hold internal metadata for the entire object.
-* `reducedDims`, to hold dimensionality reduction results.
-
-The `int_` prefix describes _internal_ slots that are **not** meant for direct manipulation by the user.
-Instead, they are set by other user-visible methods, which will be discussed in more detail below.
-Package developers should see the other vignette for how to define methods to access these internal fields.
+It provides methods for storing dimensionality reduction results and data for alternative feature sets (e.g., synthetic spike-in transcripts, antibody tags).
+It is the central data structure for a number of Bioconductor single-cell packages like `r Biocpkg("scater")` and `r Biocpkg("scran")`.
 
 # Creating SingleCellExperiment instances
 
@@ -50,147 +42,52 @@ se <- SummarizedExperiment(list(counts=counts))
 as(se, "SingleCellExperiment")
 ```
 
-To demonstrate the use of the class, we will use a subset of the `allen` data set from the `r Biocpkg("scRNAseq")` package.
-These data are stored as a `SummarizedExperiment`, so we will first coerce it into a `SingleCellExperiment`.
+To demonstrate the use of the class, we will the Allen data set from the `r Biocpkg("scRNAseq")` package.
 
 ```{r fluidigm}
 library(scRNAseq)
-data(allen)
-allen
-sce <- as(allen, "SingleCellExperiment")
+sce <- ReprocessedAllenData()
 sce
 ```
-
-# Adding spike-in information
-
-One of the main additions to `SummarizedExperiment` is the ability for the user to specify the rows corresponding to spike-in transcripts.
-This is done with the method `isSpike`, using an appropriate name for the spike-in set.
-
-```{r spikes}
-isSpike(sce, "ERCC") <- grepl("^ERCC-", rownames(sce))
-sce
-```
-
-The identities of the spike-in rows can be easily retrieved using the name of the spike-in set, as shown below.
-The names of currently available spike-in sets can also be returned with the `spikeNames` method.
-
-```{r}
-table(isSpike(sce, "ERCC"))
-spikeNames(sce)
-```
-
-While most experimental designs use a single set of spike-ins, the class has the flexibility of including more than one set of spikes.
-Let us pretend that the members of the _Adam_ gene family have been spiked-in as external genes in these data.
-
-```{r spikes2}
-isSpike(sce, "Adam") <- grepl("^Adam[0-9]", rownames(sce))
-sce
-table(isSpike(sce, "Adam"))
-spikeNames(sce)
-```
-
-If `isSpike` is used without specifying any name, it will return the union of all spike-in sets.
-
-```{r}
-table(isSpike(sce))
-```
-
-Running `isSpike<-` with `NULL` will clear the specified set from the `SingleCellExperiment`, while running `clearSpikes` will delete all spike-in information.
-
-```{r}
-temp <- sce
-isSpike(temp, "Adam") <- NULL
-spikeNames(temp)
-temp <- clearSpikes(temp)
-spikeNames(temp)
-```
-
-Note that the `isSpike` and `isSpike<-` methods get and set columns in `int_elementMetadata` and `int_metadata`.
-This information is only relevant to package developers and not necessary for routine use of this class.
-
-# Adding size factors
-
-One can also store size factors in the `SingleCellExperiment` object. 
-For illustration, we simply compute the total number of reads as size factors here.
-Note that more sophisticated methods for computing size factors are available (see, e.g., `r Biocpkg("scran")`).
-
-```{r sizeFactors}
-sizeFactors(sce) <- colSums(assay(sce))
-head(sizeFactors(sce))
-```
-
-We can compute multiple size factors and store them in the object, by providing a name to `sizeFactors`.
-This does _not_ affect the values of the unnamed size factors.
-
-```{r sizeFactors2}
-sizeFactors(sce, "ERCC") <- colSums(assay(sce)[isSpike(sce, "ERCC"),])
-head(sizeFactors(sce, "ERCC"))
-head(sizeFactors(sce)) # same as before
-```
-
-# Extracting `colData` and `rowData` 
-
-The `colData` and `rowData` methods can be used to retrieve the stored sample- and gene-level metadata. 
-By default, this will only return the user-visible metadata fields, i.e., not including the fields stored in the `int_*` slots.
-
-```{r metadata}
-colData(sce)
-rowData(sce)
-```
-
-However, it is sometimes useful to retrieve a `DataFrame` with the internal fields, i.e., spike-in and size factor information.
-This can be achieved by specifying `internal=TRUE`.
-
-```{r metadata2}
-colData(sce, internal=TRUE)
-rowData(sce, internal=TRUE)
-```
-
-See below for some discussion of why an internal storage mechanism is used here.
 
 # Adding low-dimensional representations
 
-For simplicity and speed, we work on a subset of 100 genes. 
-To avoid ending up with only uninteresting genes, we extract the 100 genes with maximal variance in the log-transformed counts.
+We compute log-transformed normalized expression values from the count matrix using the `r Biocpkg("scater")` package.
 
 ```{r subset}
-library(magrittr)
-assay(sce) %>% log1p %>% rowVars -> vars
-names(vars) <- rownames(sce)
-vars <- sort(vars, decreasing = TRUE)
-
-sce_sub <- sce[names(vars[1:100]),]
-sce_sub
+library(scater)
+sce <- normalize(sce, exprs_values="tophat_counts")
+assayNames(sce)
 ```
 
-We obtain the PCA and t-SNE representations of the data and add them to the object with the `reducedDims` method.
+We obtain the PCA and t-SNE representations of the data and add them to the object with the `reducedDims()<-` method.
 
 ```{r pca}
+pca_data <- prcomp(t(logcounts(sce)), rank=50)
+
 library(Rtsne)
 set.seed(5252)
-
-pca_data <- prcomp(t(log1p(assay(sce_sub))))
 tsne_data <- Rtsne(pca_data$x[,1:50], pca = FALSE)
 
-reducedDims(sce_sub) <- SimpleList(PCA=pca_data$x, TSNE=tsne_data$Y)
-sce_sub
+reducedDims(sce) <- SimpleList(PCA=pca_data$x, TSNE=tsne_data$Y)
+sce
 ```
 
 The stored coordinates can be retrieved by name or by numerical index.
 Each row of the coordinate matrix is assumed to correspond to a cell, while each column represents a dimension.
 
 ```{r}
-reducedDims(sce_sub)
-reducedDimNames(sce_sub)
-head(reducedDim(sce_sub, "PCA")[,1:2])
-head(reducedDim(sce_sub, "TSNE")[,1:2])
+reducedDims(sce)
+reducedDimNames(sce)
+head(reducedDim(sce, "PCA")[,1:2])
+head(reducedDim(sce, "TSNE")[,1:2])
 ```
 
 Any subsetting by column of `sce_sub` will also lead to subsetting of the dimensionality reduction results by cell.
 
 ```{r}
-dim(reducedDim(sce_sub, "PCA"))
-dim(reducedDim(sce_sub[,1:10], "PCA"))
+dim(reducedDim(sce, "PCA"))
+dim(reducedDim(sce[,1:10], "PCA"))
 ```
 
 # Convenient access to named assays
@@ -218,6 +115,44 @@ dim(counts(sce))
 ```
 
 This means that functions expecting count data can simply call `counts()` without worrying about package-specific naming conventions.
+
+# Adding alternative feature sets
+
+Many scRNA-seq experiments contain sequencing data for multiple feature types beyond the endogenous genes:
+
+- Externally added spike-in transcripts for plate-based experiments.
+- Antibody tags for CITE-seq experiments.
+- CRISPR tags for CRISPR-seq experiments.
+- Allele information for experiments involving multiple genotypes.
+
+Such features can be stored inside the `SingleCellExperiment` via the concept of "alternative Experiments".
+These are nested `SummarizedExperiment` instances that are guaranteed to have the same number and ordering of columns as the `SingleCellExperiment` itself.
+Data for endogenous genes and other features can thus be kept separate, which is often desirable as they need to be processed differently.
+
+To illustrate, consider the case of the spike-in transcripts in the Allen data. 
+We move the corresponding rows out of the assays of the main `SingleCellExperiment` and into a nested alternative Experiment.
+
+```{r}
+is.spike <- grepl("^ERCC-", rownames(sce))
+sce <- splitSCEByAlt(sce, ifelse(is.spike, "ERCC", "gene"))
+altExpNames(sce)
+```
+
+The `altExp()` method returns a self-contained `SingleCellExperiment` instance containing only the spike-in transcripts.
+
+```{r}
+altExp(sce)
+```
+
+Each alternative Experiment can have a different set of assays from the main `SingleCellExperiment`.
+This is useful in cases where the other feature types must be normalized or transformed differently.
+Similarly, the alternative Experiments can have different `rowData()` from the main object.
+
+```{r}
+rowData(altExp(sce))$concentration <- runif(nrow(altExp(sce)))
+rowData(altExp(sce))
+rowData(sce)
+```
 
 # Session Info
 

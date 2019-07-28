@@ -1,11 +1,7 @@
 # Checks for proper functioning of the methods.
-# library(SingleCellExperiment); library(testthat); source("test-sce-methods.R")
-context("SCE methods")
+# library(SingleCellExperiment); library(testthat); source("setup.R"); source("test-sce-methods.R")
 
-set.seed(1000)
-ncells <- 100
-v <- matrix(rnorm(20000), ncol=ncells)
-sce <- SingleCellExperiment(assay=v)
+sce <- empty
 
 test_that("spike-in getters/setters are functioning", {
     is.spike1 <- rbinom(nrow(v), 1, 0.2)==1

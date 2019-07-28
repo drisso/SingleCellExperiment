@@ -1,13 +1,7 @@
 # Checks for proper functioning of the reducedDim methods.
-# library(SingleCellExperiment); library(testthat); source("test-sce-reducedDims.R")
+# library(SingleCellExperiment); library(testthat); source("setup.R"); source("test-sce-reducedDims.R")
 
-set.seed(1000)
-ncells <- 100
-v <- matrix(rnorm(20000), ncol=ncells)
-sce <- SingleCellExperiment(assay=v)
-
-d1 <- matrix(rnorm(ncells*4), ncol=4)
-d2 <- matrix(rnorm(ncells), ncol=1)
+sce <- empty
 
 test_that("reducedDim getters/setters are functioning with character 'type'", {
     reducedDim(sce, "PCA") <- d1
