@@ -16,7 +16,7 @@ scat <- function(fmt, vals=character(), exdent=2, ...) {
     callNextMethod()
     scat("reducedDimNames(%d): %s\n", reducedDimNames(object))
     scat("spikeNames(%d): %s\n", spikeNames(object))
-    scat("altExperimentNames(%d): %s\n", altExperimentNames(object))
+    scat("altExpNames(%d): %s\n", altExpNames(object))
 }
 
 #' @export

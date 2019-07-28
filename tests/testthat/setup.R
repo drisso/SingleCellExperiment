@@ -34,8 +34,8 @@ se2 <- SummarizedExperiment(
 rowData(se2)$blah <- sample(letters, nrow(se2), replace=TRUE)
 rownames(se2) <- sprintf("TAG_%i", seq_len(nrow(se2)))
 
-altExperiment(loaded, "Spike") <- se1
-altExperiment(loaded, "Protein") <- se2
+altExp(loaded, "Spike") <- se1
+altExp(loaded, "Protein") <- se2
 
 #########################################
 # Other load-ups. 
