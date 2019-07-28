@@ -22,11 +22,11 @@ test_that("rbind respects the internal fields correctly", {
     expect_identical(int_colData(sce3)$X, int_colData(sce2)$X)
 
     # Respects reordered internal elementMetadata
-    int_elementMetadata(sce) <- DataFrame(A=runif(nrow(sce)), B=runif(nrow(sce)))
-    alpha <- cbind(sce, sce)
+    int_elementMetadata(sce) <- cbind(int_elementMetadata(sce), DataFrame(A=runif(nrow(sce)), B=runif(nrow(sce))))
+    alpha <- rbind(sce, sce)
     alt.sce <- sce
     int_elementMetadata(alt.sce) <- int_elementMetadata(alt.sce)[,ncol(int_elementMetadata(alt.sce)):1]
-    bravo <- cbind(sce, alt.sce)
+    bravo <- rbind(sce, alt.sce)
     expect_identical(alpha, bravo)
 })
 

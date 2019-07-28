@@ -15,19 +15,7 @@
     df
 }
 
-#' @importFrom SummarizedExperiment SummarizedExperiment
-.create_shell_coldata <- function(x) {
+.filled_int_colData <- function(x) {
     df <- int_colData(x)
-    df <- .fill_int_fields(df, c(.red_key, .alt_key))
-    SummarizedExperiment(colData=df)
-}
-
-#' @importFrom SummarizedExperiment SummarizedExperiment
-.create_shell_rowdata <- function(x) {
-    SummarizedExperiment(rowData=int_elementMetadata(x))
-}
-
-#' @importFrom SummarizedExperiment SummarizedExperiment
-.create_shell_metadata <- function(x) {
-    SummarizedExperiment(metadata=int_metadata(x))
+    .fill_int_fields(df, c(.red_key, .alt_key))
 }

@@ -1,5 +1,6 @@
 #' @export
 setMethod("[", c("SingleCellExperiment", "ANY", "ANY"), function(x, i, j, ..., drop=TRUE) {
+    x <- updateObject(x)
     if (!missing(i)) {
         ii <- .convert_subset_index(i, rownames(x))
         int_elementMetadata(x) <- int_elementMetadata(x)[ii,,drop=FALSE]
@@ -17,13 +18,15 @@ setMethod("[", c("SingleCellExperiment", "ANY", "ANY"), function(x, i, j, ..., d
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
 #' @importFrom SummarizedExperiment rowData colData
 setMethod("[<-", c("SingleCellExperiment", "ANY", "ANY", "SingleCellExperiment"), function(x, i, j, ..., value) {
+    x <- updateObject(x)
+    value <- updateObject(value)
     if (missing(i) && missing(j)) {
         return(value)
     }
 
     if (!missing(i)) {
-        left <- .create_shell_rowdata(x)
-        right <- .create_shell_rowdata(value)
+        left <- int_elementMetadata(x)
+        right <- int_elementMetadata(value)
         ii <- .convert_subset_index(i, rownames(x))
 
         tryCatch({
@@ -31,20 +34,20 @@ setMethod("[<-", c("SingleCellExperiment", "ANY", "ANY", "SingleCellExperiment")
         }, error=function(err) {
             stop("failed to replace 'int_elementMetadata'")
         })
-        int_elementMetadata(x) <- rowData(left)
+        int_elementMetadata(x) <- left
     }
 
     if (!missing(j)) {
-        left <- .create_shell_coldata(x)
-        right <- .create_shell_coldata(value)
+        left <- .filled_int_colData(x)
+        right <- .filled_int_colData(value)
         jj <- .convert_subset_index(j, colnames(x))
 
         tryCatch({
-            left[,jj] <- right
+            left[jj,] <- right
         }, error=function(err) {
             stop("failed to replace 'int_colData'")
         })
-        int_colData(x) <- colData(left)
+        int_colData(x) <- left
     }
 
     int_metadata(x) <- int_metadata(value)
