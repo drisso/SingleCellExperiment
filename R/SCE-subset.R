@@ -38,8 +38,8 @@ setMethod("[<-", c("SingleCellExperiment", "ANY", "ANY", "SingleCellExperiment")
     }
 
     if (!missing(j)) {
-        left <- .filled_int_colData(x)
-        right <- .filled_int_colData(value)
+        left <- int_colData(x)
+        right <- int_colData(value)
         jj <- .convert_subset_index(j, colnames(x))
 
         tryCatch({

@@ -7,15 +7,10 @@
 #' @importClassesFrom S4Vectors SimpleList
 setMethod("reducedDims", "SingleCellExperiment", function(x, withDimnames=TRUE) {
     x <- updateObject(x)
-
-    if (!.red_key %in% colnames(int_colData(x))) {
-        value <- List()
-    } else {
-        value <- as(int_colData(x)[[.red_key]], "SimpleList")
-        if (withDimnames) {
-            for (i in seq_along(value)) {
-                rownames(value[[i]]) <- colnames(x)
-            }
+    value <- as(int_colData(x)[[.red_key]], "SimpleList")
+    if (withDimnames) {
+        for (i in seq_along(value)) {
+            rownames(value[[i]]) <- colnames(x)
         }
     }
     value
@@ -47,21 +42,12 @@ setReplaceMethod("reducedDims", "SingleCellExperiment", function(x, value) {
 #' @export
 setMethod("reducedDimNames", "SingleCellExperiment", function(x) {
     x <- updateObject(x)
-
-    if (!.red_key %in% colnames(int_colData(x))) {
-        character(0)
-    } else {
-        colnames(int_colData(x)[[.red_key]])
-    }
+    colnames(int_colData(x)[[.red_key]])
 })
 
 #' @export
 setReplaceMethod("reducedDimNames", c("SingleCellExperiment", "character"), function(x, value) {
     x <- updateObject(x)
-
-    if (!.red_key %in% colnames(int_colData(x)) && length(value) > 0L) {
-        stop("no 'reducedDims' in 'x' to rename")
-    } 
     colnames(int_colData(x)[[.red_key]]) <- value
     x
 })
@@ -70,13 +56,7 @@ setReplaceMethod("reducedDimNames", c("SingleCellExperiment", "character"), func
 setMethod("reducedDim", "SingleCellExperiment", function(x, type=1, withDimnames=TRUE) {
     x <- updateObject(x)
 
-    internals <- int_colData(x)
-    if (!.red_key %in% colnames(internals)) {
-        internals <- internals[,0]
-    } else {
-        internals <- internals[[.red_key]]
-    }
-
+    internals <- int_colData(x)[[.red_key]]
     out <- internals[,type]
     if (!is.null(out) && withDimnames) {
         rownames(out) <- colnames(x)
@@ -89,9 +69,6 @@ setReplaceMethod("reducedDim", "SingleCellExperiment", function(x, type=1, ..., 
     x <- updateObject(x)
 
     internals <- int_colData(x)
-    if (!.red_key %in% colnames(internals)) {
-        internals[[.red_key]] <- internals[,0]
-    }
     if (!is.null(value) && !identical(nrow(value), ncol(x))) {
         stop("replacement 'reducedDim' has a different number of rows than 'ncol(x)'")
     }

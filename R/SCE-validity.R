@@ -2,10 +2,17 @@
     msg <- NULL
 
     if (nrow(int_elementMetadata(object))!=nrow(object)) {
-        msg <- c(msg, "'nrow' of internal 'rowData' not equal to 'nrow(object)'")
+        msg <- c(msg, "'nrow' of 'int_elementMetadata' not equal to 'nrow(object)'")
     }
     if (nrow(int_colData(object))!=ncol(object)) {
-        msg <- c(msg, "'nrow' of internal 'colData' not equal to 'ncol(object)'")
+        msg <- c(msg, "'nrow' of 'int_colData' not equal to 'ncol(object)'")
+    }
+
+    if (!.red_key %in% colnames(int_colData(object))) {
+        msg <- c(msg, "no 'reducedDims' field in 'int_colData'")
+    }
+    if (!.alt_key %in% colnames(int_colData(object))) {
+        msg <- c(msg, "no 'altExps' field in 'int_colData'")
     }
 
     # Checking spike-in names are present and accounted for.

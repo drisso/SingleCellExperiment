@@ -6,7 +6,7 @@ setMethod("cbind", "SingleCellExperiment", function(..., deparse.level=1) {
     int_m <- do.call(c, lapply(args, int_metadata))
 
     tryCatch({
-        int_cd <- do.call(rbind, lapply(args, .filled_int_colData))
+        int_cd <- do.call(rbind, lapply(args, int_colData))
     }, error=function(err) {
         stop(paste0("failed to combine 'int_colData'\n", err))
     })
@@ -66,8 +66,7 @@ setMethod("rbind", "SingleCellExperiment", function(..., deparse.level=1) {
 
 #' @importFrom SummarizedExperiment SummarizedExperiment
 .create_shell_coldata <- function(x) {
-    df <- .filled_int_colData(x)
-    SummarizedExperiment(colData=df)
+    SummarizedExperiment(colData=int_colData(x))
 }
 
 #' @importFrom SummarizedExperiment SummarizedExperiment

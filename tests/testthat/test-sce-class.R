@@ -73,13 +73,13 @@ test_that("internal functions work correctly", {
     SingleCellExperiment:::int_elementMetadata(sce)$whee <- rextra
     expect_equal(rextra, SingleCellExperiment:::int_elementMetadata(sce)$whee)
     SingleCellExperiment:::int_elementMetadata(sce) <- DataFrame(1:5)
-    expect_error(validObject(sce), "'nrow' of internal 'rowData' not equal to 'nrow(object)'", fixed=TRUE)
+    expect_error(validObject(sce), "'nrow' of 'int_elementMetadata' not equal to 'nrow(object)'", fixed=TRUE)
 
     cextra <- rnorm(ncells)
     SingleCellExperiment:::int_colData(sce)$stuff <- cextra
     expect_equal(cextra, SingleCellExperiment:::int_colData(sce)$stuff)
     SingleCellExperiment:::int_colData(sce) <- DataFrame(1:5)
-    expect_error(validObject(sce), "'nrow' of internal 'colData' not equal to 'ncol(object)'", fixed=TRUE)
+    expect_error(validObject(sce), "'nrow' of 'int_colData' not equal to 'ncol(object)'", fixed=TRUE)
 
     SingleCellExperiment:::int_metadata(sce)$urg <- "I was here"
     expect_identical(SingleCellExperiment:::int_metadata(sce)$urg, "I was here")

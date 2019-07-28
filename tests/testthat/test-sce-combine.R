@@ -67,24 +67,6 @@ test_that("cbind respects the internal fields correctly", {
     int_colData(alt.sce) <- int_colData(alt.sce)[,ncol(int_colData(alt.sce)):1]
     bravo <- cbind(sce, alt.sce)
     expect_identical(alpha, bravo)
-
-    # Respects missing vs empty internal nested fields. 
-    empty1 <- sce
-    empty2 <- sce
-    int_colData(empty1) <- int_colData(empty1)[,0]
-    int_colData(empty2) <- int_colData(empty2)[,0]
-    int_colData(empty2)$reducedDims <- int_colData(empty2)[,0]
-    int_colData(empty2)$altExps <- int_colData(empty2)[,0]
-    expect_identical(cbind(empty1, empty2), cbind(empty2, empty2))
-})
-
-test_that("cbind handles errors in internal fields correctly", {
-    sce2 <- sce
-    int_elementMetadata(sce)$X <- runif(nrow(sce))
-    int_elementMetadata(sce2)$X <- runif(nrow(sce2))
-    expect_error(cbind(sce, sce2), "'int_elementMetadata'")
-
-    # Throws errors upon mismatch in the internal colData.
     sce.err <- sce
     sizeFactors(sce.err) <- NULL
     expect_error(cbind(sce.err, sce), "'int_colData'")

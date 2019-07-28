@@ -3,8 +3,9 @@
 #' @importFrom S4Vectors DataFrame
 setMethod("updateObject", "SingleCellExperiment", function(object, ..., verbose=FALSE) {
     if (objectVersion(object) < "1.7.1") {
-        stuff <- object@reducedDims                        
-        int_colData(object)$reducedDims <- do.call(DataFrame, lapply(stuff, I))
+        stuff <- object@reducedDims
+        reducedDims(object) <- stuff
+        altExps(object) <- NULL
 
         if (verbose) {
             message("[updateObject] ", class(object), " object uses ", 

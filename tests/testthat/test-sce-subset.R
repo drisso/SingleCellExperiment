@@ -129,22 +129,10 @@ test_that("subset replacement by column handles internal fields", {
     to <- 1:10
     from <- 21:30
 
-    # Handles mismatch.
+    # Throws an error upon mismatch.
     scex2 <- sce
     reducedDims(scex2) <- NULL
     expect_error(scex2[,to] <- sce[,from], "'int_colData'")
-
-    # Respects missing vs empty internal nested fields. 
-    empty1 <- sce
-    empty2 <- sce
-    int_colData(empty1) <- int_colData(empty1)[,0]
-    int_colData(empty2) <- int_colData(empty2)[,0]
-    int_colData(empty2)$reducedDims <- int_colData(empty2)[,0]
-    int_colData(empty2)$altExps <- int_colData(empty2)[,0]
-
-    before <- empty1
-    empty1[,to] <- empty2[,from]
-    expect_identical(int_colData(empty1), int_colData(empty2))
 })
 
 test_that("subset replacement by both rows and columns work correctly", {
