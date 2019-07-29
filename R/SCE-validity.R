@@ -31,11 +31,6 @@
         msg <- c(msg, sprintf("no field specifying size factors for set '%s'", was.lost))
     }
 
-    # Checking version.
-    if (objectVersion(object) < "0.98.0") {
-        msg <- c(msg, "object is out of date, update with 'updateSCE(object)'")
-    }
-
     if (length(msg)) { return(msg) }
     return(TRUE)
 }
