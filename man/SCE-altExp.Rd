@@ -50,7 +50,7 @@
 
 For \code{altExpNames<-}, a character vector of length equal to the number of alternative experiments.
 
-For \code{altExps<-}, a named list-like object where each element is a \linkS4class{SummarizedExperiment} object with the same number of rows.
+For \code{altExps<-}, a named list-like object where each element is a \linkS4class{SummarizedExperiment} object with the same number of columns.
 Alternatively, a \code{NULL} value to remove all alternativeExperiments from \code{x}.
 
 For \code{altExp<-}, a SummarizedExperiment instance with number of samples equal to \code{ncol(x)}.

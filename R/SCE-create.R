@@ -3,7 +3,7 @@
 #' @importFrom methods is as
 #' @importFrom SummarizedExperiment SummarizedExperiment
 #' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
-SingleCellExperiment <- function(..., reducedDims=SimpleList(), altExps=list()) {
+SingleCellExperiment <- function(..., reducedDims=list(), altExps=list()) {
     se <- SummarizedExperiment(...)
     if(!is(se, "RangedSummarizedExperiment")) {
         se <- as(se, "RangedSummarizedExperiment")

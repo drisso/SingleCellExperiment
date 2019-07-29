@@ -34,7 +34,7 @@
 }
 
 \arguments{
-\item{x}{A SingleCellExperiment object.}
+\item{x}{A \linkS4class{SingleCellExperiment} object.}
 \item{type}{A string containing the name for the dimensionality reduction results or a numeric index containing the position of the desired dimenionality reduction result.}
 \item{withDimnames}{A logical scalar indicating whether each set of results should be returned with row names matching \code{colnames(x)}.
 This can be turned off for greater efficiency.}
@@ -43,6 +43,7 @@ This can be turned off for greater efficiency.}
 For \code{reducedDim<-}, a matrix (usually double-precision) of coordinates, for each cell (row) and dimension (column).
 
 For \code{reducedDims<-}, a named SimpleList object containing such matrices.
+Each entry should have the same number of rows corresponding to the set of cells in \code{x}.
 
 For \code{reducedDimNames<-}, a character vector containing the names of all dimensionality reduction results.}
 }

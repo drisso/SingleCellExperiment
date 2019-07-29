@@ -11,12 +11,15 @@
 \description{A description of the SingleCellExperiment class for storing single-cell sequencing data.}
 
 \usage{
-SingleCellExperiment(..., reducedDims=SimpleList())
+SingleCellExperiment(..., reducedDims=list(), altExps=list())
 }
 
 \arguments{
-    \item{...}{Arguments to pass to the \code{SummarizedExperiment} constructor.}
-    \item{reducedDims}{A SimpleList object containing matrices of cell coordinates in reduced space.}
+    \item{...}{Arguments to pass to the \code{\link{SummarizedExperiment}} constructor.}
+    \item{reducedDims}{A list containing matrices of cell coordinates in reduced space.
+    Each matrix should have the same number of rows, see \code{\link{reducedDims}}.}
+    \item{altExps}{A list containing \linkS4class{SummarizedExperiment} instances of alternative feature types.
+    Each element should have the same number of columns, see \code{\link{altExps}}.}
 }
 
 \value{
@@ -24,32 +27,24 @@ A SingleCellExperiment object is returned from the constructor.
 }
 
 \details{
-The SingleCellExperiment class inherits from the \linkS4class{SummarizedExperiment} class, with several additional slots:
-\describe{
-\item{\code{reducedDims}:}{A SimpleList containing matrices of cell coordinates.}
-\item{\code{int_elementMetadata}:}{A DataFrame containing internal row metadata (for each genomic feature).}
-\item{\code{int_colData}:}{A DataFrame containing internal column metadata (for each cell).}
-\item{\code{int_metadata}:}{A list containing internal experiment metadata.}
-}
+The SingleCellExperiment class inherits from the \linkS4class{SummarizedExperiment} class.
+It provides additional support for storing dimensionality reduction results (e.g., PCA, t-SNE) via \code{\link{reducedDims}}.
+It also supports the storage of alternative feature types (e.g., spike-ins) via the \code{\link{altExps}}.
 
 The intended use of this class is the same as that for SummarizedExperiment instances.
 Rows should represent genomic features such as genes, while columns represent samples - in this case, single cells.
 Different quantifications (e.g., counts, CPMs, log-expression) can be stored simultaneously in the \code{\link{assays}} slot.
 Row and column metadata can be attached using \code{\link{rowData}} and \code{\link{colData}}, respectively.
 
-The additional \code{reducedDims} slot allows storage of results from multiple dimensionality reduction methods, e.g., PCA or t-SNE.
-Each element of the SimpleList should be a matrix of coordinates for all cells from one reduction method.
-The number of rows of each matrix should be equal to the number of cells in the SingleCellExperiment object.
-
-The internal metadata slots are not intended for external use.
-Please use the appropriate getter/setter functions instead, such as \code{isSpike} or \code{sizeFactors}.
+The SingleCellExperiment contains internal metadata slots that are not intended for external use.
+Please use the appropriate getter/setter functions instead, such as \code{\link{sizeFactors}}.
 Package developers should refer to the suggestions in \code{?\link{int_metadata}}.
 }
 
 \seealso{
-\code{\link{isSpike}},
 \code{\link{sizeFactors}},
 \code{\link{reducedDims}}
+and \code{\link{altExps}} for specific getter and setter methods.
 }
 
 \author{
