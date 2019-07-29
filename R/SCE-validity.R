@@ -16,7 +16,7 @@
     }
 
     # Checking spike-in names are present and accounted for.
-    spike.fields <- .get_spike_field(spikeNames(object), check=FALSE)
+    spike.fields <- .get_spike_field(suppressWarnings(spikeNames(object)), check=FALSE)
     lost.spikes <- ! spike.fields %in% colnames(int_elementMetadata(object))
     if (any(lost.spikes)) {
         was.lost <- spikeNames(object)[lost.spikes][1]
@@ -24,7 +24,7 @@
     }
 
     # Checking the size factor names as well.
-    sf.fields <- vapply(sizeFactorNames(object), .get_sf_field, FUN.VALUE="")
+    sf.fields <- vapply(suppressWarnings(sizeFactorNames(object)), .get_sf_field, FUN.VALUE="")
     lost.sfs <- ! sf.fields %in% colnames(int_colData(object))
     if (any(lost.sfs)) {
         was.lost <- sizeFactorNames(object)[lost.sfs][1]
