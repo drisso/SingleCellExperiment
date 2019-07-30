@@ -3,6 +3,7 @@
 .get_sf_field <- function(type) {
     search <- "size_factor"
     if (!is.null(type)) {
+        .Deprecated(msg="'type=' is deprecated.")
         if (length(type)!=1L) {
             stop("'type' must be a character vector of length 1")
         }
@@ -27,6 +28,7 @@ setReplaceMethod("sizeFactors", "SingleCellExperiment", function(object, type=NU
     int_colData(object) <- cd
 
     if (!is.null(type)) {
+        .Deprecated(msg="'type=' is deprecated.")
         md <- int_metadata(object)
         if (is.null(value)) {
             md$size_factor_names <- setdiff(md$size_factor_names, type)
@@ -40,6 +42,7 @@ setReplaceMethod("sizeFactors", "SingleCellExperiment", function(object, type=NU
 
 #' @export
 setMethod("clearSizeFactors", "SingleCellExperiment", function(object) {
+    .Deprecated()
     sizeFactors(object) <- NULL
 
     cd <- int_colData(object)
@@ -57,5 +60,6 @@ setMethod("clearSizeFactors", "SingleCellExperiment", function(object) {
 
 #' @export
 setMethod("sizeFactorNames", "SingleCellExperiment", function(object) {
+    .Deprecated()
     int_metadata(object)$size_factor_names
 })

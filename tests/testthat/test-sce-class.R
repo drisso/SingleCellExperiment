@@ -20,8 +20,6 @@ test_that("construction of the SCE works correctly", {
     
     assay(sce, "exprs") <- w
     expect_equivalent(assay(sce, "exprs"), w)
-
-    expect_equal(names(sce@reducedDims), character(0))
 })
 
 test_that("coercion from other classes works correctly", {
@@ -30,7 +28,6 @@ test_that("coercion from other classes works correctly", {
     sce2 <- as(se, "SingleCellExperiment")
     expect_equal(sce2, SingleCellExperiment(u, rowData=rd, colData=cd)) # equality not identity due to environment in 'assays'.
     expect_true(validObject(sce2))
-    expect_identical(names(sce2@reducedDims), character(0)) # Checking that reduced dim names are set correctly.
 
     # Coercion from RangedSummarizedExperiment
     ranges <- GRanges(rep(c("chr1", "chr2"), c(50, 150)),
@@ -76,13 +73,13 @@ test_that("internal functions work correctly", {
     SingleCellExperiment:::int_elementMetadata(sce)$whee <- rextra
     expect_equal(rextra, SingleCellExperiment:::int_elementMetadata(sce)$whee)
     SingleCellExperiment:::int_elementMetadata(sce) <- DataFrame(1:5)
-    expect_error(validObject(sce), "'nrow' of internal 'rowData' not equal to 'nrow(object)'", fixed=TRUE)
+    expect_error(validObject(sce), "'nrow' of 'int_elementMetadata' not equal to 'nrow(object)'", fixed=TRUE)
 
     cextra <- rnorm(ncells)
     SingleCellExperiment:::int_colData(sce)$stuff <- cextra
     expect_equal(cextra, SingleCellExperiment:::int_colData(sce)$stuff)
     SingleCellExperiment:::int_colData(sce) <- DataFrame(1:5)
-    expect_error(validObject(sce), "'nrow' of internal 'colData' not equal to 'ncol(object)'", fixed=TRUE)
+    expect_error(validObject(sce), "'nrow' of 'int_colData' not equal to 'ncol(object)'", fixed=TRUE)
 
     SingleCellExperiment:::int_metadata(sce)$urg <- "I was here"
     expect_identical(SingleCellExperiment:::int_metadata(sce)$urg, "I was here")

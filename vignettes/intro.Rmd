@@ -46,17 +46,21 @@ To demonstrate the use of the class, we will the Allen data set from the `r Bioc
 
 ```{r fluidigm}
 library(scRNAseq)
-sce <- ReprocessedAllenData()
+sce <- ReprocessedAllenData("tophat_counts")
 sce
 ```
 
 # Adding low-dimensional representations
 
-We compute log-transformed normalized expression values from the count matrix using the `r Biocpkg("scater")` package.
+We compute log-transformed normalized expression values from the count matrix. 
+(We note that many of these steps can be performed as one-liners from the `r Biocpkg("scater")` package,
+but we will show them here in full to demonstrate the capabilities of the `SingleCellExperiment` class.)
 
 ```{r subset}
-library(scater)
-sce <- normalize(sce, exprs_values="tophat_counts")
+counts <- assay(sce, "tophat_counts")
+libsizes <- colSums(counts)
+size.factors <- libsizes/mean(libsizes)
+logcounts(sce) <- log2(t(t(counts)/size.factors) + 1)
 assayNames(sce)
 ```
 
@@ -69,7 +73,7 @@ library(Rtsne)
 set.seed(5252)
 tsne_data <- Rtsne(pca_data$x[,1:50], pca = FALSE)
 
-reducedDims(sce) <- SimpleList(PCA=pca_data$x, TSNE=tsne_data$Y)
+reducedDims(sce) <- list(PCA=pca_data$x, TSNE=tsne_data$Y)
 sce
 ```
 

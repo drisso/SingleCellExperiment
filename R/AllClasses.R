@@ -7,16 +7,14 @@
 setClass("SingleCellExperiment",
     slots=c(int_elementMetadata = "DataFrame",
         int_colData = "DataFrame",
-        int_metadata = "list",
-        reducedDims = "SimpleList"),
+        int_metadata = "list"),
     contains = "RangedSummarizedExperiment",
     prototype = prototype(
         int_metadata=list(
             version=packageVersion("SingleCellExperiment"),
             spike_names=character(0),
             size_factor_names=character(0)
-        ),
-        reducedDims=setNames(SimpleList(), character(0))
+        )
     )
 )
 

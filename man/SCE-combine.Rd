@@ -22,11 +22,15 @@ Methods to combine SingleCellExperiment objects.
 
 \details{
 For \code{rbind}, SingleCellExperiment objects are combined row-wise, i.e., rows in successive objects are appended to the first object.
-Column metadata, experimental metadata and \code{reducedDims} coordinates will only be taken from the first element in the list.
+Column metadata, experimental metadata, alternative Experiments in \code{\link{altExps}} and \code{\link{reducedDims}} coordinates will only be taken from the first element in the list.
 
 For \code{cbind}, SingleCellExperiment objects are combined columns-wise, i.e., columns in successive objects are appended to the first object.
-\code{reducedDims} coordinates will be combined row-wise to reflect the addition or more cells.
+The same applies for any \linkS4class{SummarizedExperiment} instances in the \code{\link{altExps}}.
+\code{\link{reducedDims}} coordinates will be combined row-wise to reflect the addition or more cells.
 Row and experimental metadata will only be taken from the first element in the list.
+
+Column combining requires that all objects in \code{...} have the same dimensionality reduction results and alternative Experiments, with the same dimensions - and in the latter case, the same row/column metadata in each alternative Experiment.
+Identical ordering is not required if all \code{\link{reducedDims}} and \code{\link{altExps}} have unique names within each SingleCellExperiment.
 }
 
 \value{

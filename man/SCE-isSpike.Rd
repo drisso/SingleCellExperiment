@@ -15,7 +15,11 @@
 \alias{clearSpikes,SingleCellExperiment-method}
 
 \title{Spike-in methods}
-\description{Gets or sets the rows corresponding to spike-in transcripts.}
+\description{Gets or sets the rows corresponding to spike-in transcripts.
+
+\strong{Note:} these methods have been deprecated in favour of storing spike-in information as alternative Experiments,
+see \code{\link{altExps}} for details.
+}
 
 \usage{
 \S4method{isSpike}{SingleCellExperiment,character}(x, type)

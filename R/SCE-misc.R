@@ -15,7 +15,7 @@ scat <- function(fmt, vals=character(), exdent=2, ...) {
 .sce_show <- function(object) {
     callNextMethod()
     scat("reducedDimNames(%d): %s\n", reducedDimNames(object))
-    scat("spikeNames(%d): %s\n", spikeNames(object))
+    scat("spikeNames(%d): %s\n", suppressWarnings(spikeNames(object)))
     scat("altExpNames(%d): %s\n", altExpNames(object))
 }
 

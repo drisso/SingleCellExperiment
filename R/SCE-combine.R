@@ -1,33 +1,76 @@
 #' @export
-#' @importFrom S4Vectors SimpleList
-#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
+#' @importFrom BiocGenerics rbind cbind
 setMethod("cbind", "SingleCellExperiment", function(..., deparse.level=1) {
-    args <- unname(list(...))
-    base <- do.call(cbind, lapply(args, function(x) { as(x, "RangedSummarizedExperiment") }))
+    args <- list(...)
+    args <- lapply(args, updateObject)
+    int_m <- do.call(c, lapply(args, int_metadata))
 
-    all.col.data <- lapply(args, int_colData)
-    sout <- do.call(.standardize_DataFrames, all.col.data)
-    new.col.data <- do.call(rbind, sout)
+    tryCatch({
+        int_cd <- do.call(rbind, lapply(args, int_colData))
+    }, error=function(err) {
+        stop(paste0("failed to combine 'int_colData'\n", err))
+    })
 
-    all.rd <- do.call(.standardize_reducedDims, args)
-    new.rd <- SimpleList(do.call(mapply, c(all.rd, FUN=rbind, SIMPLIFY=FALSE)))
+    # Creating a shell to avoid having to pull out .cbind.DataFrame 
+    # to fuse metadata along the dimension not being combined.
+    row_shells <- lapply(args, .create_shell_rowdata)
+    tryCatch({
+        combined <- do.call(cbind, row_shells)
+    }, error=function(err) {
+        stop(paste0("failed to combine 'int_elementMetadata'\n", err))
+    })
+    int_em <- rowData(combined)
 
-    ans <- args[[1]]
-    new(class(ans), base, int_colData=new.col.data, int_elementMetadata=int_elementMetadata(ans),
-        int_metadata=int_metadata(ans), reducedDims=new.rd)
+    old <- S4Vectors:::disableValidity()
+    if (!isTRUE(old)) {
+        S4Vectors:::disableValidity(TRUE)
+        on.exit(S4Vectors:::disableValidity(old))
+    }
+    out <- callNextMethod()
+    BiocGenerics:::replaceSlots(out, int_colData=int_cd, int_elementMetadata=int_em, 
+        int_metadata=int_m, check=FALSE)
 })
 
 #' @export
-#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
+#' @importFrom BiocGenerics rbind cbind
 setMethod("rbind", "SingleCellExperiment", function(..., deparse.level=1) {
-    args <- unname(list(...))
-    base <- do.call(rbind, lapply(args, function(x) { as(x, "RangedSummarizedExperiment") }))
+    args <- list(...)
+    args <- lapply(args, updateObject)
+    int_m <- do.call(c, lapply(args, int_metadata))
 
-    all.row.data <- lapply(args, int_elementMetadata)
-    sout <- do.call(.standardize_DataFrames, all.row.data)
-    new.row.data <- do.call(rbind, sout)
+    tryCatch({
+        int_em <- do.call(rbind, lapply(args, int_elementMetadata))
+    }, error=function(err) {
+        stop(paste0("failed to combine 'int_elementMetadata'\n", err))
+    })
 
-    ans <- args[[1]]
-    new(class(ans), base, int_colData=int_colData(ans), int_elementMetadata=new.row.data,
-        int_metadata=int_metadata(ans), reducedDims=reducedDims(ans, withDimnames=FALSE))
+    # Creating a shell to avoid having to pull out .cbind.DataFrame 
+    # to fuse metadata along the dimension not being combined.
+    col_shells <- lapply(args, .create_shell_coldata)
+    tryCatch({
+        combined <- do.call(rbind, col_shells)
+    }, error=function(err) {
+        stop(paste0("failed to combine 'int_colData'\n", err))
+    })
+    int_cd <- colData(combined)
+
+    old <- S4Vectors:::disableValidity()
+    if (!isTRUE(old)) {
+        S4Vectors:::disableValidity(TRUE)
+        on.exit(S4Vectors:::disableValidity(old))
+    }
+    out <- callNextMethod()
+    BiocGenerics:::replaceSlots(out, int_colData=int_cd, int_elementMetadata=int_em, 
+        int_metadata=int_m, check=FALSE)
 })
+
+#' @importFrom SummarizedExperiment SummarizedExperiment
+.create_shell_coldata <- function(x) {
+    SummarizedExperiment(colData=int_colData(x))
+}
+
+#' @importFrom SummarizedExperiment SummarizedExperiment
+.create_shell_rowdata <- function(x) {
+    SummarizedExperiment(rowData=int_elementMetadata(x))
+}
+

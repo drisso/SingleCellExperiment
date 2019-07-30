@@ -7,7 +7,7 @@ test_that("altExp getters work correctly", {
     expect_identical(altExp(sce), se1)
     expect_identical(altExp(sce, 2), se2)
     expect_identical(altExp(sce, "Protein"), se2)
-    expect_error(altExp(empty), "no alternative experiments")
+    expect_error(altExp(empty), "out-of-bounds")
 
     expect_identical(altExps(sce, withColData=FALSE), List(Spike=se1, Protein=se2))
     expect_identical(altExpNames(sce), c("Spike", "Protein"))
@@ -60,7 +60,7 @@ test_that("altExpNames setters work correctly", {
     altExpNames(sce) <- c("A", "B")
     expect_identical(altExpNames(sce), c("A", "B"))
 
-    expect_error(altExpNames(empty) <- c("A", "B"), "no alternative experiments")
+    expect_error(altExpNames(empty) <- c("A", "B"), "more column names")
     expect_error(altExpNames(empty) <- NULL, NA) # coerces the character.
     expect_error(altExpNames(sce) <- LETTERS, "more column names")
 })
