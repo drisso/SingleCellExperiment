@@ -2,6 +2,18 @@
 \title{SingleCellExperiment News}
 \encoding{UTF-8}
 
+\section{Version 1.8.0}{\itemize{
+\item Added altExp() and related methods to get and set alternative Experiments.
+
+\item Deprecated isSpike(), spikeNames() and related arguments for handling spike-ins,
+in favor of representing spike-ins as alternative Experiments.
+
+\item Deprecated type= in sizeFactors() and sizeFactorNames(), 
+which were previously only required to store size factors for spike-ins.
+
+\item Internal change to the representation of reducedDims() to streamline subsetting and combining.
+}}
+
 \section{Version 1.4.0}{\itemize{
 \item Allow ... arguments to be passed to rowData() and colData().
 
