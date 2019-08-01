@@ -1,11 +1,9 @@
 #' @export
 #' @importFrom BiocGenerics updateObject
-#' @importFrom S4Vectors DataFrame
 setMethod("updateObject", "SingleCellExperiment", function(object, ..., verbose=FALSE) {
     if (objectVersion(object) < "1.7.1") {
         stuff <- object@reducedDims
-        reducedDims(object) <- stuff
-        altExps(object) <- NULL
+        object <- .rse_to_sce(as(object, "RangedSummarizedExperiment"), reducedDims=stuff)
 
         if (verbose) {
             message("[updateObject] ", class(object), " object uses ", 
