@@ -1,10 +1,16 @@
 #' @export
 #' @importFrom BiocGenerics updateObject
-#' @importFrom S4Vectors DataFrame
+#' @importFrom utils packageVersion
 setMethod("updateObject", "SingleCellExperiment", function(object, ..., verbose=FALSE) {
     if (objectVersion(object) < "1.7.1") {
-        stuff <- object@reducedDims
-        reducedDims(object) <- stuff
+        old <- S4Vectors:::disableValidity()
+        if (!isTRUE(old)) {
+            S4Vectors:::disableValidity(TRUE)
+            on.exit(S4Vectors:::disableValidity(old))
+        }
+
+        int_metadata(object)$version <- packageVersion("SingleCellExperiment")
+        reducedDims(object) <- object@reducedDims
         altExps(object) <- NULL
 
         if (verbose) {

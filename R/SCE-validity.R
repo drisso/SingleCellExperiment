@@ -8,11 +8,13 @@
         msg <- c(msg, "'nrow' of 'int_colData' not equal to 'ncol(object)'")
     }
 
-    if (!.red_key %in% colnames(int_colData(object))) {
-        msg <- c(msg, "no 'reducedDims' field in 'int_colData'")
-    }
-    if (!.alt_key %in% colnames(int_colData(object))) {
-        msg <- c(msg, "no 'altExps' field in 'int_colData'")
+    if (objectVersion(object) >= "1.7.1") {
+        if (!.red_key %in% colnames(int_colData(object))) {
+            msg <- c(msg, "no 'reducedDims' field in 'int_colData'")
+        }
+        if (!.alt_key %in% colnames(int_colData(object))) {
+            msg <- c(msg, "no 'altExps' field in 'int_colData'")
+        }
     }
 
     # Checking spike-in names are present and accounted for.
