@@ -65,13 +65,15 @@ These data cannot be stored in the main \code{assays} of the \linkS4class{Single
 However, it is still desirable to store these features \emph{somewhere} in the SingleCellExperiment.
 This simplifies account-keeping in long workflows and ensure that samples remain synchronised.
 
-To facilitate this, the \linkS4class{SingleCellExperiment} allows for \dQuote{alternative Experiments}.
-This stores nested \linkS4class{SummarizedExperiment}-class objects inside a SingleCellExperiment object \code{x}, in a manner that guarantees that the nested objects have the same columns in the same order as those in \code{x}.
+To facilitate this, the \linkS4class{SingleCellExperiment} class allows for \dQuote{alternative Experiments}.
+Nested \linkS4class{SummarizedExperiment}-class objects are stored inside the SingleCellExperiment object \code{x}, in a manner that guarantees that the nested objects have the same columns in the same order as those in \code{x}.
 Methods are provided to enable convenient access to and manipulation of these alternative Experiments.
+Each alternative Experiment should contain experimental data and row metadata for a distinct set of features.
 
-By default, \code{withColData=TRUE} will replace the column metadata in each alternative Experiment with that from the main object \code{x} during access to the former.
-This is based on the rationale that relevant column metadata should be stored in \code{colData(x)}, given that samples are shared across the main and alternative Experiments.
-Users can set this to \code{FALSE} for efficiency if they are not interested in copying the column metadata, or in the rarer case where the alternative Experiment has its own column metadata fields that are of interest.
+Note that alternative Experiments are not expected to have their own column metadata.
+As samples are shared across the main and alternative Experiments, all relevant column metadata should be stored in \code{colData(x)} and \emph{not} in \code{colData(altExp(x))}.
+Indeed, the default \code{withColData=TRUE} will replace the column metadata in each alternative Experiment with that from the main object \code{x} when extracting the former.
+Users can set this to \code{FALSE} for efficiency if they are not interested in the column metadata.
 }
 
 \value{
