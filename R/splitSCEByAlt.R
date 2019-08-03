@@ -10,7 +10,7 @@ splitSCEByAlt <- function(x, f, ref=NULL) {
     for (other in setdiff(names(by.feat), ref)) {
         # Clearing out the colData() before adding it.
         subset <- x[by.feat[[other]],]
-        colData(subset) <- colData(se)[,0]
+        colData(subset) <- colData(subset)[,0]
         altExp(x0, other) <- subset
     }
     x0

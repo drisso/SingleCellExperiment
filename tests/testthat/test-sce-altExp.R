@@ -66,18 +66,25 @@ test_that("altExpNames setters work correctly", {
 })
 
 test_that("splitSCEByAlt works correctly", {
-     feat.type <- sample(c("endog", "ERCC", "CITE"), nrow(empty),
-         replace=TRUE, p=c(0.8, 0.1, 0.1))
-     out <- splitSCEByAlt(empty, feat.type)
+    feat.type <- sample(c("endog", "ERCC", "CITE"), nrow(empty),
+        replace=TRUE, p=c(0.8, 0.1, 0.1))
+    out <- splitSCEByAlt(empty, feat.type)
 
-     expect_identical(assay(out), assay(empty[feat.type=="endog",]))
-     expect_identical(altExp(out, "ERCC"), empty[feat.type=="ERCC",])
-     expect_identical(altExp(out, "CITE"), empty[feat.type=="CITE",])
+    expect_identical(assay(out), assay(empty[feat.type=="endog",]))
+    expect_identical(altExp(out, "ERCC"), empty[feat.type=="ERCC",])
+    expect_identical(altExp(out, "CITE"), empty[feat.type=="CITE",])
 
-     # Handles alternative reference. 
-     out <- splitSCEByAlt(empty, feat.type, ref="ERCC")
+    # Handles alternative reference. 
+    out <- splitSCEByAlt(empty, feat.type, ref="ERCC")
 
-     expect_identical(assay(out), assay(empty[feat.type=="ERCC",]))
-     expect_identical(altExp(out, "endog"), empty[feat.type=="endog",])
-     expect_identical(altExp(out, "CITE"), empty[feat.type=="CITE",])
+    expect_identical(assay(out), assay(empty[feat.type=="ERCC",]))
+    expect_identical(altExp(out, "endog"), empty[feat.type=="endog",])
+    expect_identical(altExp(out, "CITE"), empty[feat.type=="CITE",])
+
+    # Clears out colData
+    empty$blah <- sample(LETTERS, ncol(empty), replace=TRUE)
+    out <- splitSCEByAlt(empty, feat.type)
+    expect_identical(colnames(colData(out)), "blah")
+    expect_identical(colnames(colData(altExp(out))), "blah")
+    expect_identical(colnames(colData(altExp(out, withColData=FALSE))), character(0))
 })
