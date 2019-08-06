@@ -21,24 +21,31 @@ setMethod("sizeFactors", "SingleCellExperiment", function(object, type=NULL) {
 
 #' @export
 #' @importFrom BiocGenerics "sizeFactors<-"
-setReplaceMethod("sizeFactors", "SingleCellExperiment", function(object, type=NULL, ..., value) {
-    field <- .get_sf_field(type)
-    cd <- int_colData(object)
-    cd[[field]] <- value
-    int_colData(object) <- cd
+setReplaceMethod(
+    f = "sizeFactors",
+    signature = signature(
+        object = "SingleCellExperiment",
+        value = "numeric"
+    ),
+    function(object, type=NULL, ..., value) {
+        field <- .get_sf_field(type)
+        cd <- int_colData(object)
+        cd[[field]] <- value
+        int_colData(object) <- cd
 
-    if (!is.null(type)) {
-        .Deprecated(msg="'type=' is deprecated.")
-        md <- int_metadata(object)
-        if (is.null(value)) {
-            md$size_factor_names <- setdiff(md$size_factor_names, type)
-        } else {
-            md$size_factor_names <- union(md$size_factor_names, type)
+        if (!is.null(type)) {
+            .Deprecated(msg="'type=' is deprecated.")
+            md <- int_metadata(object)
+            if (is.null(value)) {
+                md$size_factor_names <- setdiff(md$size_factor_names, type)
+            } else {
+                md$size_factor_names <- union(md$size_factor_names, type)
+            }
+            int_metadata(object) <- md
         }
-        int_metadata(object) <- md
+        return(object)
     }
-    return(object)
-})
+)
 
 #' @export
 setMethod("clearSizeFactors", "SingleCellExperiment", function(object) {
