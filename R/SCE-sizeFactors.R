@@ -27,7 +27,7 @@ setReplaceMethod(
         object = "SingleCellExperiment",
         value = "numeric"
     ),
-    function(object, type=NULL, ..., value) {
+    signature = function(object, type=NULL, ..., value) {
         field <- .get_sf_field(type)
         cd <- int_colData(object)
         cd[[field]] <- value
