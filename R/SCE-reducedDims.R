@@ -57,7 +57,10 @@ setMethod("reducedDim", "SingleCellExperiment", function(x, type=1, withDimnames
     x <- updateObject(x)
 
     internals <- int_colData(x)[[.red_key]]
-    out <- internals[,type]
+    if (identical(ncol(internals), 0L)) {
+        return(NULL)
+    }
+    out <- internals[[type]]
     if (!is.null(out) && withDimnames) {
         rownames(out) <- colnames(x)
     }

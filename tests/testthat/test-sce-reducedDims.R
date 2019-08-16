@@ -50,7 +50,7 @@ test_that("reducedDims getters/setters are functioning", {
     reducedDims(alt) <- NULL
     expect_identical(reducedDims(alt), setNames(SimpleList(), character(0)))
 
-    # Setting with an unnamed list works. 
+    # Setting with an unnamed list works.
     reducedDims(sce) <- list(d1, d2)
     expect_identical(length(reducedDimNames(sce)), 2L)
 
@@ -78,6 +78,11 @@ test_that("getters/setters respond to dimnames", {
 })
 
 test_that("reducedDim getters/setters work with numeric indices", {
+    # In the absence of reducedDim, return NULL
+    expect_null(reducedDim(sce))
+    expect_null(reducedDim(sce, 2))
+    expect_null(reducedDim(sce, "PCA"))
+
     # This gets a bit confusing as the order changes when earlier elements are wiped out.
     reducedDim(sce, 1) <- d1
     expect_identical(reducedDim(sce), d1)
