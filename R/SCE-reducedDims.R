@@ -96,11 +96,8 @@ setMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type
     out <- tryCatch({
         internals[, type]
     }, error=function(err) {
-        NULL
-    })
-
-    if (is.null(out))
         stop(msg, "\n'", type, "' not in names(reducedDims(<", class(x), ">))")
+    })
 
     if (withDimnames) {
         rownames(out) <- colnames(x)
