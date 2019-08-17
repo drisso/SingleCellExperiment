@@ -53,20 +53,47 @@ setReplaceMethod("reducedDimNames", c("SingleCellExperiment", "character"), func
 })
 
 #' @export
-setMethod("reducedDim", "SingleCellExperiment", function(x, type=1, withDimnames=TRUE) {
+setMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x, i, ...) {
     x <- updateObject(x)
-
     internals <- int_colData(x)[[.red_key]]
 
-    if (identical(ncol(internals), 0L))
-        stop("'reducedDim(<", class(x), ">, ...) ",
-             "length(reducedDims(<", class(x), ">)) is 0'")
-
-    out <- internals[[type]]
-    if (!is.null(out) && withDimnames) {
-        rownames(out) <- colnames(x)
+    if (identical(ncol(internals), 0L)) {
+        stop(
+            "'reducedDim(<", class(x), ">, ...) ",
+            "length(reducedDims(<", class(x), ">)) is 0'")
     }
-    out
+
+    reducedDim(x, 1L)
+})
+
+#' @export
+setMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, i, ...) {
+    x <- updateObject(x)
+    internals <- int_colData(x)[[.red_key]]
+    internals <- as(internals, "SimpleList")
+
+    tryCatch({
+        internals[[i]]
+    }, error=function(err) {
+        stop("'reducedDim(<", class(x), ">, i=\"numeric\", ...)' ",
+             "invalid subscript 'i'\n", conditionMessage(err))
+    })
+})
+
+#' @export
+setMethod("reducedDim", c("SingleCellExperiment", "character"),
+    function(x, i, ...)
+{
+    msg <- paste0("'reducedDim(<", class(x), ">, i=\"character\", ...)' ",
+                  "invalid subscript 'i'")
+    res <- tryCatch({
+        reducedDims(x, ...)[[i]]
+    }, error=function(err) {
+        stop(msg, "\n", conditionMessage(err))
+    })
+    if (is.null(res))
+        stop(msg, "\n'", i, "' not in names(reducedDims(<", class(x), ">))")
+    res
 })
 
 #' @export

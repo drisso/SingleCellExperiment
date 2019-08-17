@@ -23,7 +23,7 @@ setGeneric("factorData<-", function(x, ..., value) standardGeneric("factorData<-
 # Getter/setters for reducedDim.
 
 #' @export
-setGeneric("reducedDim", function(x, ...) standardGeneric("reducedDim"))
+setGeneric("reducedDim", function(x, i, ...) standardGeneric("reducedDim"))
 
 #' @export
 setGeneric("reducedDim<-", function(x, ..., value) standardGeneric("reducedDim<-"))
