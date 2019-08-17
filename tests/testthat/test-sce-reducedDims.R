@@ -22,8 +22,8 @@ test_that("reducedDim getters/setters are functioning with character 'type'", {
     expect_identical(reducedDimNames(sce), "tSNE")
 
     # Checking for different errors.
-    expect_error(reducedDim(sce, "PCA"), "invalid names")
-    expect_error(reducedDim(sce, 2), "out-of-bounds indices")
+    expect_error(reducedDim(sce, "PCA"), "subscript contains invalid names")
+    expect_error(reducedDim(sce, 2), "invalid subscript")
     expect_error(reducedDim(sce, "DM") <- d1[1:10,], "different number of rows")
     expect_error(reducedDim(sce, "DM") <- "huh", "different number of rows")
 })
@@ -78,10 +78,10 @@ test_that("getters/setters respond to dimnames", {
 })
 
 test_that("reducedDim getters/setters work with numeric indices", {
-    # In the absence of reducedDim, return NULL
-    expect_null(reducedDim(sce))
-    expect_null(reducedDim(sce, 2))
-    expect_null(reducedDim(sce, "PCA"))
+    # In the absence of reducedDim, throw an error
+    expect_error(reducedDim(sce), "is 0")
+    expect_error(reducedDim(sce, 2), "invalid subscript 'type'")
+    expect_error(reducedDim(sce, "PCA"), "subscript contains invalid names")
 
     # This gets a bit confusing as the order changes when earlier elements are wiped out.
     reducedDim(sce, 1) <- d1

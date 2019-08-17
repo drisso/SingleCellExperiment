@@ -53,7 +53,7 @@ setReplaceMethod("reducedDimNames", c("SingleCellExperiment", "character"), func
 })
 
 #' @export
-setMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x, i, ...) {
+setMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x, type, withDimnames=TRUE) {
     x <- updateObject(x)
     internals <- int_colData(x)[[.red_key]]
 
@@ -63,37 +63,50 @@ setMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x, i, ...
             "length(reducedDims(<", class(x), ">)) is 0'")
     }
 
-    reducedDim(x, 1L)
+    reducedDim(x, 1L, withDimnames)
 })
 
 #' @export
-setMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, i, ...) {
+setMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, type=1, withDimnames=TRUE) {
     x <- updateObject(x)
     internals <- int_colData(x)[[.red_key]]
-    internals <- as(internals, "SimpleList")
 
-    tryCatch({
-        internals[[i]]
+    out <- tryCatch({
+        internals[, type]
     }, error=function(err) {
-        stop("'reducedDim(<", class(x), ">, i=\"numeric\", ...)' ",
-             "invalid subscript 'i'\n", conditionMessage(err))
+        stop("'reducedDim(<", class(x), ">, type=\"numeric\", ...)' ",
+             "invalid subscript 'type'\n", conditionMessage(err))
     })
+
+    if (withDimnames) {
+        rownames(out) <- colnames(x)
+    }
+
+    out
 })
 
 #' @export
-setMethod("reducedDim", c("SingleCellExperiment", "character"),
-    function(x, i, ...)
-{
-    msg <- paste0("'reducedDim(<", class(x), ">, i=\"character\", ...)' ",
-                  "invalid subscript 'i'")
-    res <- tryCatch({
-        reducedDims(x, ...)[[i]]
+setMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type, withDimnames=TRUE) {
+    msg <- paste0("'reducedDim(<", class(x), ">, type=\"character\", ...)' ",
+                  "invalid subscript 'type'")
+
+    x <- updateObject(x)
+    internals <- int_colData(x)[[.red_key]]
+
+    out <- tryCatch({
+        internals[, type]
     }, error=function(err) {
         stop(msg, "\n", conditionMessage(err))
     })
-    if (is.null(res))
-        stop(msg, "\n'", i, "' not in names(reducedDims(<", class(x), ">))")
-    res
+
+    if (is.null(out))
+        stop(msg, "\n'", type, "' not in names(reducedDims(<", class(x), ">))")
+
+    if (withDimnames) {
+        rownames(out) <- colnames(x)
+    }
+
+    out
 })
 
 #' @export
