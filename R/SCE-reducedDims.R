@@ -96,7 +96,7 @@ setMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type
     out <- tryCatch({
         internals[, type]
     }, error=function(err) {
-        stop(msg, "\n", conditionMessage(err))
+        NULL
     })
 
     if (is.null(out))
