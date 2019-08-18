@@ -56,7 +56,13 @@ Multiple results can be stored in a single object by assigning to different \cod
 If \code{value} is \code{NULL} for \code{reducedDim<-}, the set of results corresponding to \code{type} is removed from the object.
 If \code{value} is \code{NULL} for \code{reducedDims<-}, all dimensionality reduction results are removed.
 
-Unnamed results assigned via \code{reducedDim<-} or \code{reducedDims<-} will be assigned empty names.
+Unnamed results assigned \code{reducedDims<-} will be assigned empty names.
+
+Individual results can be assigned using \code{reducedDim<-}.
+If \code{type} is missing, \code{value} is assigned to the first result.
+If the result already exists, its name is preserved; otherwise it is given an empty name.
+If \code{type} is \code{numeric}, it must be within the range of existing results, and \code{value} will be assigned to the result at that index.
+If \code{type} is \code{character} and a result exists with this name, \code{value} is assigned to to that result; otherwise a new result with this name is append to the existing list of results.
 }
 
 \value{

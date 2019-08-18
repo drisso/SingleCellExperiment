@@ -22,10 +22,14 @@ test_that("reducedDim getters/setters are functioning with character 'type'", {
     expect_identical(reducedDimNames(sce), "tSNE")
 
     # Checking for different errors.
-    expect_error(reducedDim(sce, "PCA"), "subscript contains invalid names")
-    expect_error(reducedDim(sce, 2), "invalid subscript")
+    expect_null(reducedDim(sce, "PCA")) # during deprecation
+    expect_warning(reducedDim(sce, "PCA"), "deprecated") # during deprecation
+    # expect_error(reducedDim(sce, "PCA"), "subscript contains invalid names") # after deprecation
+    expect_null(reducedDim(sce, "2")) # during deprecation
+    expect_warning(reducedDim(sce, "2"), "deprecated") # during deprecation
+    # expect_error(reducedDim(sce, 2), "invalid subscript") # after deprecation
     expect_error(reducedDim(sce, "DM") <- d1[1:10,], "different number of rows")
-    expect_error(reducedDim(sce, "DM") <- "huh", "different number of rows")
+    expect_error(reducedDim(sce, 1) <- "huh", "different number of rows")
 })
 
 test_that("reducedDims getters/setters are functioning", {
@@ -77,11 +81,25 @@ test_that("getters/setters respond to dimnames", {
     expect_identical(rownames(out[[2]]), NULL)
 })
 
+test_that("reducedDim setter creates an unnamed redDim is none are present", {
+    # In the absence of of redDim, create an unnamed one (like reducedDims does)
+    reducedDim(sce) <- d1
+    expect_identical(reducedDimNames(sce), character(1))
+})
+
 test_that("reducedDim getters/setters work with numeric indices", {
-    # In the absence of reducedDim, throw an error
-    expect_error(reducedDim(sce), "is 0")
-    expect_error(reducedDim(sce, 2), "invalid subscript 'type'")
-    expect_error(reducedDim(sce, "PCA"), "subscript contains invalid names")
+    # In the absence of reducedDim
+    # currently return NULL with a deprecation message
+    # future will throw an error
+    expect_null(reducedDim(sce)) # during deprecation
+    expect_warning(reducedDim(sce), "NULL is deprecated") # during deprecation
+    # expect_error(reducedDim(sce), "is 0") # after deprecation
+    expect_null(reducedDim(sce, 2)) # during deprecation
+    expect_warning(reducedDim(sce, 2), "NULL is deprecated") # during deprecation
+    # expect_error(reducedDim(sce, 2), "invalid subscript 'type'") # after deprecation
+    expect_null(reducedDim(sce, "PCA")) # during deprecation
+    expect_warning(reducedDim(sce, "PCA"), "NULL is deprecated") # during deprecation
+    # expect_error(reducedDim(sce, "PCA"), "subscript contains invalid names") # after deprecation
 
     # This gets a bit confusing as the order changes when earlier elements are wiped out.
     reducedDim(sce, 1) <- d1

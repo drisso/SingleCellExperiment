@@ -116,13 +116,55 @@ setMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type
 })
 
 #' @export
-setReplaceMethod("reducedDim", "SingleCellExperiment", function(x, type=1, ..., value) {
+setReplaceMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x, type, ..., value) {
+    type <- 1L
+
+    if (0L == length(reducedDimNames(x))){
+        ## Implementation 1
+        # https://github.com/drisso/SingleCellExperiment/pull/35#issuecomment-522258649
+        # type <- "unnamed"
+        ## Implementation 2
+        # `reducedDims<-`` above creates character(n) names
+        type <- character(1)
+        ## Implementation 3
+        # This would implement the same behaviour as SummarizedExperiment::assay<-
+        # stop("'reducedDim(<", class(x), ">) <- value' ", "length(reducedDims(<",
+        #      class(x), ">)) is 0")
+    }
+
+    reducedDim(x, type) <- value
+    x
+})
+
+#' @export
+setReplaceMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, type = 1, ..., value) {
+    x <- updateObject(x)
+
+    internals <- int_colData(x)
+
+    if (!is.null(value) && !identical(nrow(value), ncol(x))) {
+        stop("replacement 'reducedDim' has a different number of rows than 'ncol(x)'")
+    }
+
+    # How do we want to deal with length(type) > 1 ?
+    if (type[1] > ncol(internals)) {
+        stop("invalid subscript 'type'\nsubscript out of bounds")
+    }
+
+    internals[[.red_key]][[type]] <- value
+    int_colData(x) <- internals
+    x
+})
+
+#' @export
+setReplaceMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type, ..., value) {
     x <- updateObject(x)
 
     internals <- int_colData(x)
     if (!is.null(value) && !identical(nrow(value), ncol(x))) {
         stop("replacement 'reducedDim' has a different number of rows than 'ncol(x)'")
     }
+
     internals[[.red_key]][[type]] <- value
     int_colData(x) <- internals
     x
