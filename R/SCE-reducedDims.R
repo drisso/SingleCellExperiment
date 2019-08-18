@@ -58,8 +58,8 @@ setMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x, type, 
     internals <- int_colData(x)[[.red_key]]
 
     if (identical(ncol(internals), 0L)) {
-        # .Deprecated(msg="NULL is deprecated.")
-        # return(NULL)
+        .Deprecated(msg="NULL is deprecated.")
+        return(NULL)
         # To deprecate NULL and throw an error instead, remove the two lines above.
         stop(
             "'reducedDim(<", class(x), ">, ...) ",
