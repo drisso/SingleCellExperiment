@@ -1,6 +1,7 @@
 # Getter/setter functions for reducedDims.
 
 .red_key <- "reducedDims"
+.unnamed <- "unnamed"
 
 #' @export
 #' @importFrom S4Vectors List
@@ -31,7 +32,7 @@ setReplaceMethod("reducedDims", "SingleCellExperiment", function(x, value) {
         }
         collected <- do.call(DataFrame, lapply(value, I))
         if (is.null(names(value))) {
-            colnames(collected) <- character(length(value))
+            colnames(collected) <- paste0(.unnamed, seq_along(value))
         }
     }
 
@@ -122,10 +123,10 @@ setReplaceMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x,
     if (0L == length(reducedDimNames(x))){
         ## Implementation 1
         # https://github.com/drisso/SingleCellExperiment/pull/35#issuecomment-522258649
-        # type <- "unnamed"
+        type <- paste0(.unnamed, 1L)
         ## Implementation 2
         # `reducedDims<-`` above creates character(n) names
-        type <- character(1)
+        # type <- character(1)
         ## Implementation 3
         # This would implement the same behaviour as SummarizedExperiment::assay<-
         # stop("'reducedDim(<", class(x), ">) <- value' ", "length(reducedDims(<",
@@ -140,14 +141,13 @@ setReplaceMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x,
 setReplaceMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, type = 1, ..., value) {
     x <- updateObject(x)
 
-    internals <- int_colData(x)
-
     if (!is.null(value) && !identical(nrow(value), ncol(x))) {
         stop("replacement 'reducedDim' has a different number of rows than 'ncol(x)'")
     }
 
-    # How do we want to deal with length(type) > 1 ?
-    if (type[1] > ncol(internals)) {
+    internals <- int_colData(x)
+
+    if (type[1] > ncol(internals[[.red_key]])) {
         stop("invalid subscript 'type'\nsubscript out of bounds")
     }
 

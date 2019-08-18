@@ -56,7 +56,7 @@ test_that("reducedDims getters/setters are functioning", {
 
     # Setting with an unnamed list works.
     reducedDims(sce) <- list(d1, d2)
-    expect_identical(length(reducedDimNames(sce)), 2L)
+    expect_identical(reducedDimNames(sce), c("unnamed1", "unnamed2"))
 
     # Checking for errors.
     expect_error(reducedDims(sce) <- list(d1, d2[1:10,]), "do not have the correct number of rows")
@@ -84,7 +84,7 @@ test_that("getters/setters respond to dimnames", {
 test_that("reducedDim setter creates an unnamed redDim is none are present", {
     # In the absence of of redDim, create an unnamed one (like reducedDims does)
     reducedDim(sce) <- d1
-    expect_identical(reducedDimNames(sce), character(1))
+    expect_identical(reducedDimNames(sce), "unnamed1")
 })
 
 test_that("reducedDim getters/setters work with numeric indices", {
@@ -101,28 +101,27 @@ test_that("reducedDim getters/setters work with numeric indices", {
     expect_warning(reducedDim(sce, "PCA"), "NULL is deprecated") # during deprecation
     # expect_error(reducedDim(sce, "PCA"), "subscript contains invalid names") # after deprecation
 
+    expect_error(reducedDim(sce, 1) <- d1, "invalid subscript 'type'\nsubscript out of bounds")
+    expect_error(reducedDim(sce, 2) <- d1, "invalid subscript 'type'\nsubscript out of bounds")
+
     # This gets a bit confusing as the order changes when earlier elements are wiped out.
-    reducedDim(sce, 1) <- d1
-    expect_identical(reducedDim(sce), d1)
-    expect_identical(reducedDim(sce, 1), d1)
-    expect_identical(reducedDimNames(sce), "")
-    reducedDim(sce, 2) <- d2
+    reducedDims(sce) <- list(d1, d2)
     expect_identical(reducedDim(sce), d1)
     expect_identical(reducedDim(sce, 2), d2)
-    expect_identical(reducedDimNames(sce), character(2))
+    expect_identical(reducedDimNames(sce), c("unnamed1", "unnamed2"))
 
     mult <- d1 * 5
     reducedDim(sce, "PCA") <- mult # d1 is the second element.
     expect_identical(reducedDim(sce, 1), d1)
     expect_identical(reducedDim(sce, 2), d2)
     expect_identical(reducedDim(sce, 3), mult)
-    expect_identical(reducedDimNames(sce), c("", "", "PCA"))
+    expect_identical(reducedDimNames(sce), c("unnamed1", "unnamed2", "PCA"))
 
     reducedDim(sce, 1) <- NULL # d2 becomes the first element now.
     expect_identical(reducedDim(sce), d2)
     expect_identical(reducedDim(sce, 1), d2)
     expect_identical(reducedDim(sce, 2), reducedDim(sce, "PCA"))
-    expect_identical(reducedDimNames(sce), c("", "PCA"))
+    expect_identical(reducedDimNames(sce), c("unnamed2", "PCA"))
 
     reducedDim(sce) <- NULL # 'mult' becomes the first element.
     expect_identical(reducedDim(sce), mult)
@@ -136,7 +135,7 @@ test_that("reducedDim getters/setters work with numeric indices", {
 
 test_that("reducedDimNames getters/setters work correctly", {
     reducedDims(sce) <- list(d1, d2)
-    expect_identical(reducedDimNames(sce), character(2))
+    expect_identical(reducedDimNames(sce), c("unnamed1", "unnamed2"))
     reducedDims(sce) <- list(PCA=d1, TSNE=d2)
     expect_identical(reducedDimNames(sce), c("PCA", "TSNE"))
 
