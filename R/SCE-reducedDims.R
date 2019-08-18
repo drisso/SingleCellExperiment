@@ -58,6 +58,9 @@ setMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x, type, 
     internals <- int_colData(x)[[.red_key]]
 
     if (identical(ncol(internals), 0L)) {
+        # .Deprecated(msg="NULL is deprecated.")
+        # return(NULL)
+        # To deprecate NULL and throw an error instead, remove the two lines above.
         stop(
             "'reducedDim(<", class(x), ">, ...) ",
             "length(reducedDims(<", class(x), ">)) is 0'")
@@ -74,6 +77,9 @@ setMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, type=1
     out <- tryCatch({
         internals[, type]
     }, error=function(err) {
+        .Deprecated(msg="NULL is deprecated.")
+        return(NULL)
+        # To deprecate NULL and throw an error instead, remove the two lines above.
         stop("'reducedDim(<", class(x), ">, type=\"numeric\", ...)' ",
              "invalid subscript 'type'\n", conditionMessage(err))
     })
@@ -96,6 +102,9 @@ setMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type
     out <- tryCatch({
         internals[, type]
     }, error=function(err) {
+        .Deprecated(msg="NULL is deprecated.")
+        return(NULL)
+        # To deprecate NULL and throw an error instead, remove the two lines above.
         stop(msg, "\n'", type, "' not in names(reducedDims(<", class(x), ">))")
     })
 
