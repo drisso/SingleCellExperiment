@@ -82,7 +82,7 @@ LinearEmbeddingMatrix <- function(sampleFactors = matrix(nrow = 0, ncol = 0),
                             factorData = NULL,
                             metadata = list()) {
     if (is.null(factorData)) {
-        factorData <- new("DataFrame", nrows = ncol(sampleFactors))
+        factorData <- new("DFrame", nrows = ncol(sampleFactors))
     }
     out <- new("LinearEmbeddingMatrix",
                sampleFactors = sampleFactors,

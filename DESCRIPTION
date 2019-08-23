@@ -1,5 +1,5 @@
 Package: SingleCellExperiment
-Version: 1.7.4
+Version: 1.7.5
 Date: 2019-08-02
 Title: S4 Classes for Single Cell Data
 Authors@R: c(
@@ -8,7 +8,7 @@ Authors@R: c(
         person("Keegan", "Korthauer", role=c("ctb")))
 Depends: SummarizedExperiment
 Imports: 
-    S4Vectors,
+    S4Vectors (>= 0.23.19),
     methods,
     BiocGenerics,
     utils,

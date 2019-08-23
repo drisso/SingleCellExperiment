@@ -84,7 +84,7 @@ test_that("getting with names makes sense", {
     colnames(ref) <- cn
     expect_identical(featureLoadings(lem), ref)
 
-    ref <- new("DataFrame", nrows=ncol(lem))
+    ref <- new("DFrame", nrows=ncol(lem))
     rownames(ref) <- cn
     expect_identical(factorData(lem, withDimnames=FALSE), ref)
     expect_identical(factorData(lem), ref) # Doesn't make a difference, as this is the reference location.
@@ -109,7 +109,7 @@ test_that("setting with names makes sense", {
 
     # This will delete the column names.
     lem2 <- lem
-    factorData(lem2) <- new("DataFrame", nrows=ncol(lem))
+    factorData(lem2) <- new("DFrame", nrows=ncol(lem))
     expect_equal(ncol(factorData(lem2)), 0L)
     expect_identical(rownames(factorData(lem2)), NULL)
 
@@ -125,7 +125,7 @@ test_that("setting with names makes sense", {
     colnames(loading2) <- paste0("Y", cn)
     expect_error(featureLoadings(lem) <- loading2, "must match")
 
-    ref <- new("DataFrame", nrows=ncol(lem))
+    ref <- new("DFrame", nrows=ncol(lem))
     rownames(ref) <- paste0("Y", cn)
     expect_error(factorData(lem) <- ref, "must match")
 })

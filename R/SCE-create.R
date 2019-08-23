@@ -23,8 +23,8 @@ SingleCellExperiment <- function(..., reducedDims=list(), altExps=list()) {
     }
     
     out <- new("SingleCellExperiment", rse, 
-        int_elementMetadata=new("DataFrame", nrows=nrow(rse)),
-        int_colData=new("DataFrame", nrows=ncol(rse)))
+        int_elementMetadata=new("DFrame", nrows=nrow(rse)),
+        int_colData=new("DFrame", nrows=ncol(rse)))
 
     reducedDims(out) <- reducedDims
     altExps(out) <- altExps
