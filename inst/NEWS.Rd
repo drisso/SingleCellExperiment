@@ -5,6 +5,8 @@
 \section{Version 1.8.0}{\itemize{
 \item Added altExp() and related methods to get and set alternative Experiments.
 
+\item Added the splitAltExps() utility to create many alternative Experiments at once.
+
 \item Deprecated isSpike(), spikeNames() and related arguments for handling spike-ins,
 in favor of representing spike-ins as alternative Experiments.
 
