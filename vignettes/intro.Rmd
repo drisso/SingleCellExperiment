@@ -1,6 +1,10 @@
 ---
 title: "An introduction to the SingleCellExperiment class"
-author: "Davide Risso and Aaron Lun"
+author: 
+- name: Davide Risso
+  affiliation: Division of Biostatistics and Epidemiology, Weill Cornell Medicine 
+- name: Aaron Lun
+  email: infinite.monkeys.with.keyboards@gmail.com
 package: SingleCellExperiment
 output:
   BiocStyle::html_document:
@@ -22,7 +26,7 @@ The `SingleCellExperiment` class is a light-weight container for single-cell gen
 It extends the `RangedSummarizedExperiment` class and follows similar conventions, 
 i.e., rows should represent features (genes, transcripts, genomic regions) and columns should represent cells.
 It provides methods for storing dimensionality reduction results and data for alternative feature sets (e.g., synthetic spike-in transcripts, antibody tags).
-It is the central data structure for a number of Bioconductor single-cell packages like `r Biocpkg("scater")` and `r Biocpkg("scran")`.
+It is the central data structure for Bioconductor single-cell packages like `r Biocpkg("scater")` and `r Biocpkg("scran")`.
 
 # Creating SingleCellExperiment instances
 
@@ -49,6 +53,9 @@ library(scRNAseq)
 sce <- ReprocessedAllenData("tophat_counts")
 sce
 ```
+
+The set of operations that can be applied to a `RangedSummarizedExperiment` are also applicable to any instance of a `SingleCellExperiment`.
+This includes access to assay data via `assay()`, column metadata with `colData()`, and so on.
 
 # Adding low-dimensional representations
 
@@ -138,7 +145,7 @@ We move the corresponding rows out of the assays of the main `SingleCellExperime
 
 ```{r}
 is.spike <- grepl("^ERCC-", rownames(sce))
-sce <- splitSCEByAlt(sce, ifelse(is.spike, "ERCC", "gene"))
+sce <- splitAltExps(sce, ifelse(is.spike, "ERCC", "gene"))
 altExpNames(sce)
 ```
 
