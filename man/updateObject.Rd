@@ -3,6 +3,7 @@
 \docType{methods}
 \name{updateObject}
 \alias{updateObject}
+\alias{updateObject,SingleCellExperiment-method}
 \title{Update a SingleCellExperiment object}
 \usage{
 \S4method{updateObject}{SingleCellExperiment}(object, ...,
