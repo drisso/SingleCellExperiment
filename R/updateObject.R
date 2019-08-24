@@ -19,7 +19,7 @@
 #'
 #' @name updateObject 
 #' @export
-#' @aliases updateObject
+#' @aliases updateObject updateObject,SingleCellExperiment-method
 #' @importFrom BiocGenerics updateObject
 #' @importFrom S4Vectors DataFrame
 #' @importFrom utils packageVersion

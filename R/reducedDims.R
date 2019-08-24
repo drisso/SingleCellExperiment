@@ -73,6 +73,7 @@
 #' reducedDims(sce)
 #' 
 #' @name reducedDims
+#' @docType methods
 #' @aliases 
 #' reducedDim reducedDims reducedDimNames
 #' reducedDim,SingleCellExperiment,missing-method
@@ -85,7 +86,7 @@
 #' reducedDim<-,SingleCellExperiment,numeric-method
 #' reducedDim<-,SingleCellExperiment,character-method
 #' reducedDims<-,SingleCellExperiment-method
-#' reducedDimNames<-,SingleCellExperiment-method
+#' reducedDimNames<-,SingleCellExperiment,character-method
 NULL
 
 # Getter/setter functions for reducedDims.

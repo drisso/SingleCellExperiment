@@ -3,7 +3,6 @@
 \alias{SingleCellExperiment-class}
 \alias{coerce,SummarizedExperiment,SingleCellExperiment-method}
 \alias{coerce,RangedSummarizedExperiment,SingleCellExperiment-method}
-\alias{updateObject,SingleCellExperiment-method}
 
 \docType{class}
 

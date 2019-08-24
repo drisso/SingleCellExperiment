@@ -95,6 +95,7 @@
 #' altExp(sce, "ERCC") <- se1[1:2,]
 #' 
 #' @name altExps
+#' @docType methods
 #' @aliases 
 #' altExp altExps altExpNames
 #' altExp,SingleCellExperiment,missing-method
@@ -107,7 +108,7 @@
 #' altExp<-,SingleCellExperiment,numeric-method
 #' altExp<-,SingleCellExperiment,character-method
 #' altExps<-,SingleCellExperiment-method
-#' altExpNames<-,SingleCellExperiment-method
+#' altExpNames<-,SingleCellExperiment,character-method
 #' [,SummarizedExperimentByColumn,ANY,ANY,ANY-method
 #' [<-,SummarizedExperimentByColumn,ANY,ANY,ANY-method
 #' c,SummarizedExperimentByColumn-method
@@ -189,8 +190,8 @@ setMethod("altExp", c("SingleCellExperiment", "character"), function(x, e, withC
 # Setters.
 
 #' @export
-setReplaceMethod("altExpNames", "SingleCellExperiment", function(x, value) {
-    colnames(int_colData(x)[[.alt_key]]) <- as.character(value)
+setReplaceMethod("altExpNames", c("SingleCellExperiment", "character"), function(x, value) {
+    colnames(int_colData(x)[[.alt_key]]) <- value
     x
 })
 

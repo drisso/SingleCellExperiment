@@ -40,8 +40,6 @@ setGeneric("reducedDims", function(x, ...) standardGeneric("reducedDims"))
 #' @export
 setGeneric("reducedDims<-", function(x, value) standardGeneric("reducedDims<-"))
 
-setGeneric("int_reducedDims<-", function(x, value) standardGeneric("int_reducedDims<-"))
-
 ########################################
 # Hidden getter/setters for internal slots.
 
