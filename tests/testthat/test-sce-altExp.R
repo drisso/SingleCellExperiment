@@ -7,17 +7,16 @@ test_that("altExp getters work correctly", {
     expect_identical(altExp(sce), se1)
     expect_identical(altExp(sce, 2), se2)
     expect_identical(altExp(sce, "Protein"), se2)
-    expect_error(altExp(empty), "is 0")
 
     expect_identical(altExps(sce, withColData=FALSE), List(Spike=se1, Protein=se2))
     expect_identical(altExpNames(sce), c("Spike", "Protein"))
 
     # Carries over colData.
     colData(sce)$stuff <- runif(ncol(sce))
-    expect_identical(sce$stuff, altExp(sce)$stuff)
+    expect_identical(sce$stuff, altExp(sce, withColData=TRUE)$stuff)
     expect_identical(NULL, altExp(sce, withColData=FALSE)$stuff)
 
-    expect_identical(sce$stuff, altExps(sce)[[1]]$stuff)
+    expect_identical(sce$stuff, altExps(sce, withColData=TRUE)[[1]]$stuff)
     expect_identical(NULL, altExps(sce, withColData=FALSE)[[1]]$stuff)
 })
 
@@ -39,6 +38,13 @@ test_that("altExp setters work correctly", {
     altExp(sce, 1) <- NULL
     expect_identical(altExpNames(sce), character(0))
 
+    altExp(sce) <- se2
+    expect_identical(altExpNames(sce), "unnamed1")
+    expect_identical(altExp(sce), se2)
+    altExp(sce) <- se3
+    expect_identical(altExpNames(sce), "unnamed1")
+    expect_identical(altExp(sce), se3)
+
     expect_error(altExp(sce, 5) <- se3, "out of bounds")
 })
 
@@ -51,7 +57,7 @@ test_that("altExps setters work correctly", {
 
     # Works without names.
     altExps(sce) <- list(se1, se2)
-    expect_identical(altExpNames(sce), character(2))
+    expect_identical(altExpNames(sce), c("unnamed1", "unnamed2"))
     expect_identical(altExp(sce,1), se1)
     expect_identical(altExp(sce,2), se2)
 })
@@ -61,21 +67,21 @@ test_that("altExpNames setters work correctly", {
     expect_identical(altExpNames(sce), c("A", "B"))
 
     expect_error(altExpNames(empty) <- c("A", "B"), "more column names")
-    expect_error(altExpNames(empty) <- NULL, NA) # coerces the character.
+    expect_error(altExpNames(empty) <- NULL, "unable to find an inherited method") 
     expect_error(altExpNames(sce) <- LETTERS, "more column names")
 })
 
-test_that("splitSCEByAlt works correctly", {
+test_that("splitAltExps works correctly", {
     feat.type <- sample(c("endog", "ERCC", "CITE"), nrow(empty),
         replace=TRUE, p=c(0.8, 0.1, 0.1))
-    out <- splitSCEByAlt(empty, feat.type)
+    out <- splitAltExps(empty, feat.type)
 
     expect_identical(assay(out), assay(empty[feat.type=="endog",]))
     expect_identical(altExp(out, "ERCC"), empty[feat.type=="ERCC",])
     expect_identical(altExp(out, "CITE"), empty[feat.type=="CITE",])
 
     # Handles alternative reference.
-    out <- splitSCEByAlt(empty, feat.type, ref="ERCC")
+    out <- splitAltExps(empty, feat.type, ref="ERCC")
 
     expect_identical(assay(out), assay(empty[feat.type=="ERCC",]))
     expect_identical(altExp(out, "endog"), empty[feat.type=="endog",])
@@ -83,19 +89,16 @@ test_that("splitSCEByAlt works correctly", {
 
     # Clears out colData
     empty$blah <- sample(LETTERS, ncol(empty), replace=TRUE)
-    out <- splitSCEByAlt(empty, feat.type)
-    expect_identical(colnames(colData(out)), "blah")
-    expect_identical(colnames(colData(altExp(out))), "blah")
+    out <- splitAltExps(empty, feat.type)
     expect_identical(colnames(colData(altExp(out, withColData=FALSE))), character(0))
 })
 
 test_that("getters and setters throw appropriate errors", {
 
-    expect_error(altExp(empty), "is 0")
+    expect_error(altExp(empty), "no available entries")
     expect_error(altExp(sce, 3), "subscript contains out-of-bounds indices")
-    expect_error(altExp(sce, "dummy"), "not in names")
+    expect_error(altExp(sce, "dummy"), "invalid subscript")
 
-    expect_error(altExp(empty) <- se1, "is 0")
-    expect_error(altExp(sce, 3) <- se1, "subscript out of bounds")
+    expect_error(altExp(sce, 3) <- se1, "out of bounds")
 
 })

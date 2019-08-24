@@ -28,8 +28,8 @@ test_that("reducedDim getters/setters are functioning with character 'type'", {
     expect_null(reducedDim(sce, "2")) # during deprecation
     expect_warning(reducedDim(sce, "2"), "deprecated") # during deprecation
     # expect_error(reducedDim(sce, 2), "invalid subscript") # after deprecation
-    expect_error(reducedDim(sce, "DM") <- d1[1:10,], "different number of rows")
-    expect_error(reducedDim(sce, 1) <- "huh", "different number of rows")
+    expect_error(reducedDim(sce, "DM") <- d1[1:10,], "number of rows")
+    expect_error(reducedDim(sce, 1) <- "huh", "number of rows")
 })
 
 test_that("reducedDims getters/setters are functioning", {
@@ -59,8 +59,8 @@ test_that("reducedDims getters/setters are functioning", {
     expect_identical(reducedDimNames(sce), c("unnamed1", "unnamed2"))
 
     # Checking for errors.
-    expect_error(reducedDims(sce) <- list(d1, d2[1:10,]), "do not have the correct number of rows")
-    expect_error(reducedDims(sce) <- list(d1[1:10,], d2[1:10,]), "do not have the correct number of rows")
+    expect_error(reducedDims(sce) <- list(d1, d2[1:10,]), "number of rows")
+    expect_error(reducedDims(sce) <- list(d1[1:10,], d2[1:10,]), "number of rows")
 })
 
 test_that("getters/setters respond to dimnames", {
@@ -101,8 +101,8 @@ test_that("reducedDim getters/setters work with numeric indices", {
     expect_warning(reducedDim(sce, "PCA"), "NULL is deprecated") # during deprecation
     # expect_error(reducedDim(sce, "PCA"), "subscript contains invalid names") # after deprecation
 
-    expect_error(reducedDim(sce, 1) <- d1, "invalid subscript 'type'\nsubscript out of bounds")
-    expect_error(reducedDim(sce, 2) <- d1, "invalid subscript 'type'\nsubscript out of bounds")
+    expect_error(reducedDim(sce, 1) <- d1, "out of bounds")
+    expect_error(reducedDim(sce, 2) <- d1, "out of bounds")
 
     # This gets a bit confusing as the order changes when earlier elements are wiped out.
     reducedDims(sce) <- list(d1, d2)
@@ -130,7 +130,7 @@ test_that("reducedDim getters/setters work with numeric indices", {
     expect_identical(reducedDim(sce, 1), d2)
     expect_identical(reducedDimNames(sce), "PCA")
 
-    expect_error(reducedDim(sce, 5) <- d1, "subscript out of bounds")
+    expect_error(reducedDim(sce, 5) <- d1, "out of bounds")
 })
 
 test_that("reducedDimNames getters/setters work correctly", {
