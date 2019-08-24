@@ -1,6 +1,8 @@
 #' Reduced dimensions methods
 #'
 #' Methods to get or set dimensionality reduction results in a \linkS4class{SingleCellExperiment} object.
+#' These are typically used to store and retrieve low-dimensional representations of single-cell datasets,
+#' e.g., for data compression (PCA) or visualization (t-SNE).
 #' 
 #' @section Getters:
 #' In the following examples, \code{x} is a \linkS4class{SingleCellExperiment} object.
@@ -35,7 +37,7 @@
 #' }
 #'
 #' \code{value} is expected to be a numeric matrix-like object with number of rows equal to \code{ncol(x)}.
-#' Alternatively, if \code{value} is \code{NULL}, the set of results corresponding to \code{type} is removed from the object.
+#' Alternatively, if \code{value} is \code{NULL}, the result corresponding to \code{type} is removed from the object.
 #' 
 #' @section Other setters:
 #' In the following examples, \code{x} is a \linkS4class{SingleCellExperiment} object.
@@ -116,7 +118,8 @@ setReplaceMethod("reducedDims", "SingleCellExperiment", function(x, value) {
     } else {
         nrows <- vapply(value, nrow, FUN.VALUE = 0L)
         if (!all(nrows == ncol(x))) {
-            stop("elements of replacement 'reducedDims' do not have the correct number of rows")
+            stop("invalid 'value' in 'reducedDims(<", class(x), ">) <- value'\n",
+                "each element of 'value' should have number of rows equal to 'ncol(x)'")
         }
         collected <- do.call(DataFrame, lapply(value, I))
         if (is.null(names(value))) {
@@ -148,9 +151,7 @@ setMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x, type, 
         .Deprecated(msg="NULL is deprecated.")
         return(NULL)
         # To deprecate NULL and throw an error instead, remove the two lines above.
-        stop(
-            "'reducedDim(<", class(x), ">, ...) ",
-            "length(reducedDims(<", class(x), ">)) is 0'")
+        stop("no available entries for 'reducedDim(<", class(x), ">, ...)'")
     }
 
     reducedDim(x, 1L, withDimnames)
@@ -167,8 +168,8 @@ setMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, type=1
         .Deprecated(msg="NULL is deprecated.")
         return(NULL)
         # To deprecate NULL and throw an error instead, remove the two lines above.
-        stop("'reducedDim(<", class(x), ">, type=\"numeric\", ...)' ",
-             "invalid subscript 'type'\n", conditionMessage(err))
+        stop("invalid subscript 'type' in 'reducedDim(<", class(x), ">, type=\"numeric\", ...)'\n",,
+            conditionMessage(err))
     })
 
     if (withDimnames) {
@@ -180,9 +181,6 @@ setMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, type=1
 
 #' @export
 setMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type, withDimnames=TRUE) {
-    msg <- paste0("'reducedDim(<", class(x), ">, type=\"character\", ...)' ",
-                  "invalid subscript 'type'")
-
     x <- updateObject(x)
     internals <- int_colData(x)[[.red_key]]
 
@@ -192,7 +190,8 @@ setMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type
         .Deprecated(msg="NULL is deprecated.")
         return(NULL)
         # To deprecate NULL and throw an error instead, remove the two lines above.
-        stop(msg, "\n'", type, "' not in names(reducedDims(<", class(x), ">))")
+        stop("invalid subscript 'type' in 'reducedDim(<", class(x), ">, type=\"character\", ...)'\n",
+            "'", type, "' not in 'reducedDimNames(<", class(x), ">)'")
     })
 
     if (withDimnames) {
@@ -204,37 +203,27 @@ setMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type
 
 #' @export
 setReplaceMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x, type, ..., value) {
-    type <- 1L
-
     if (0L == length(reducedDimNames(x))){
-        ## Implementation 1
-        # https://github.com/drisso/SingleCellExperiment/pull/35#issuecomment-522258649
         type <- paste0(.unnamed, 1L)
-        ## Implementation 2
-        # `reducedDims<-`` above creates character(n) names
-        # type <- character(1)
-        ## Implementation 3
-        # This would implement the same behaviour as SummarizedExperiment::assay<-
-        # stop("'reducedDim(<", class(x), ">) <- value' ", "length(reducedDims(<",
-        #      class(x), ">)) is 0")
+    } else {
+        type <- 1L
     }
-
     reducedDim(x, type) <- value
     x
 })
 
 #' @export
-setReplaceMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, type = 1, ..., value) {
+setReplaceMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, type, ..., value) {
     x <- updateObject(x)
 
     if (!is.null(value) && !identical(nrow(value), ncol(x))) {
-        stop("replacement 'reducedDim' has a different number of rows than 'ncol(x)'")
+        stop("invalid 'value' in 'reducedDim(<", class(x), ">, type=\"numeric\") <- value'\n",
+            "'value' should have number of rows equal to 'ncol(x)'")
     }
 
     internals <- int_colData(x)
-
     if (type[1] > ncol(internals[[.red_key]])) {
-        stop("invalid subscript 'type'\nsubscript out of bounds")
+        stop("'type' out of bounds in 'reducedDim(<", class(x), ">, type='numeric')")
     }
 
     internals[[.red_key]][[type]] <- value
@@ -248,7 +237,8 @@ setReplaceMethod("reducedDim", c("SingleCellExperiment", "character"), function(
 
     internals <- int_colData(x)
     if (!is.null(value) && !identical(nrow(value), ncol(x))) {
-        stop("replacement 'reducedDim' has a different number of rows than 'ncol(x)'")
+        stop("invalid 'value' in 'reducedDim(<", class(x), ">, type=\"character\") <- value'\n",
+            "'value' should have number of rows equal to 'ncol(x)'")
     }
 
     internals[[.red_key]][[type]] <- value
