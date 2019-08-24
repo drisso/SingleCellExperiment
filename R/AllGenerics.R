@@ -91,7 +91,7 @@ setGeneric("sizeFactorNames", function(object) standardGeneric("sizeFactorNames"
 # Alternative experiment getter/setters.
 
 #' @export
-setGeneric("altExp", function(x, ...) standardGeneric("altExp"))
+setGeneric("altExp", function(x, e, ...) standardGeneric("altExp"))
 
 #' @export
 setGeneric("altExps", function(x, ...) standardGeneric("altExps"))
@@ -100,7 +100,7 @@ setGeneric("altExps", function(x, ...) standardGeneric("altExps"))
 setGeneric("altExpNames", function(x, ...) standardGeneric("altExpNames"))
 
 #' @export
-setGeneric("altExp<-", function(x, ..., value) standardGeneric("altExp<-"))
+setGeneric("altExp<-", function(x, e, ..., value) standardGeneric("altExp<-"))
 
 #' @export
 setGeneric("altExps<-", function(x, ..., value) standardGeneric("altExps<-"))

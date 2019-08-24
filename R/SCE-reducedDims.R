@@ -55,10 +55,8 @@ setReplaceMethod("reducedDimNames", c("SingleCellExperiment", "character"), func
 
 #' @export
 setMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x, type, withDimnames=TRUE) {
-    x <- updateObject(x)
-    internals <- int_colData(x)[[.red_key]]
 
-    if (identical(ncol(internals), 0L)) {
+    if (identical(length(reducedDimNames(x)), 0L)) {
         .Deprecated(msg="NULL is deprecated.")
         return(NULL)
         # To deprecate NULL and throw an error instead, remove the two lines above.
