@@ -1,4 +1,5 @@
 #' @export
+#' @rdname SingleCellExperiment
 #' @importFrom utils packageVersion
 #' @importFrom S4Vectors SimpleList
 #' @importFrom stats setNames

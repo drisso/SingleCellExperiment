@@ -1,5 +1,7 @@
+#' @title
 #' Named assay getters and setters
 #'
+#' @description
 #' These are methods for getting or setting \code{assay(sce, i=X, ...)} 
 #' where \code{sce} is a \linkS4class{SingleCellExperiment} object and \code{X} is the name of the method.
 #' For example, \code{counts} will get or set \code{X="counts"}.
@@ -55,7 +57,8 @@
 #' logcounts(sce) <- log2(normcounts(sce)+1)
 #' dim(normcounts(sce))
 #' 
-#' @name assays
+#' @name SCE-assays
+#' @rdname assays
 #' @docType methods
 #' @aliases
 #' counts

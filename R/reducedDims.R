@@ -1,14 +1,14 @@
 #' Reduced dimensions methods
 #'
 #' Methods to get or set dimensionality reduction results in a \linkS4class{SingleCellExperiment} object.
-#' These are typically used to store and retrieve low-dimensional representations of single-cell datasets,
-#' e.g., for data compression (PCA) or visualization (t-SNE).
+#' These are typically used to store and retrieve low-dimensional representations of single-cell datasets.
+#' Each row of a reduced dimension result is expected to correspond to a column of the SingleCellExperiment object.
 #' 
 #' @section Getters:
 #' In the following examples, \code{x} is a \linkS4class{SingleCellExperiment} object.
 #' \describe{
 #' \item{\code{reducedDim(x, type, withDimnames=TRUE)}:}{
-#' Retrieves a numeric matrix containing reduced dimension coordinates for cells (rows) and dimensions (columns).
+#' Retrieves a matrix (or matrix-like object) containing reduced dimension coordinates for cells (rows) and dimensions (columns).
 #' \code{type} is either a string specifying the name of the dimensionality reduction result in \code{x} to retrieve,
 #' or a numeric scalar specifying the index of the desired result.
 #' If \code{withDimnames=TRUE}, row names of the output matrix are replaced with the column names of \code{x}.
@@ -19,7 +19,7 @@
 #' }
 #' \item{\code{reducedDims(x, withDimnames=TRUE)}:}{
 #' Returns a named \linkS4class{List} of matrices containing one or more dimensionality reduction results.
-#' Each result is a numeric matrix with the same number of rows.
+#' Each result is a matrix (or matrix-like object) with the same number of rows.
 #' If \code{withDimnames=TRUE}, row names of each matrix are replaced with the column names of \code{x}.
 #' }
 #' }
@@ -36,7 +36,7 @@
 #' Otherwise a new result with this name is append to the existing list of results.
 #' }
 #'
-#' \code{value} is expected to be a numeric matrix-like object with number of rows equal to \code{ncol(x)}.
+#' \code{value} is expected to be a matrix or matrix-like object with number of rows equal to \code{ncol(x)}.
 #' Alternatively, if \code{value} is \code{NULL}, the result corresponding to \code{type} is removed from the object.
 #' 
 #' @section Other setters:
@@ -44,7 +44,7 @@
 #' \describe{
 #' \item{\code{reducedDims(x) <- value}:}{
 #' Replaces all dimensionality reduction results in \code{x} with those in \code{value}.
-#' The latter should be a list-like object containing any number of numeric matrix-like objects 
+#' The latter should be a list-like object containing any number of matrices or matrix-like objects 
 #' with number of rows equal to \code{ncol(x)}.
 #'
 #' If \code{value} is named, those names will be used to name the dimensionality reduction results in \code{x}.
