@@ -1,5 +1,7 @@
+#' @title
 #' Internal SingleCellExperiment functions 
 #' 
+#' @description
 #' Methods to get or set internal fields from the SingleCellExperiment class.
 #' Thse functions are intended for package developers who want to add protected fields to a SingleCellExperiment.
 #' They should \emph{not} be used by ordinary users of the \pkg{SingleCellExperiment} package.
@@ -14,6 +16,19 @@
 #' with number of rows equal to \code{ncol(x)}.
 #' This is analogous to the user-visible \code{\link{rowData}}.}
 #' \item{\code{int_metadata(x)}:}{Returns a list of internal metadata, analogous to the user-visible \code{\link{metadata}}.}
+#' }
+#'
+#' It may occasionally be useful to return both the visible and the internal \code{colData} in a single DataFrame.
+#' This is facilitated by the following methods:
+#' \describe{
+#' \item{\code{rowData(x, ..., internal=FALSE)}:}{Returns a \linkS4class{DataFrame} of the user-visible row metadata.
+#' If \code{internal=TRUE}, the internal row metadata is added column-wise to the user-visible metadata.
+#' A warning is emitted if the user-visible metadata column names overlap with the internal fields.
+#' Any arguments in \code{...} are passed to \code{\link{rowData,SummarizedExperiment-method}}.}
+#' \item{\code{colData(x, ..., internal=FALSE)}:}{Returns a \linkS4class{DataFrame} of the user-visible column metadata.
+#' If \code{internal=TRUE}, the internal column metadata is added column-wise to the user-visible metadata.
+#' A warning is emitted if the user-visible metadata column names overlap with the internal fields.
+#' Any arguments in \code{...} are passed to \code{\link{colData,SummarizedExperiment-method}}.}
 #' } 
 #'
 #' @section Setters:
@@ -36,7 +51,7 @@
 #' For example, \code{\link{altExps}} and \code{\link{reducedDims}} are implemented as fields in the internal column metadata.
 #'
 #' That these elements are internal is important as this ensures that the implementation details are abstracted away.
-#' Any user-interaction with these internal fields should be done via the designated getter and setter methods,
+#' Any user interaction with these internal fields should be done via the designated getter and setter methods,
 #' e.g., \code{\link{reducedDim}} and friends for retrieving or modifying reduced dimensions.
 #' This provides developers with more freedom to change the internal representation without breaking user code.
 #' 
@@ -47,7 +62,8 @@
 #'
 #' @author Aaron Lun
 #'
-#' @name internals
+#' @name SCE-internals
+#' @rdname internals
 #' @docType methods
 #' @aliases
 #' int_colData
@@ -62,6 +78,8 @@
 #' int_colData<-,SingleCellExperiment-method
 #' int_elementMetadata<-,SingleCellExperiment-method
 #' int_metadata<-,SingleCellExperiment-method
+#' colData,SingleCellExperiment-method
+#' rowData,SingleCellExperiment-method
 #'
 #' @examples
 #' example(SingleCellExperiment, echo=FALSE) # Using the class example
