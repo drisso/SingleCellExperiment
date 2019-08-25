@@ -36,11 +36,9 @@
 #' 
 #' \code{\link{sizeFactors}}, to store size factors for normalization.
 #'
-#' \code{\link{colData}} and \code{\link{rowData}}, to extract column or row metadata.
+#' \code{?"\link{SCE-combine}"}, to combine or subset a SingleCellExperiment object.
 #'
-#' \code{\link{cbind}} and related function, to combine or subset a SingleCellExperiment instance.
-#'
-#' \code{\link{int_colData}} and related methods, for developer use.
+#' \code{?"\link{SCE-internals}"}, for developer use.
 #' @examples
 #' ncells <- 100
 #' u <- matrix(rpois(20000, 5), ncol=ncells)
@@ -58,6 +56,9 @@
 #' as(se, "SingleCellExperiment")
 #' 
 #' @docType class
+#' @aliases
+#' coerce,SummarizedExperiment,SingleCellExperiment-method
+#' coerce,RangedSummarizedExperiment,SingleCellExperiment-method
 #' @export
 #' @importFrom S4Vectors SimpleList 
 #' @importFrom methods is as

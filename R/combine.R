@@ -61,7 +61,7 @@
 #' and \code{\link{altExpNames}} as \code{x}.
 #' If \code{sizeFactors} is set for \code{x}, it should also be set for \code{value}. 
 #' 
-#' Arguments in \code{...} are passed to to \code{\link{[<-,SummarizedExperiment-method}}.}
+#' Arguments in \code{...} are passed to the corresponding \linkS4class{SummarizedExperiment} method.}
 #' }
 #' 
 #' @author
@@ -90,10 +90,8 @@
 #' 
 #' @docType methods
 #' @aliases
-#' cbind
-#' cbind,SingleCellExperiment
-#' rbind
-#' rbind,SingleCellExperiment
+#' cbind,SingleCellExperiment-method
+#' rbind,SingleCellExperiment-method
 #' [,SingleCellExperiment,ANY-method
 #' [,SingleCellExperiment,ANY,ANY-method
 #' [,SingleCellExperiment,ANY,ANY,ANY-method
