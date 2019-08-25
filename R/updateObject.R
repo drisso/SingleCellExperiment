@@ -17,6 +17,9 @@
 #'
 #' @author Aaron Lun
 #'
+#' @seealso
+#' \code{\link{objectVersion}}, which is used to determine if the object is up-to-date.
+#' 
 #' @name updateObject 
 #' @export
 #' @aliases updateObject updateObject,SingleCellExperiment-method
