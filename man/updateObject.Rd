@@ -30,6 +30,9 @@ Changes are as follows:
 Reduced dimension results previously in the \code{reducedDims} slot are transferred to the \code{reducedDims} field.
 }
 }
+\seealso{
+\code{\link{objectVersion}}, which is used to determine if the object is up-to-date.
+}
 \author{
 Aaron Lun
 }
