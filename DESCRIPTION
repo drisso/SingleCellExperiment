@@ -1,6 +1,6 @@
 Package: SingleCellExperiment
-Version: 1.7.6
-Date: 2019-08-23
+Version: 1.7.7
+Date: 2019-08-25
 Title: S4 Classes for Single Cell Data
 Authors@R: c(
         person("Aaron", "Lun", role=c("aut", "cph"), email="infinite.monkeys.with.keyboards@gmail.com"),
