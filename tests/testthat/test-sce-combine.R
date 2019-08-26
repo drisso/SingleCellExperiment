@@ -67,6 +67,14 @@ test_that("cbind respects the internal fields correctly", {
     int_colData(alt.sce) <- int_colData(alt.sce)[,ncol(int_colData(alt.sce)):1]
     bravo <- cbind(sce, alt.sce)
     expect_identical(alpha, bravo)
+
+    alt.sce <- sce
+    reducedDims(alt.sce) <- rev(reducedDims(alt.sce))
+    altExps(alt.sce) <- rev(altExps(alt.sce))
+    bravo <- cbind(sce, alt.sce)
+    expect_identical(alpha, bravo)
+
+    # Chokes correctly when presented with errors.
     sce.err <- sce
     sizeFactors(sce.err) <- NULL
     expect_error(cbind(sce.err, sce), "'int_colData'")
