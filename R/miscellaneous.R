@@ -29,7 +29,7 @@
 #' objectVersion(sce)
 #' 
 #' # Setting/getting size factors.
-#' sizeFactors(sce) <- runi(ncol(sce))
+#' sizeFactors(sce) <- runif(ncol(sce))
 #' sizeFactors(sce)
 #'
 #' sizeFactors(sce) <- NULL

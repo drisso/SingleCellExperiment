@@ -40,7 +40,7 @@
 #' @section Subsetting:
 #' In the following code snippets, \code{x} is a \linkS4class{SingleCellExperiment} object.
 #' \describe{
-#' \item{\code{x[i, j, ..., drop=FALSE]}:}{Returns a SingleCellExperiment containing the 
+#' \item{\code{x[i, j, ..., drop=TRUE]}:}{Returns a SingleCellExperiment containing the 
 #' specified rows \code{i} and columns \code{j}.
 #' 
 #' \code{i} and \code{j} can be a logical, integer or character vector of subscripts, 
