@@ -72,7 +72,7 @@ If \code{withColData=TRUE}, the column metadata of each output object is set to 
 
 \section{Single-object setter}{
 
-\code{altExp(x, e) <- value} will add or replace an alternative Experiment 
+\code{altExp(x, e) <- value} will add or replace an alternative Experiment
 in a \linkS4class{SingleCellExperiment} object \code{x}.
 The value of \code{e} determines how the result is added or replaced:
 \itemize{
@@ -93,7 +93,7 @@ In the following examples, \code{x} is a \linkS4class{SingleCellExperiment} obje
 \describe{
 \item{\code{altExps(x) <- value}:}{
 Replaces all alterrnative Experiments in \code{x} with those in \code{value}.
-The latter should be a list-like object containing any number of SummarizedExperiment objects 
+The latter should be a list-like object containing any number of SummarizedExperiment objects
 with number of columns equal to \code{ncol(x)}.
 
 If \code{value} is named, those names will be used to name the alternative Experiments in \code{x}.

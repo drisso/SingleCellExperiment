@@ -17,7 +17,7 @@ test_that("construction of the SCE works correctly", {
     sce <- SingleCellExperiment(assay=list(counts=u, exprs=v))
     expect_equivalent(assay(sce, "counts"), u)
     expect_equivalent(assay(sce, "exprs"), v)
-    
+
     assay(sce, "exprs") <- w
     expect_equivalent(assay(sce, "exprs"), w)
 })
@@ -84,3 +84,8 @@ test_that("internal functions work correctly", {
     SingleCellExperiment:::int_metadata(sce)$urg <- "I was here"
     expect_identical(SingleCellExperiment:::int_metadata(sce)$urg, "I was here")
 })
+
+test_that(".sce_show works", {
+    expect_null(show(loaded))
+})
+

@@ -6,7 +6,7 @@
 #' These data cannot be stored in the main \code{assays} of the \linkS4class{SingleCellExperiment} itself.
 #' However, it is still desirable to store these features \emph{somewhere} in the SingleCellExperiment.
 #' This simplifies book-keeping in long workflows and ensure that samples remain synchronised.
-#' 
+#'
 #' To facilitate this, the \linkS4class{SingleCellExperiment} class allows for \dQuote{alternative Experiments}.
 #' Nested \linkS4class{SummarizedExperiment}-class objects are stored inside the SingleCellExperiment object \code{x}, in a manner that guarantees that the nested objects have the same columns in the same order as those in \code{x}.
 #' Methods are provided to enable convenient access to and manipulation of these alternative Experiments.
@@ -33,7 +33,7 @@
 #' }
 #'
 #' @section Single-object setter:
-#' \code{altExp(x, e) <- value} will add or replace an alternative Experiment 
+#' \code{altExp(x, e) <- value} will add or replace an alternative Experiment
 #' in a \linkS4class{SingleCellExperiment} object \code{x}.
 #' The value of \code{e} determines how the result is added or replaced:
 #' \itemize{
@@ -46,18 +46,18 @@
 #'
 #' \code{value} is expected to be a SummarizedExperiment object with number of columns equal to \code{ncol(x)}.
 #' Alternatively, if \code{value} is \code{NULL}, the alternative Experiment at \code{e} is removed from the object.
-#' 
+#'
 #' @section Other setters:
 #' In the following examples, \code{x} is a \linkS4class{SingleCellExperiment} object.
 #' \describe{
 #' \item{\code{altExps(x) <- value}:}{
 #' Replaces all alterrnative Experiments in \code{x} with those in \code{value}.
-#' The latter should be a list-like object containing any number of SummarizedExperiment objects 
+#' The latter should be a list-like object containing any number of SummarizedExperiment objects
 #' with number of columns equal to \code{ncol(x)}.
 #'
 #' If \code{value} is named, those names will be used to name the alternative Experiments in \code{x}.
 #' Otherwise, unnamed results are assigned default names prefixed with \code{"unnamed"}.
-#' 
+#'
 #' If \code{value} is \code{NULL}, all alternative Experiments in \code{x} are removed.
 #' }
 #' \item{\code{altExpNames(x) <- value}:}{
@@ -70,33 +70,33 @@
 #' \code{\link{splitAltExps}}, for a convenient way of adding alternative Experiments from existing features.
 #'
 #' @author Aaron Lun
-#' 
+#'
 #' @examples
 #' example(SingleCellExperiment, echo=FALSE) # Using the class example
 #' dim(counts(sce))
-#' 
+#'
 #' # Mocking up some alternative Experiments.
 #' se1 <- SummarizedExperiment(matrix(rpois(1000, 5), ncol=ncol(se)))
 #' rowData(se1)$stuff <- sample(LETTERS, nrow(se1), replace=TRUE)
 #' se2 <- SummarizedExperiment(matrix(rpois(500, 5), ncol=ncol(se)))
 #' rowData(se2)$blah <- sample(letters, nrow(se2), replace=TRUE)
-#' 
+#'
 #' # Setting the alternative Experiments.
 #' altExp(sce, "spike-in") <- se1
 #' altExp(sce, "CRISPR") <- se2
-#' 
+#'
 #' # Getting alternative Experimental data.
 #' altExpNames(sce)
 #' altExp(sce, "spike-in")
 #' altExp(sce, 2)
-#' 
+#'
 #' # Setting alternative Experimental data.
 #' altExpNames(sce) <- c("ERCC", "Ab")
 #' altExp(sce, "ERCC") <- se1[1:2,]
-#' 
+#'
 #' @name altExps
 #' @docType methods
-#' @aliases 
+#' @aliases
 #' altExp altExps altExpNames
 #' altExp,SingleCellExperiment,missing-method
 #' altExp,SingleCellExperiment,numeric-method
@@ -157,7 +157,8 @@ setMethod("altExp", c("SingleCellExperiment", "numeric"), function(x, e=1, withC
     out <- tryCatch({
         .get_se(internals[,.alt_key][,e])
     }, error=function(err) {
-        stop("invalid subscript 'e' in 'altExp(<", class(x), ">, e=\"numeric\", ...)'\n", 
+        stop(
+            "invalid subscript 'e' in 'altExp(<", class(x), ">, e=\"numeric\", ...)'\n",
             conditionMessage(err))
     })
 
@@ -175,7 +176,8 @@ setMethod("altExp", c("SingleCellExperiment", "character"), function(x, e, withC
     out <- tryCatch({
         .get_se(internals[,.alt_key][,e])
     }, error=function(err) {
-        stop("invalid subscript 'e' in 'altExp(<", class(x), ">, e=\"character\", ...)'\n",
+        stop(
+            "invalid subscript 'e' in 'altExp(<", class(x), ">, e=\"character\", ...)'\n",
             "'", e, "' not in 'altExpNames(<", class(x), ">)'")
     })
 
@@ -199,7 +201,8 @@ setReplaceMethod("altExpNames", c("SingleCellExperiment", "character"), function
 .precheck_altExp <- function(x, val, ...) {
     if (!is(val, "SummarizedExperiment")) {
         stop(..., " should be a SummarizedExperiment object")
-    } else if (ncol(x)!=ncol(val)) {
+    }
+    if (ncol(x)!=ncol(val)) {
         stop(..., " should have the same number of columns as 'x'")
     }
 }
@@ -213,10 +216,10 @@ setReplaceMethod("altExps", "SingleCellExperiment", function(x, value) {
         collected[[i]] <- SummarizedExperimentByColumn(value[[i]])
     }
 
-    if (!is.null(names(value))) {
-        nm <- names(value)
+    if (is.null(names(value))) {
+        nm <- sprintf("%s%i", .unnamed, seq_along(value))
     } else {
-        nm <- sprintf("unnamed%i", seq_along(value))
+        nm <- names(value)
     }
 
     colnames(collected) <- nm
