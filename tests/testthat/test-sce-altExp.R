@@ -14,6 +14,7 @@ test_that("altExp getters work correctly", {
     # Carries over colData.
     colData(sce)$stuff <- runif(ncol(sce))
     expect_identical(sce$stuff, altExp(sce, withColData=TRUE)$stuff)
+    expect_identical(sce$stuff, altExp(sce, "Protein", withColData=TRUE)$stuff)
     expect_identical(NULL, altExp(sce, withColData=FALSE)$stuff)
 
     expect_identical(sce$stuff, altExps(sce, withColData=TRUE)[[1]]$stuff)
@@ -67,7 +68,7 @@ test_that("altExpNames setters work correctly", {
     expect_identical(altExpNames(sce), c("A", "B"))
 
     expect_error(altExpNames(empty) <- c("A", "B"), "more column names")
-    expect_error(altExpNames(empty) <- NULL, "unable to find an inherited method") 
+    expect_error(altExpNames(empty) <- NULL, "unable to find an inherited method")
     expect_error(altExpNames(sce) <- LETTERS, "more column names")
 })
 
@@ -100,5 +101,19 @@ test_that("getters and setters throw appropriate errors", {
     expect_error(altExp(sce, "dummy"), "invalid subscript")
 
     expect_error(altExp(sce, 3) <- se1, "out of bounds")
+
+})
+
+test_that(".precheck_altExp throws appropriate errors", {
+
+    expect_error(
+        .precheck_altExp(sce, assay(sce)),
+        "should be a SummarizedExperiment object"
+    )
+
+    expect_error(
+        .precheck_altExp(sce, SummarizedExperiment()),
+        "should have the same number of columns as 'x'"
+    )
 
 })

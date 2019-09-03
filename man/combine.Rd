@@ -13,7 +13,7 @@
 \description{
 An overview of methods to combine multiple \linkS4class{SingleCellExperiment} objects by row or column,
 or to subset a SingleCellExperiment by row or column.
-These methods are useful for ensuring that all data fields remain synchronized 
+These methods are useful for ensuring that all data fields remain synchronized
 when cells or genes are added or removed.
 }
 \section{Combining}{
@@ -29,16 +29,16 @@ Refer to \code{?\link[base]{rbind}} for the interpretation of \code{deparse.leve
 Note that all objects in \code{...} must have the exact same values for \code{\link{reducedDims}} and \code{\link{altExps}}.
 Any \code{\link{sizeFactors}} should either be \code{NULL} or contain the same values across objects.
 }
-\item{\code{cbind(..., deparse.level=1)}:}{Returns a SingleCellExperiment where 
-all objects in \code{...} are combined column-wise, 
+\item{\code{cbind(..., deparse.level=1)}:}{Returns a SingleCellExperiment where
+all objects in \code{...} are combined column-wise,
 i.e., columns in successive objects are appended to the first object.
 
 Each object \code{x} in \code{...} must have the same values of \code{\link{reducedDimNames}(x)} (though they can be unordered).
-Dimensionality reduction results with the same name across objects 
+Dimensionality reduction results with the same name across objects
 will be combined row-wise to create the corresponding entry in the output object.
 
 Each object \code{x} in \code{...} must have the same values of \code{\link{altExpNames}(x)} (though they can be unordered).
-Alternative Experiments with the same name across objects 
+Alternative Experiments with the same name across objects
 will be combined column-wise to create the corresponding entry in the output object.
 
 \code{\link{sizeFactors}} should be either set to \code{NULL} in all objects, or set to a numeric vector in all objects.
@@ -53,26 +53,26 @@ Refer to \code{?\link[base]{cbind}} for the interpretation of \code{deparse.leve
 
 In the following code snippets, \code{x} is a \linkS4class{SingleCellExperiment} object.
 \describe{
-\item{\code{x[i, j, ..., drop=FALSE]}:}{Returns a SingleCellExperiment containing the 
+\item{\code{x[i, j, ..., drop=TRUE]}:}{Returns a SingleCellExperiment containing the
 specified rows \code{i} and columns \code{j}.
 
-\code{i} and \code{j} can be a logical, integer or character vector of subscripts, 
+\code{i} and \code{j} can be a logical, integer or character vector of subscripts,
 indicating the rows and columns respectively to retain.
 Either can be missing, in which case subsetting is only performed in the specified dimension.
 If both are missing, no subsetting is performed.
 
 Arguments in \code{...} and \code{drop} are passed to to \code{\link{[,SummarizedExperiment-method}}.}
-\item{\code{x[i, j, ...] <- value}:}{Replaces all data for rows \code{i} and columns {j} 
+\item{\code{x[i, j, ...] <- value}:}{Replaces all data for rows \code{i} and columns {j}
 with the corresponding fields in a SingleCellExperiment \code{value}.
 
-\code{i} and \code{j} can be a logical, integer or character vector of subscripts, 
+\code{i} and \code{j} can be a logical, integer or character vector of subscripts,
 indicating the rows and columns respectively to replace.
 Either can be missing, in which case replacement is only performed in the specified dimension.
 If both are missing, \code{x} is replaced entirely with \code{value}.
 
 If \code{j} is specified, \code{value} is expected to have the same name and order of \code{\link{reducedDimNames}}
 and \code{\link{altExpNames}} as \code{x}.
-If \code{sizeFactors} is set for \code{x}, it should also be set for \code{value}. 
+If \code{sizeFactors} is set for \code{x}, it should also be set for \code{value}.
 
 Arguments in \code{...} are passed to the corresponding \linkS4class{SummarizedExperiment} method.}
 }
