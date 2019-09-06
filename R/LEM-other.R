@@ -36,7 +36,7 @@ setValidity2("LinearEmbeddingMatrix", .le_validity)
 #############################################
 # Sets the show method.
 
-#' @importFrom S4Vectors metadata
+#' @importFrom S4Vectors metadata coolcat
 .le_show <- function(object) {
 
     cat("class:", class(object), "\n")
@@ -47,14 +47,14 @@ setValidity2("LinearEmbeddingMatrix", .le_validity)
     if (is.null(expt)) {
         expt <- character(length(metadata(object)))
     }
-    scat("metadata(%d): %s\n", expt)
+    coolcat("metadata(%d): %s\n", expt)
 
     ## rownames
     rownames <- rownames(object)
     if(is.null(rownames)) {
         cat("rownames: NULL\n")
     } else {
-        scat("rownames(%d): %s\n", rownames(object))
+        coolcat("rownames(%d): %s\n", rownames(object))
     }
 
     ## colnames
@@ -62,11 +62,11 @@ setValidity2("LinearEmbeddingMatrix", .le_validity)
     if(is.null(colnames)) {
         cat("colnames: NULL\n")
     } else {
-        scat("colnames(%d): %s\n", colnames(object))
+        coolcat("colnames(%d): %s\n", colnames(object))
     }
 
     ## factorData
-    scat("factorData names(%d): %s\n", names(factorData(object)))
+    coolcat("factorData names(%d): %s\n", names(factorData(object)))
 }
 
 #' @export
