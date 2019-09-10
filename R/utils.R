@@ -5,3 +5,5 @@
     }
     return(as.vector(subset))
 }
+
+.unnamed <- "unnamed"

@@ -48,7 +48,7 @@ If \code{withDimnames=TRUE}, row names of each matrix are replaced with the colu
 
 \section{Single-result setter}{
 
-\code{reducedDim(x, type) <- value} will add or replace a dimensionality reduction result 
+\code{reducedDim(x, type) <- value} will add or replace a dimensionality reduction result
 in a \linkS4class{SingleCellExperiment} object \code{x}.
 The value of \code{type} determines how the result is added or replaced:
 \itemize{
@@ -69,7 +69,7 @@ In the following examples, \code{x} is a \linkS4class{SingleCellExperiment} obje
 \describe{
 \item{\code{reducedDims(x) <- value}:}{
 Replaces all dimensionality reduction results in \code{x} with those in \code{value}.
-The latter should be a list-like object containing any number of matrices or matrix-like objects 
+The latter should be a list-like object containing any number of matrices or matrix-like objects
 with number of rows equal to \code{ncol(x)}.
 
 If \code{value} is named, those names will be used to name the dimensionality reduction results in \code{x}.

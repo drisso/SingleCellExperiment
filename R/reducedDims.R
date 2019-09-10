@@ -3,7 +3,7 @@
 #' Methods to get or set dimensionality reduction results in a \linkS4class{SingleCellExperiment} object.
 #' These are typically used to store and retrieve low-dimensional representations of single-cell datasets.
 #' Each row of a reduced dimension result is expected to correspond to a column of the SingleCellExperiment object.
-#' 
+#'
 #' @section Getters:
 #' In the following examples, \code{x} is a \linkS4class{SingleCellExperiment} object.
 #' \describe{
@@ -25,7 +25,7 @@
 #' }
 #'
 #' @section Single-result setter:
-#' \code{reducedDim(x, type) <- value} will add or replace a dimensionality reduction result 
+#' \code{reducedDim(x, type) <- value} will add or replace a dimensionality reduction result
 #' in a \linkS4class{SingleCellExperiment} object \code{x}.
 #' The value of \code{type} determines how the result is added or replaced:
 #' \itemize{
@@ -38,18 +38,18 @@
 #'
 #' \code{value} is expected to be a matrix or matrix-like object with number of rows equal to \code{ncol(x)}.
 #' Alternatively, if \code{value} is \code{NULL}, the result corresponding to \code{type} is removed from the object.
-#' 
+#'
 #' @section Other setters:
 #' In the following examples, \code{x} is a \linkS4class{SingleCellExperiment} object.
 #' \describe{
 #' \item{\code{reducedDims(x) <- value}:}{
 #' Replaces all dimensionality reduction results in \code{x} with those in \code{value}.
-#' The latter should be a list-like object containing any number of matrices or matrix-like objects 
+#' The latter should be a list-like object containing any number of matrices or matrix-like objects
 #' with number of rows equal to \code{ncol(x)}.
 #'
 #' If \code{value} is named, those names will be used to name the dimensionality reduction results in \code{x}.
 #' Otherwise, unnamed results are assigned default names prefixed with \code{"unnamed"}.
-#' 
+#'
 #' If \code{value} is \code{NULL}, all dimensionality reduction results in \code{x} are removed.
 #' }
 #' \item{\code{reducedDimNames(x) <- value}:}{
@@ -59,22 +59,22 @@
 #' }
 #'
 #' @author Aaron Lun and Kevin Rue-Albrecht
-#' 
+#'
 #' @examples
 #' example(SingleCellExperiment, echo=FALSE)
 #' reducedDim(sce, "PCA")
 #' reducedDim(sce, "tSNE")
 #' reducedDims(sce)
-#' 
+#'
 #' reducedDim(sce, "PCA") <- NULL
 #' reducedDims(sce)
-#' 
+#'
 #' reducedDims(sce) <- SimpleList()
 #' reducedDims(sce)
-#' 
+#'
 #' @name reducedDims
 #' @docType methods
-#' @aliases 
+#' @aliases
 #' reducedDim reducedDims reducedDimNames
 #' reducedDim,SingleCellExperiment,missing-method
 #' reducedDim,SingleCellExperiment,numeric-method
@@ -92,7 +92,6 @@ NULL
 # Getter/setter functions for reducedDims.
 
 .red_key <- "reducedDims"
-.unnamed <- "unnamed"
 
 #' @export
 #' @importFrom S4Vectors List
@@ -114,8 +113,8 @@ setMethod("reducedDims", "SingleCellExperiment", function(x, withDimnames=TRUE) 
 setReplaceMethod("reducedDims", "SingleCellExperiment", function(x, value) {
     x <- updateObject(x)
 
-    if (length(value)==0L) {
-        collected <- int_colData(x)[,0]
+    if (length(value) == 0L) {
+        collected <- int_colData(x)[, 0]
     } else {
         nrows <- vapply(value, nrow, FUN.VALUE = 0L)
         if (!all(nrows == ncol(x))) {

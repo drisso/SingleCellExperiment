@@ -32,7 +32,9 @@ setMethod("[<-", c("SingleCellExperiment", "ANY", "ANY", "SingleCellExperiment")
         tryCatch({
             left[ii,] <- right
         }, error=function(err) {
-            stop("failed to replace 'int_elementMetadata' in '<", class(x), ">[i,] <- value'\n", conditionMessage(err))
+            stop(
+                "failed to replace 'int_elementMetadata' in '<", class(x), ">[i,] <- value'\n",
+                conditionMessage(err))
         })
         int_elementMetadata(x) <- left
     }
@@ -45,7 +47,9 @@ setMethod("[<-", c("SingleCellExperiment", "ANY", "ANY", "SingleCellExperiment")
         tryCatch({
             left[jj,] <- right
         }, error=function(err) {
-            stop("failed to replace 'int_colData' in '<", class(x), ">[,j] <- value'\n", conditionMessage(err))
+            stop(
+                "failed to replace 'int_colData' in '<", class(x), ">[,j] <- value'\n",
+                conditionMessage(err))
         })
         int_colData(x) <- left
     }
