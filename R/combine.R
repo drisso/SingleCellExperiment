@@ -106,7 +106,7 @@ NULL
 setMethod("cbind", "SingleCellExperiment", function(..., deparse.level=1) {
     args <- list(...)
     args <- lapply(args, updateObject)
-    int_m <- do.call(c, lapply(args, int_metadata))
+    int_m <- do.call(c, unname(lapply(args, int_metadata)))
 
     tryCatch({
         int_cd <- do.call(rbind, lapply(args, int_colData))
@@ -139,7 +139,7 @@ setMethod("cbind", "SingleCellExperiment", function(..., deparse.level=1) {
 setMethod("rbind", "SingleCellExperiment", function(..., deparse.level=1) {
     args <- list(...)
     args <- lapply(args, updateObject)
-    int_m <- do.call(c, lapply(args, int_metadata))
+    int_m <- do.call(c, unname(lapply(args, int_metadata)))
 
     tryCatch({
         int_em <- do.call(rbind, lapply(args, int_elementMetadata))
