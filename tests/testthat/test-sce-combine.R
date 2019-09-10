@@ -40,6 +40,10 @@ test_that("rbind handles errors in internal fields correctly", {
     sce.err <- sce
     int_elementMetadata(sce.err)$X <- "YAY"
     expect_error(rbind(sce.err, sce), "'int_elementMetadata'")
+
+    # Don't concatenate names when merging metadata().
+    sce4 <- rbind(A=sce, B=sce)
+    expect_identical(objectVersion(sce4), objectVersion(sce))
 })
 
 test_that("cbind works correctly in the basic case", {
@@ -86,5 +90,8 @@ test_that("cbind respects the internal fields correctly", {
     sce.err <- sce
     altExp(sce.err, 1) <- NULL
     expect_error(cbind(sce.err, sce), "'int_colData'")
-})
 
+    # Don't concatenate names when merging metadata().
+    sce4 <- rbind(A=sce, B=sce) 
+    expect_identical(objectVersion(sce4), objectVersion(sce))
+})
