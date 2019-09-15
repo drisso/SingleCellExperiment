@@ -12,7 +12,7 @@
 #' each of which should have the same number of columns as the output SingleCellExperiment object.
 #'
 #' @details
-#' In this lass, rows should represent genomic features (e.g., genes) while columns represent samples generated from single cells.
+#' In this class, rows should represent genomic features (e.g., genes) while columns represent samples generated from single cells.
 #' As with any \linkS4class{SummarizedExperiment} derivative,
 #' different quantifications (e.g., counts, CPMs, log-expression) can be stored simultaneously in the \code{\link{assays}} slot,
 #' and row and column metadata can be attached using \code{\link{rowData}} and \code{\link{colData}}, respectively.
