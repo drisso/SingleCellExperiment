@@ -47,7 +47,7 @@ Get or set a matrix of raw count data, e.g., number of reads or transcripts.
 Get or set a matrix of normalized values on the same scale as the original counts.
 For example, counts divided by cell-specific size factors that are centred at unity.
 }
-\item{\code{logcounts(x, ...)}, \code{normcounts(x, ...) <- value}:}{
+\item{\code{logcounts(x, ...)}, \code{logcounts(x, ...) <- value}:}{
 Get or set a matrix of log-transformed counts or count-like values.
 In most cases, this will be defined as log-transformed \code{normcounts}, e.g., using log base 2 and a pseudo-count of 1.
 }

@@ -22,7 +22,7 @@ Split a \linkS4class{SingleCellExperiment} based on the feature type, creating a
 }
 \details{
 This function provides a convenient way to create a SingleCellExperiment with alternative Experiments.
-For example, a SingleCellExperiment with rows corresponding to all features can be quickly split into endogenous genes (main) 
+For example, a SingleCellExperiment with rows corresponding to all features can be quickly split into endogenous genes (main)
 and other alternative features like spike-in transcripts and antibody tags.
 
 By default, the most frequent level of \code{f} is treated as the \code{ref} if the latter is not specified.
