@@ -94,26 +94,41 @@ test_that("splitAltExps works correctly", {
     expect_identical(colnames(colData(altExp(out, withColData=FALSE))), character(0))
 })
 
-test_that("getters and setters throw appropriate errors", {
+test_that("swapAltExp works correctly", {
+    feat.type <- sample(c("endog", "ERCC", "CITE"), nrow(empty),
+        replace=TRUE, p=c(0.8, 0.1, 0.1))
+    ref <- splitAltExps(empty, feat.type)
+    ref$A <- seq_len(ncol(ref))
 
+    swapped <- swapAltExp(ref, "CITE", save="all")
+    expect_identical(assay(swapped), assay(altExp(ref, "CITE")))
+    expect_identical(colData(swapped), colData(ref))
+    expect_identical(altExpNames(swapped), c(altExpNames(ref), "all"))
+
+    swapped2 <- swapAltExp(swapped, "all")
+    expect_identical(assay(swapped2), assay(ref))
+    expect_identical(colData(swapped2), colData(ref))
+    expect_identical(altExps(swapped2), altExps(swapped))
+
+    swapped3 <- swapAltExp(swapped, "CITE", withColData=FALSE)
+    expect_identical(ncol(colData(swapped3)), 0L)
+})
+
+test_that("getters and setters throw appropriate errors", {
     expect_error(altExp(empty), "no available entries")
     expect_error(altExp(sce, 3), "subscript contains out-of-bounds indices")
     expect_error(altExp(sce, "dummy"), "invalid subscript")
-
     expect_error(altExp(sce, 3) <- se1, "out of bounds")
-
 })
 
 test_that(".precheck_altExp throws appropriate errors", {
-
     expect_error(
-        .precheck_altExp(sce, assay(sce)),
+        SingleCellExperiment:::.precheck_altExp(sce, assay(sce)),
         "should be a SummarizedExperiment object"
     )
 
     expect_error(
-        .precheck_altExp(sce, SummarizedExperiment()),
+        SingleCellExperiment:::.precheck_altExp(sce, SummarizedExperiment()),
         "should have the same number of columns as 'x'"
     )
-
 })
