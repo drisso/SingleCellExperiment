@@ -50,8 +50,7 @@ swapAltExp <- function(x, name, saved=NULL, withColData=TRUE) {
     altExps(y) <- altExps(x, withColData=FALSE)
 
     if (!is.null(saved)) {
-        altExps(x) <- NULL
-        altExp(y, saved) <- x
+        altExp(y, saved) <- removeAltExps(x)
     }
     y
 }

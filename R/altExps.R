@@ -66,8 +66,12 @@
 #' }
 #' }
 #'
+#' \code{removeAltExps(x)} will remove all alternative Experiments from \code{x}.
+#' This has the same effect as \code{altExps(x) <- NULL} but may be more convenient as it directly returns a SingleCellExperiment.
 #' @seealso
 #' \code{\link{splitAltExps}}, for a convenient way of adding alternative Experiments from existing features.
+#'
+#' \code{\link{swapAltExp}}, to swap the main and alternative Experiments.
 #'
 #' @author Aaron Lun
 #'
@@ -115,6 +119,7 @@
 #' length,SummarizedExperimentByColumn-method
 #' names,SummarizedExperimentByColumn-method
 #' names<-,SummarizedExperimentByColumn-method
+#' removeAltExps
 #'
 #' % Dumping the SEBC methods here, so that check doesn't complain.
 NULL
@@ -226,6 +231,12 @@ setReplaceMethod("altExps", "SingleCellExperiment", function(x, value) {
     int_colData(x)[[.alt_key]] <- collected
     x
 })
+
+#' @export
+removeAltExps <- function(x) {
+    altExps(x) <- NULL
+    x
+}
 
 #' @export
 setReplaceMethod("altExp", c("SingleCellExperiment", "missing"), function(x, e, ..., value) {
