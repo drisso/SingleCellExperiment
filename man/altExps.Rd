@@ -24,6 +24,7 @@
 \alias{length,SummarizedExperimentByColumn-method}
 \alias{names,SummarizedExperimentByColumn-method}
 \alias{names<-,SummarizedExperimentByColumn-method}
+\alias{removeAltExps}
 \alias{\%}
 \alias{Dumping}
 \alias{the}
@@ -106,6 +107,9 @@ Replaces all names for alternative Experiments in \code{x} with a character vect
 This should be of length equal to the number of results currently in \code{x}.
 }
 }
+
+\code{removeAltExps(x)} will remove all alternative Experiments from \code{x}.
+This has the same effect as \code{altExps(x) <- NULL} but may be more convenient as it directly returns a SingleCellExperiment.
 }
 
 \examples{
@@ -134,6 +138,8 @@ altExp(sce, "ERCC") <- se1[1:2,]
 }
 \seealso{
 \code{\link{splitAltExps}}, for a convenient way of adding alternative Experiments from existing features.
+
+\code{\link{swapAltExp}}, to swap the main and alternative Experiments.
 }
 \author{
 Aaron Lun

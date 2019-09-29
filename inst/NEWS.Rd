@@ -7,6 +7,8 @@
 
 \item Added the splitAltExps() utility to create many alternative Experiments at once.
 
+\item Added the swapAltExp() utility to swap between main and alternative Experiments.
+
 \item Deprecated isSpike(), spikeNames() and related arguments for handling spike-ins,
 in favor of representing spike-ins as alternative Experiments.
 
