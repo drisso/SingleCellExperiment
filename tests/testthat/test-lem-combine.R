@@ -89,5 +89,5 @@ test_that("cbind works correctly", {
 
     lem.alt <- lem
     factorData(lem.alt)$WHEE <- NULL
-    expect_error(cbind(lem, lem.alt), "number of columns")
+    expect_error(cbind(lem, lem.alt), "column names")
 })
