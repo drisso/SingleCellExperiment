@@ -112,7 +112,7 @@ setMethod("cbind", "SingleCellExperiment", function(..., deparse.level=1) {
         int_cd <- do.call(rbind, lapply(args, int_colData))
     }, error=function(err) {
         stop(
-            "failed to combine 'int_colData' in 'cbind(<", class(args[[1]]), ">)'\n",
+            "failed to combine 'int_colData' in 'cbind(<", class(args[[1]]), ">)':\n  ",
             conditionMessage(err))
     })
 
@@ -123,7 +123,7 @@ setMethod("cbind", "SingleCellExperiment", function(..., deparse.level=1) {
         combined <- do.call(cbind, row_shells)
     }, error=function(err) {
         stop(
-            "failed to combine 'int_elementMetadata' in 'cbind(<", class(args[[1]]), ">)'\n",
+            "failed to combine 'int_elementMetadata' in 'cbind(<", class(args[[1]]), ">)':\n  ",
             conditionMessage(err))
     })
     int_em <- rowData(combined)
@@ -149,7 +149,7 @@ setMethod("rbind", "SingleCellExperiment", function(..., deparse.level=1) {
         int_em <- do.call(rbind, lapply(args, int_elementMetadata))
     }, error=function(err) {
         stop(
-            "failed to combine 'int_elementMetadata' in 'rbind(<", class(args[[1]]), ">)'\n",
+            "failed to combine 'int_elementMetadata' in 'rbind(<", class(args[[1]]), ">)':\n  ",
             conditionMessage(err))
     })
 
