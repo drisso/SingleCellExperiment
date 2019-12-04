@@ -2,6 +2,10 @@
 \title{SingleCellExperiment News}
 \encoding{UTF-8}
 
+\section{Version 1.10.0}{\itemize{
+\item Removed deprecated modes for getting and setting reducedDims.
+}}
+
 \section{Version 1.8.0}{\itemize{
 \item Added altExp() and related methods to get and set alternative Experiments.
 
