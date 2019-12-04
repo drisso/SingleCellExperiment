@@ -22,12 +22,8 @@ test_that("reducedDim getters/setters are functioning with character 'type'", {
     expect_identical(reducedDimNames(sce), "tSNE")
 
     # Checking for different errors.
-    expect_null(reducedDim(sce, "PCA")) # during deprecation
-    expect_warning(reducedDim(sce, "PCA"), "deprecated") # during deprecation
-    # expect_error(reducedDim(sce, "PCA"), "subscript contains invalid names") # after deprecation
-    expect_null(reducedDim(sce, "2")) # during deprecation
-    expect_warning(reducedDim(sce, "2"), "deprecated") # during deprecation
-    # expect_error(reducedDim(sce, 2), "invalid subscript") # after deprecation
+    expect_error(reducedDim(sce, "PCA"), "invalid subscript") 
+    expect_error(reducedDim(sce, 2), "invalid subscript") 
     expect_error(reducedDim(sce, "DM") <- d1[1:10,], "number of rows")
     expect_error(reducedDim(sce, 1) <- "huh", "number of rows")
 })
@@ -88,18 +84,9 @@ test_that("reducedDim setter creates an unnamed redDim is none are present", {
 })
 
 test_that("reducedDim getters/setters work with numeric indices", {
-    # In the absence of reducedDim
-    # currently return NULL with a deprecation message
-    # future will throw an error
-    expect_null(reducedDim(sce)) # during deprecation
-    expect_warning(reducedDim(sce), "NULL is deprecated") # during deprecation
-    # expect_error(reducedDim(sce), "is 0") # after deprecation
-    expect_null(reducedDim(sce, 2)) # during deprecation
-    expect_warning(reducedDim(sce, 2), "NULL is deprecated") # during deprecation
-    # expect_error(reducedDim(sce, 2), "invalid subscript 'type'") # after deprecation
-    expect_null(reducedDim(sce, "PCA")) # during deprecation
-    expect_warning(reducedDim(sce, "PCA"), "NULL is deprecated") # during deprecation
-    # expect_error(reducedDim(sce, "PCA"), "subscript contains invalid names") # after deprecation
+    expect_error(reducedDim(sce), "no available entries") 
+    expect_error(reducedDim(sce, 2), "invalid subscript 'type'") 
+    expect_error(reducedDim(sce, "PCA"), "invalid subscript") 
 
     expect_error(reducedDim(sce, 1) <- d1, "out of bounds")
     expect_error(reducedDim(sce, 2) <- d1, "out of bounds")
