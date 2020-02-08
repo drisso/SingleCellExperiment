@@ -17,22 +17,6 @@
         }
     }
 
-    # Checking spike-in names are present and accounted for.
-    spike.fields <- .get_spike_field(suppressWarnings(spikeNames(object)), check=FALSE)
-    lost.spikes <- ! spike.fields %in% colnames(int_elementMetadata(object))
-    if (any(lost.spikes)) {
-        was.lost <- suppressWarnings(spikeNames(object)[lost.spikes][1])
-        msg <- c(msg, sprintf("no field specifying rows belonging to spike-in set '%s'", was.lost))
-    }
-
-    # Checking the size factor names as well.
-    sf.fields <- vapply(suppressWarnings(sizeFactorNames(object)), .get_sf_field, FUN.VALUE="")
-    lost.sfs <- ! sf.fields %in% colnames(int_colData(object))
-    if (any(lost.sfs)) {
-        was.lost <- suppressWarnings(sizeFactorNames(object)[lost.sfs][1])
-        msg <- c(msg, sprintf("no field specifying size factors for set '%s'", was.lost))
-    }
-
     if (length(msg)) { return(msg) }
     return(TRUE)
 }
