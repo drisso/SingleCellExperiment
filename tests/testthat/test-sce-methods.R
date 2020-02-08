@@ -17,6 +17,20 @@ test_that("size factor getters/setters are functioning", {
     expect_error(sizeFactors(sce, onAbsence="error"), "NULL")
 })
 
+test_that("column label getters/setters are functioning", {
+    labels <- sample(letters, ncol(sce), replace=TRUE) 
+    colLabels(sce) <- labels
+    expect_identical(colLabels(sce), labels)
+
+    # Manual deletion.
+    colLabels(sce) <- NULL
+    expect_identical(colLabels(sce), NULL)
+
+    # Additional actions work.
+    expect_warning(colLabels(sce, onAbsence="warn"), "NULL")
+    expect_error(colLabels(sce, onAbsence="error"), "NULL")
+})
+
 test_that("object version extraction works", {
     expect_identical(objectVersion(sce), packageVersion("SingleCellExperiment"))
 })
