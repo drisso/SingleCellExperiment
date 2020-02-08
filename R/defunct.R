@@ -15,4 +15,5 @@
 #' @docType methods 
 #' @aliases isSpike isSpike<- spikeNames clearSpikes
 #' sizeFactorNames clearSizeFactors
+#' @name defunct
 NULL

@@ -34,13 +34,14 @@
 #' sizeFactors(sce) <- runif(ncol(sce))
 #' sizeFactors(sce)
 #'
-#' @name SCE-sizeFactors
+#' @name sizeFactors
 NULL
 
 .sf_field <- "sizeFactor"
 
 #' @export
-#' @rdname SCE-sizeFactors
+#' @rdname sizeFactors
+#' @importFrom SummarizedExperiment colData
 #' @importFrom BiocGenerics sizeFactors
 setMethod("sizeFactors", "SingleCellExperiment", function(object) {
     object <- updateObject(object)
@@ -50,7 +51,8 @@ setMethod("sizeFactors", "SingleCellExperiment", function(object) {
 })
 
 #' @export
-#' @rdname SCE-sizeFactors
+#' @rdname sizeFactors
+#' @importFrom SummarizedExperiment colData<- colData
 #' @importFrom BiocGenerics sizeFactors<-
 setReplaceMethod("sizeFactors", "SingleCellExperiment", function(object, ..., value) {
     object <- updateObject(object)
