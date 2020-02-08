@@ -46,9 +46,7 @@ NULL
 #' @importFrom BiocGenerics sizeFactors
 setMethod("sizeFactors", "SingleCellExperiment", function(object) {
     object <- updateObject(object)
-    output <- colData(object)[[.sf_field]]
-    names(output) <- colnames(object)
-    output
+    colData(object)[[.sf_field]]
 })
 
 #' @export
