@@ -6,12 +6,15 @@
 \alias{sizeFactors<-,SingleCellExperiment-method}
 \title{Size factor methods}
 \usage{
-\S4method{sizeFactors}{SingleCellExperiment}(object)
+\S4method{sizeFactors}{SingleCellExperiment}(object, onAbsence = "none")
 
 \S4method{sizeFactors}{SingleCellExperiment}(object, ...) <- value
 }
 \arguments{
 \item{object}{A \linkS4class{SingleCellExperiment} object.}
+
+\item{onAbsence}{String indicating an additional action to take when size factors are absent:
+nothing (\code{"none"}), a warning (\code{"warn"}) or an error (\code{"error"}).}
 
 \item{...}{Additional arguments, currently ignored.}
 
@@ -19,11 +22,12 @@
 }
 \value{
 For \code{sizeFactors}, a numeric vector is returned containing size factors for all cells.
+If no size factors are available, a \code{NULL} is returned (and/or a warning or error, depending on \code{onAbsence}).
 
 For \code{sizeFactors<-}, a modified \code{object} is returned with size factors in its \code{\link{colData}}.
 }
 \description{
-Gets or sets the size factors for all cells.
+Gets or sets the size factors for all cells in a \linkS4class{SingleCellExperiment} object.
 }
 \details{
 A size factor is a scaling factor used to divide the raw counts of a particular cell to obtain normalized expression values,
@@ -33,6 +37,9 @@ The \code{sizeFactors} methods can be used to get or set size factors for all ce
 When setting size factors, the values are stored in the \code{\link{colData}} as the \code{\link{sizeFactors}} field.
 This name is chosen for general consistency with other packages (e.g., \pkg{DESeq2})
 and to allow the size factors to be easily extracted from the \code{\link{colData}} for use as covariates.
+
+For developers, \code{onAbsence} is provided to make it easier to mandate that \code{object} has size factors.
+This avoids silent \code{NULL} values that flow to the rest of the function and make debugging difficult.
 }
 \examples{
 example(SingleCellExperiment, echo=FALSE) # Using the class example

@@ -44,7 +44,9 @@
 #' colLabels(sce) <- sample(LETTERS, ncol(sce), replace=TRUE)
 #' colLabels(sce)
 #'
+#' @docType methods
 #' @name colLabels
+#' @aliases colLabels colLabels<-
 NULL
 
 .label_field <- "label"
