@@ -11,6 +11,10 @@ test_that("size factor getters/setters are functioning", {
     # Manual deletion.
     sizeFactors(sce) <- NULL
     expect_identical(sizeFactors(sce), NULL)
+
+    # Additional actions work.
+    expect_warning(sizeFactors(sce, onAbsence="warn"), "NULL")
+    expect_error(sizeFactors(sce, onAbsence="error"), "NULL")
 })
 
 test_that("object version extraction works", {
