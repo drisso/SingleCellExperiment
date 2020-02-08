@@ -18,7 +18,8 @@
 An updated version of \code{object}.
 }
 \description{
-Update a SingleCellExperiment object
+Update \linkS4class{SingleCellExperiment} objects to the latest version of the class structure.
+This is usually called by methods in the \pkg{SingleCellExperiment} package rather than by users or downstream packages.
 }
 \details{
 This function updates the SingleCellExperiment to match changes in the internal class representation.
@@ -26,6 +27,7 @@ Changes are as follows:
 \itemize{
 \item Objects created before 1.7.1 are modified to include \code{\link{altExps}} and \code{\link{reducedDims}} fields in their internal column metadata.
 Reduced dimension results previously in the \code{reducedDims} slot are transferred to the \code{reducedDims} field.
+\item Objects created before 1.9.1 are modified so that the size factors are stored by \code{\link{sizeFactors<-}} in \code{\link{colData}} rather than \code{\link{int_colData}}.
 }
 }
 \seealso{
