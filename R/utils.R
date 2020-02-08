@@ -7,3 +7,17 @@
 }
 
 .unnamed <- "unnamed"
+
+.absent_action <- function(object, val, fun, onAbsence=c("none", "warn", "error")) {
+    if (is.null(val)) {
+        onAbsence <- match.arg(onAbsence)
+        if (onAbsence!="none") {
+            msg <- sprintf("'%s(<%s>)' returns 'NULL'", fun, class(object)[1])
+            if (onAbsence=="warn") {
+                warning(msg)
+            } else {
+                stop(msg)
+            }
+        }
+    }
+}
