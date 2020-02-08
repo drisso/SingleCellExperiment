@@ -1,6 +1,6 @@
 #' Size factor methods
 #' 
-#' Gets or sets the size factors for all cells.
+#' Gets or sets the size factors for all cells in a \linkS4class{SingleCellExperiment} object.
 #' 
 #' @param object A \linkS4class{SingleCellExperiment} object.
 #' @param value A numeric vector of length equal to \code{ncol(object)}, containing size factors for all cells.
