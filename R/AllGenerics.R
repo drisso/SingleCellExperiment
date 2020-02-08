@@ -65,6 +65,12 @@ setGeneric("int_metadata<-", function(x, value) standardGeneric("int_metadata<-"
 # Miscellaneous methods.
 
 #' @export
+setGeneric("colLabels", function(x, ...) standardGeneric("colLabels"))
+
+#' @export
+setGeneric("colLabels<-", function(x, ..., value) standardGeneric("colLabels<-"))
+
+#' @export
 setGeneric("objectVersion", function(x) standardGeneric("objectVersion"))
 
 ########################################
