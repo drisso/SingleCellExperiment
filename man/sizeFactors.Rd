@@ -13,6 +13,8 @@
 \arguments{
 \item{object}{A \linkS4class{SingleCellExperiment} object.}
 
+\item{...}{Additional arguments, currently ignored.}
+
 \item{value}{A numeric vector of length equal to \code{ncol(object)}, containing size factors for all cells.}
 }
 \value{

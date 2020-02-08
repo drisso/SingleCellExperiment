@@ -4,6 +4,7 @@
 #' 
 #' @param object A \linkS4class{SingleCellExperiment} object.
 #' @param value A numeric vector of length equal to \code{ncol(object)}, containing size factors for all cells.
+#' @param ... Additional arguments, currently ignored.
 #' 
 #' @details
 #' A size factor is a scaling factor used to divide the raw counts of a particular cell to obtain normalized expression values,
