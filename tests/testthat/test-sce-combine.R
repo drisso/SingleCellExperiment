@@ -10,7 +10,6 @@ test_that("rbind works correctly in the basic case", {
     sce2 <- rbind(sce, sce.alt)
     expect_equivalent(assay(sce2), rbind(assay(sce), assay(sce.alt)))
     expect_identical(sizeFactors(sce2), sizeFactors(sce))
-    expect_identical(isSpike(sce2), c(isSpike(sce), isSpike(sce.alt)))
     expect_identical(reducedDims(sce2), reducedDims(sce))
 })
 
@@ -54,7 +53,6 @@ test_that("cbind works correctly in the basic case", {
     expect_equivalent(assay(sce2), cbind(assay(sce), assay(sce.alt)))
     expect_identical(sizeFactors(sce2), c(sizeFactors(sce), sizeFactors(sce.alt)))
     expect_identical(reducedDim(sce2, "PCA"), rbind(reducedDim(sce, "PCA"), reducedDim(sce.alt, "PCA")))
-    expect_identical(isSpike(sce2), isSpike(sce))
     expect_identical(altExp(sce2), cbind(altExp(sce), altExp(sce.alt)))
 })
 
@@ -77,12 +75,10 @@ test_that("cbind respects the internal fields correctly", {
     altExps(alt.sce) <- rev(altExps(alt.sce))
     bravo <- cbind(sce, alt.sce)
     expect_identical(alpha, bravo)
+})
 
+test_that("cbind handles errors in the internal fields correctly", {
     # Chokes correctly when presented with errors.
-    sce.err <- sce
-    sizeFactors(sce.err) <- NULL
-    expect_error(cbind(sce.err, sce), "'int_colData'")
-
     sce.err <- sce
     reducedDim(sce.err, "PCA") <- NULL
     expect_error(cbind(sce.err, sce), "'int_colData'")
