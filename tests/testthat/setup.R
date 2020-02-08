@@ -40,5 +40,4 @@ altExp(loaded, "Protein") <- se2
 #########################################
 # Other load-ups. 
 
-isSpike(loaded, "ERCC") <- rbinom(nrow(v), 1, 0.2)==1
 sizeFactors(loaded) <- 2^rnorm(ncells)
