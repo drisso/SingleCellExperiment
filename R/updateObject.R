@@ -1,4 +1,7 @@
 #' Update a SingleCellExperiment object
+#'
+#' Update \linkS4class{SingleCellExperiment} objects to the latest version of the class structure.
+#' This is usually called by methods in the \pkg{SingleCellExperiment} package rather than by users or downstream packages.
 #' 
 #' @param object A old \linkS4class{SingleCellExperiment} object.
 #' @param ... Additional arguments that are ignored.
@@ -10,6 +13,7 @@
 #' \itemize{
 #' \item Objects created before 1.7.1 are modified to include \code{\link{altExps}} and \code{\link{reducedDims}} fields in their internal column metadata.
 #' Reduced dimension results previously in the \code{reducedDims} slot are transferred to the \code{reducedDims} field.
+#' \item Objects created before 1.9.1 are modified so that the size factors are stored by \code{\link{sizeFactors<-}} in \code{\link{colData}} rather than \code{\link{int_colData}}.
 #' }
 #' 
 #' @return
@@ -27,13 +31,17 @@
 #' @importFrom S4Vectors DataFrame
 #' @importFrom utils packageVersion
 setMethod("updateObject", "SingleCellExperiment", function(object, ..., verbose=FALSE) {
-    if (objectVersion(object) < "1.7.1") {
+    old.ver <- objectVersion(object)
+    triggered <- FALSE
+
+    if (old.ver < "1.7.1") {
         old <- S4Vectors:::disableValidity()
         if (!isTRUE(old)) {
             S4Vectors:::disableValidity(TRUE)
             on.exit(S4Vectors:::disableValidity(old))
         }
 
+        # Need this to avoid a circular recursion when calling reducedDims()<-.
         int_metadata(object)$version <- packageVersion("SingleCellExperiment")
 
         if (!.red_key %in% colnames(int_colData(object))) {
@@ -50,11 +58,27 @@ setMethod("updateObject", "SingleCellExperiment", function(object, ..., verbose=
             altExps(object) <- NULL
         }
 
-        if (verbose) {
-            message("[updateObject] ", class(object), " object uses ", 
-                "internal representation\n", "[updateObject] from SingleCellExperiment ", 
-                objectVersion(object), ". ", "Updating it ... ", appendLF = FALSE)
+        triggered <- TRUE
+    }
+
+    if (old.ver < "1.9.2") {
+        # Need this to avoid a circular recursion when calling sizeFactors()<-.
+        int_metadata(object)$version <- packageVersion("SingleCellExperiment")
+
+        old_sf <- int_colData(object)$size_factor
+        has_sf <- sizeFactors(object)
+        if (!is.null(has_sf) && !identical(has_sf, old_sf)) {
+            warning(sprintf("clobbering old 'sizeFactors' in 'colData(<%s>)'", class(object)[1]))
         }
+        sizeFactors(object) <- old_sf
+
+        triggered <- TRUE
+    }
+
+    if (verbose && triggered) {
+        message("[updateObject] ", class(object)[1], " object uses ", 
+            "internal representation\n", "[updateObject] from SingleCellExperiment ", 
+            old.ver, ". ", "Updating it ...\n", appendLF = FALSE)
     }
 
     int_metadata(object)$version <- packageVersion("SingleCellExperiment")
