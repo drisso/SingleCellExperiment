@@ -62,28 +62,10 @@ setGeneric("int_metadata", function(x) standardGeneric("int_metadata"))
 setGeneric("int_metadata<-", function(x, value) standardGeneric("int_metadata<-"))
 
 ########################################
-# Loose getter/setters (i.e., with no official slot).
-
-#' @export
-setGeneric("isSpike", function(x, type, ...) standardGeneric("isSpike"))
-
-#' @export
-setGeneric("isSpike<-", function(x, type, ..., value) standardGeneric("isSpike<-"))
-
-#' @export
-setGeneric("clearSpikes", function(x, type, ..., value) standardGeneric("clearSpikes"))
-
-#' @export
-setGeneric("clearSizeFactors", function(object) standardGeneric("clearSizeFactors"))
+# Miscellaneous methods.
 
 #' @export
 setGeneric("objectVersion", function(x) standardGeneric("objectVersion"))
-
-#' @export
-setGeneric("spikeNames", function(x) standardGeneric("spikeNames"))
-
-#' @export
-setGeneric("sizeFactorNames", function(object) standardGeneric("sizeFactorNames"))
 
 ########################################
 # Alternative experiment getter/setters.
