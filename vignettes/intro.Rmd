@@ -22,40 +22,71 @@ knitr::opts_chunk$set(warning=FALSE, error=FALSE, message=FALSE)
 
 # Motivation
 
-The `SingleCellExperiment` class is a light-weight container for single-cell genomics data.
+The `SingleCellExperiment` class is a lightweight Bioconductor container for storing and manipulating single-cell genomics data.
 It extends the `RangedSummarizedExperiment` class and follows similar conventions, 
 i.e., rows should represent features (genes, transcripts, genomic regions) and columns should represent cells.
-It provides methods for storing dimensionality reduction results and data for alternative feature sets (e.g., synthetic spike-in transcripts, antibody tags).
+It provides methods for storing dimensionality reduction results and data for alternative feature sets (e.g., synthetic spike-in transcripts, antibody-derived tags).
 It is the central data structure for Bioconductor single-cell packages like `r Biocpkg("scater")` and `r Biocpkg("scran")`.
 
 # Creating SingleCellExperiment instances
 
-`SingleCellExperiment` objects can be created via the constructor of the same name:
+`SingleCellExperiment` objects can be created via the constructor of the same name.
+For example, if we have a count matrix in `counts`, we can simply call:
 
 ```{r construct}
 library(SingleCellExperiment)
 counts <- matrix(rpois(100, lambda = 10), ncol=10, nrow=10)
-sce <- SingleCellExperiment(assays = list(counts = counts))
+sce <- SingleCellExperiment(counts)
 sce
 ```
 
-An alternative approach is via coercion from `SummarizedExperiment` objects.
+In practice, it is often more useful to name the assay by passing in a named list:
+
+```{r}
+sce <- SingleCellExperiment(list(counts=counts))
+sce
+```
+
+It is similarly easy to set the column and row metadata by passing values to the appropriate arguments.
+We will not go into much detail here as most of this is covered by the `r Biocpkg("SummarizedExperiment")` documentation,
+but to give an example:
+
+```{r}
+pretend.cell.labels <- sample(letters, ncol(counts), replace=TRUE)
+pretend.gene.lengths <- sample(10000, nrow(counts))
+
+sce <- SingleCellExperiment(list(counts=counts),
+    colData=DataFrame(label=pretend.cell.labels),
+    rowData=DataFrame(length=pretend.gene.lengths),
+    metadata=list(study="GSE111111")
+)
+sce
+```
+
+We can also construct a `SingleCellExperiment` by coercing an existing `(Ranged)SummarizedExperiment` object:
 
 ```{r coerce}
 se <- SummarizedExperiment(list(counts=counts))
 as(se, "SingleCellExperiment")
 ```
 
-To demonstrate the use of the class, we will the Allen data set from the `r Biocpkg("scRNAseq")` package.
+The set of operations that can be applied to a `RangedSummarizedExperiment` are also applicable to any instance of a `SingleCellExperiment`.
+This includes access to assay data via `assay()`, column metadata with `colData()`, and so on.
+Again, without going into too much detail:
+
+```{r}
+dim(assay(sce))
+colnames(colData(sce))
+colnames(rowData(sce))
+```
+
+To demonstrate the use of the class in the rest of the vignette, we will use the Allen data set from the `r Biocpkg("scRNAseq")` package.
 
 ```{r fluidigm}
 library(scRNAseq)
 sce <- ReprocessedAllenData("tophat_counts")
 sce
 ```
-
-The set of operations that can be applied to a `RangedSummarizedExperiment` are also applicable to any instance of a `SingleCellExperiment`.
-This includes access to assay data via `assay()`, column metadata with `colData()`, and so on.
 
 # Adding low-dimensional representations
 
@@ -72,6 +103,7 @@ assayNames(sce)
 ```
 
 We obtain the PCA and t-SNE representations of the data and add them to the object with the `reducedDims()<-` method.
+Alternatively, we can representations one at a time with the `reducedDim()<-` method (note the missing `s`).
 
 ```{r pca}
 pca_data <- prcomp(t(logcounts(sce)), rank=50)
@@ -84,8 +116,9 @@ reducedDims(sce) <- list(PCA=pca_data$x, TSNE=tsne_data$Y)
 sce
 ```
 
-The stored coordinates can be retrieved by name or by numerical index.
-Each row of the coordinate matrix is assumed to correspond to a cell, while each column represents a dimension.
+The coordinates for all representations can be retrieved from a `SingleCellExperiment` _en masse_ with `reducedDims()`
+or one at a time by name/index with `reducedDim()`.
+Each row of the coordinate matrix is assumed to correspond to a cell while each column represents a dimension.
 
 ```{r}
 reducedDims(sce)
@@ -95,6 +128,7 @@ head(reducedDim(sce, "TSNE")[,1:2])
 ```
 
 Any subsetting by column of `sce_sub` will also lead to subsetting of the dimensionality reduction results by cell.
+This is convenient as it ensures our low-dimensional results are always synchronized with the gene expression data.
 
 ```{r}
 dim(reducedDim(sce, "PCA"))
@@ -137,18 +171,10 @@ Many scRNA-seq experiments contain sequencing data for multiple feature types be
 - Allele information for experiments involving multiple genotypes.
 
 Such features can be stored inside the `SingleCellExperiment` via the concept of "alternative Experiments".
-These are nested `SummarizedExperiment` instances that are guaranteed to have the same number and ordering of columns as the `SingleCellExperiment` itself.
-Data for endogenous genes and other features can thus be kept separate, which is often desirable as they need to be processed differently.
+These are nested `SummarizedExperiment` instances that are guaranteed to have the same number and ordering of columns as the main `SingleCellExperiment` itself.
+Data for endogenous genes and other features can thus be kept separate - which is often desirable as they need to be processed differently - while still retaining the synchronization of operations on a single object. 
 
 To illustrate, consider the case of the spike-in transcripts in the Allen data. 
-We move the corresponding rows out of the assays of the main `SingleCellExperiment` and into a nested alternative Experiment.
-
-```{r}
-is.spike <- grepl("^ERCC-", rownames(sce))
-sce <- splitAltExps(sce, ifelse(is.spike, "ERCC", "gene"))
-altExpNames(sce)
-```
-
 The `altExp()` method returns a self-contained `SingleCellExperiment` instance containing only the spike-in transcripts.
 
 ```{r}
@@ -163,6 +189,60 @@ Similarly, the alternative Experiments can have different `rowData()` from the m
 rowData(altExp(sce))$concentration <- runif(nrow(altExp(sce)))
 rowData(altExp(sce))
 rowData(sce)
+```
+
+We provide the `splitAltExps()` utility to easily split a `SingleCellExperiment` into new alternative Experiments.
+For example, if we wanted to split the RIKEN transcripts into a separate Experiment
+- say, to ensure that they are not used in downstream analyses without explicitly throwing out the data -
+we would do:
+
+```{r}
+is.riken <- grepl("^[0-9]", rownames(sce))
+sce <- splitAltExps(sce, ifelse(is.riken, "RIKEN", "gene"))
+altExpNames(sce)
+```
+
+Alternatively, if we want to swap the main and alternative Experiments -
+perhaps because the RIKEN transcripts were more interesting than expected, and we want to perform our analyses on them -
+we can simply use `swapAltExp()` to switch the RIKEN alternative Experiment with the gene expression data:
+
+```{r}
+swapAltExp(sce, "RIKEN", saved="original")
+```
+
+# Additional metadata fields
+
+The `SingleCellExperiment` class provides the `sizeFactors()` getter and setter methods,
+to set and retrieve size factors from the `colData` of the object.
+Each size factor represents the scaling factor applied to a cell to normalize expression values prior to downstream comparisons,
+e.g., to remove the effects of differences in library size and other cell-specific biases.
+These methods are primarily intended for programmatic use in functions implementing normalization methods,
+but users can also directly call this to inspect or define the size factors for their analysis.
+
+```{r}
+# Making up some size factors and storing them:
+sizeFactors(sce) <- 2^rnorm(ncol(sce))
+summary(sizeFactors(sce))
+
+# Deleting the size factors:
+sizeFactors(sce) <- NULL
+sizeFactors(sce)
+```
+
+The `colLabels()` getter and setters methods allow applications to set and retrieve cell labels from the `colData`.
+These labels can be derived from cluster annotations, assigned by classification algorithms, etc.
+and are often used in downstream visualization and analyses.
+While labels can be stored in any `colData` field, the `colLabels()` methods aim to provide some informal standardization
+to a default location that downstream functions can search first when attempting to retrieve annotations.
+
+```{r}
+# Making up some labels and storing them:
+colLabels(sce) <- sample(letters, ncol(sce), replace=TRUE)
+table(colLabels(sce))
+
+# Deleting the labels:
+colLabels(sce) <- NULL
+colLabels(sce)
 ```
 
 # Session Info
