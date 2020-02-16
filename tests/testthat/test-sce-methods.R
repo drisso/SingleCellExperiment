@@ -109,15 +109,15 @@ test_that("assay getters/setters respect withDimnames", {
     expect_identical(dimnames(counts(sce, withDimnames=FALSE)), NULL)
 
     v3 <- log2(v2)
-    logcounts(sce) <- v3
+    logcounts(sce, withDimnames=FALSE) <- v3
     expect_identical(dimnames(logcounts(sce)), list(sce_rownames, sce_colnames))
     expect_identical(dimnames(logcounts(sce, withDimnames=FALSE)), NULL)
 
-    cpm(sce) <- v3 + v2
+    cpm(sce, withDimnames=FALSE) <- v3 + v2
     expect_identical(dimnames(cpm(sce)), list(sce_rownames, sce_colnames))
     expect_identical(dimnames(cpm(sce, withDimnames=FALSE)), NULL)
 
-    tpm(sce) <- v3 - v2
+    tpm(sce, withDimnames=FALSE) <- v3 - v2
     expect_equivalent(tpm(sce), v3-v2)
     expect_identical(dimnames(tpm(sce)), list(sce_rownames, sce_colnames))
     expect_identical(dimnames(tpm(sce, withDimnames=FALSE)), NULL)
