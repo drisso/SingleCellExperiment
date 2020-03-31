@@ -1,6 +1,7 @@
 #' Get or set column labels
 #'
-#' Get or set column labels for the cells in a \linkS4class{SingleCellExperiment} class.
+#' Get or set column labels in an instance of a \linkS4class{SingleCellExperiment} class.
+#' Labels are expected to represent information about the the biological state of each cell.
 #'
 #' @param x A \linkS4class{SingleCellExperiment} object.
 #' @param value Any vector-like object of length equal to \code{ncol(object)}, containing labels for all cells.
@@ -10,20 +11,17 @@
 #'
 #' @details
 #' A frequent task in single-cell data analyses is to label cells with some annotation,
-#' e.g., cluster identities, cell type labels, classifications and so on.
-#' In a standard \linkS4class{SummarizedExperiment}, the \code{\link{colData}} represents the ideal place for such annotations,
+#' e.g., cluster identities, predicted cell type classifications and so on.
+#' In a \linkS4class{SummarizedExperiment}, the \code{\link{colData}} represents the ideal place for such annotations,
 #' which can be easily set and retrieved with standard methods, e.g., \code{x$label <- my.labels}.
 #'
-#' That said, it is desirable to have some informal standardization of the name of the column used to store these annotations
-#' as this makes it easier to programmatically set sensible defaults for retrieval of the labels in downstream functions.
+#' That said, it is desirable to have some informal standardization of the name of the column used to store these annotations as this makes it easier to programmatically set sensible defaults for retrieval of the labels in downstream functions.
 #' To this end, the \code{colLabels} function will get or set labels from the \code{"label"} field of the \code{\link{colData}}.
-#' This considers the application where there is a \dQuote{primary} set of labels that should be used by default.
+#' This considers the use case where there is a \dQuote{primary} set of labels that represents the default grouping of cells in downstream analyses.
 #'
 #' To illustrate, let's say we have a downstream function that accepts a SingleCellExperiment object and requires labels.
-#' When defining our function, we can set \code{colLabels(x)} as the default value for our label argument,
-#' which will instruct the function to look in the location defined by \code{colLabels} for the labels.
-#' This pattern is useful as it still accommodates on-the-fly changes to a secondary set of labels in \code{x}
-#' without requiring the user to run \code{colLabels(x) <- second.labels}.
+#' When defining our function, we can set \code{colLabels(x)} as the default value for our label argument.
+#' This pattern is useful as it accommodates on-the-fly changes to a secondary set of labels in \code{x} without requiring the user to run \code{colLabels(x) <- second.labels}, while facilitating convenient use of the primary labels by default.
 #' 
 #' For developers, \code{onAbsence} is provided to make it easier to mandate that \code{x} actually has labels.
 #' This avoids silent \code{NULL} values that flow to the rest of the function and make debugging difficult.
