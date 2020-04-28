@@ -53,7 +53,7 @@ Each alternative Experiment should contain experimental data and row metadata fo
 
 In the following examples, \code{x} is a \linkS4class{SingleCellExperiment} object.
 \describe{
-\item{\code{altExp(x, e, withColData=TRUE)}:}{
+\item{\code{altExp(x, e, withColData=FALSE)}:}{
 Retrieves a \linkS4class{SummarizedExperiment} containing alternative features (rows) for all cells (columns) in \code{x}.
 \code{e} is either a string specifying the name of the alternative Experiment in \code{x} to retrieve,
 or a numeric scalar specifying the index of the desired Experiment.
@@ -63,7 +63,7 @@ If \code{withColData=TRUE}, the column metadata of the output object is set to \
 Returns a character vector containing the names of all alternative Experiments in \code{x}.
 This is guaranteed to be of the same length as the number of results, though the names may not be unique.
 }
-\item{\code{altExps(x, withColData=TRUE)}:}{
+\item{\code{altExps(x, withColData=FALSE)}:}{
 Returns a named \linkS4class{List} of matrices containing one or more \linkS4class{SummarizedExperiment} objects.
 Each object has the same number of columns.
 If \code{withColData=TRUE}, the column metadata of each output object is set to \code{\link{colData}(x)}.
