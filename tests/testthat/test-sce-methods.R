@@ -31,6 +31,29 @@ test_that("column label getters/setters are functioning", {
     expect_error(colLabels(sce, onAbsence="error"), "NULL")
 })
 
+test_that("row subset getters/setters are functioning", {
+    of.interest <- 1:10
+    rowSubset(sce) <- of.interest
+    expect_identical(which(rowSubset(sce)), of.interest)
+
+    keep <- rbinom(nrow(sce), 1, 0.5)==1
+    rowSubset(sce) <- keep
+    expect_identical(rowSubset(sce), keep)
+
+    rownames(sce) <- sprintf("GENE_%i", seq_len(nrow(sce)))
+    labels <- sample(rownames(sce), ncol(sce), replace=TRUE) 
+    rowSubset(sce) <- labels
+    expect_identical(rowSubset(sce), rownames(sce) %in% labels)
+
+    # Manual deletion.
+    rowSubset(sce) <- NULL
+    expect_identical(rowSubset(sce), NULL)
+
+    # Additional actions work.
+    expect_warning(rowSubset(sce, onAbsence="warn"), "NULL")
+    expect_error(rowSubset(sce, onAbsence="error"), "NULL")
+})
+
 test_that("object version extraction works", {
     expect_identical(objectVersion(sce), packageVersion("SingleCellExperiment"))
 })

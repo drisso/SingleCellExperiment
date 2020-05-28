@@ -71,6 +71,12 @@ setGeneric("colLabels", function(x, ...) standardGeneric("colLabels"))
 setGeneric("colLabels<-", function(x, ..., value) standardGeneric("colLabels<-"))
 
 #' @export
+setGeneric("rowSubset", function(x, ...) standardGeneric("rowSubset"))
+
+#' @export
+setGeneric("rowSubset<-", function(x, ..., value) standardGeneric("rowSubset<-"))
+
+#' @export
 setGeneric("objectVersion", function(x) standardGeneric("objectVersion"))
 
 ########################################
