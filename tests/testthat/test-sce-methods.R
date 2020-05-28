@@ -45,6 +45,11 @@ test_that("row subset getters/setters are functioning", {
     rowSubset(sce) <- labels
     expect_identical(rowSubset(sce), rownames(sce) %in% labels)
 
+    # Responds to non-default locations.
+    of.interest <- 1:10
+    rowSubset(sce, "hvgs") <- of.interest
+    expect_identical(which(rowSubset(sce, "hvgs")), of.interest)
+
     # Manual deletion.
     rowSubset(sce) <- NULL
     expect_identical(rowSubset(sce), NULL)
