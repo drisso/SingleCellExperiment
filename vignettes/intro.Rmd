@@ -245,6 +245,21 @@ colLabels(sce) <- NULL
 colLabels(sce)
 ```
 
+In a similar vein, we provide the `rowSubset()` function for users to set and get row subsets from the `rowData`.
+This will store any vector of gene identities (e.g., row names, integer indices, logical vector) 
+in the `SingleCellExperiment` object for retrieval and use by downstream functions.
+Users can then easily pack multiple feature sets into the same object for synchronized manipulation.
+
+```{r}
+# Packs integer or character vectors into the rowData:
+rowSubset(sce, "my gene set 1") <- 1:10
+which(rowSubset(sce, "my gene set 1"))
+
+# Easy to delete:
+rowSubset(sce, "my gene set 1") <- NULL
+rowSubset(sce, "my gene set 1")
+```
+
 # Session Info
 
 ```{r}
