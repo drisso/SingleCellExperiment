@@ -5,6 +5,7 @@
 #'
 #' @param x A \linkS4class{SingleCellExperiment} object.
 #' @param value Any vector-like object of length equal to \code{ncol(object)}, containing labels for all cells.
+#' Alternatively \code{NULL}, in which case existing label information is removed.
 #' @param ... Additional arguments, currently ignored.
 #' @param onAbsence String indicating an additional action to take when labels are absent:
 #' nothing (\code{"none"}), a warning (\code{"warn"}) or an error (\code{"error"}).
