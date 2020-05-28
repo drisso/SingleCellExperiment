@@ -2,8 +2,16 @@
 \title{SingleCellExperiment News}
 \encoding{UTF-8}
 
+\section{Version 1.12.0}{\itemize{
+\item Added the \code{rowSubset} function as a standard location for a row subset.
+}}
+
 \section{Version 1.10.0}{\itemize{
-\item Removed deprecated modes for getting and setting reducedDims.
+\item Removed deprecated modes for getting and setting \code{reducedDims}.
+
+\item Added the \code{colLabels} function as a standard location for column labels.
+
+\item Added more options to control \code{sizeFactors} behavior when size factors are missing.
 }}
 
 \section{Version 1.8.0}{\itemize{
