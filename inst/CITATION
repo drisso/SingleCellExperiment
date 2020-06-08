@@ -20,10 +20,6 @@ bibentry("Article",
                     ),
          year = 2020,
          volume = 17,
-         pages = 137--145,
+         pages = "137--145",
          journal = "Nature Methods",
-         url = "https://www.nature.com/articles/s41592-019-0654-x",
-         textVersion =
-         paste("Robert A. Amezquita, Aaron T. L. Lun, Etienne Becht, Vince J. Carey, Lindsay N. Carpp, Ludwig Geistlinger, Federico Marini, Kevin Rue-Albrecht, Davide Risso, Charlotte Soneson, Levi Waldron, Herve Pages, Mike L. Smith, Wolfgang Huber, Martin Morgan, Raphael Gottardo & Stephanie C. Hicks","(2020).",
-               "Orchestrating single-cell analysis with Bioconductor. Nature Methods 17:137-145.")
-               )
+         url = "https://www.nature.com/articles/s41592-019-0654-x"               )
