@@ -8,7 +8,13 @@
 \alias{coerce,RangedSummarizedExperiment,SingleCellExperiment-method}
 \title{The SingleCellExperiment class}
 \usage{
-SingleCellExperiment(..., reducedDims = list(), altExps = list())
+SingleCellExperiment(
+  ...,
+  reducedDims = list(),
+  altExps = list(),
+  rowPairs = list(),
+  colPairs = list()
+)
 }
 \arguments{
 \item{...}{Arguments passed to the \code{\link{SummarizedExperiment}} constructor to fill the slots of the base class.}
@@ -18,6 +24,14 @@ each of which should have the same number of rows as the output SingleCellExperi
 
 \item{altExps}{A list of any number of \linkS4class{SummarizedExperiment} objects containing alternative Experiments,
 each of which should have the same number of columns as the output SingleCellExperiment object.}
+
+\item{rowPairs}{A list of any number of \linkS4class{SelfHits} objects describing relationships between pairs of rows.
+Each entry should have number of nodes equal to the number of rows of the output SingleCellExperiment object.
+Alternatively, entries may be square sparse matrices of order equal to the number of rows of the output object.}
+
+\item{columnPairs}{A list of any number of \linkS4class{SelfHits} objects describing relationships between pairs of columns.
+Each entry should have number of nodes equal to the number of columns of the output SingleCellExperiment object.
+Alternatively, entries may be square sparse matrices of order equal to the number of columns of the output object.}
 }
 \value{
 A SingleCellExperiment object.
@@ -34,8 +48,10 @@ As with any \linkS4class{SummarizedExperiment} derivative,
 different quantifications (e.g., counts, CPMs, log-expression) can be stored simultaneously in the \code{\link{assays}} slot,
 and row and column metadata can be attached using \code{\link{rowData}} and \code{\link{colData}}, respectively.
 
-The \code{\link{reducedDims}} and \code{\link{altExps}} concepts are the main extensions of the SingleCellExperiment class.
-This enables formalized representation of data structures that are commonly encountered during single-cell data analysis.
+The extra arguments in the constructor (e.g., \code{\link{reducedDims}} \code{\link{altExps}})
+represent the main extensions implemented in the SingleCellExperiment class.
+This enables a consistent, formalized representation of data structures 
+that are commonly encountered during single-cell data analysis.
 Readers are referred to the specific documentation pages for more details.
 
 A SingleCellExperiment can also be created by coercing from a \linkS4class{SummarizedExperiment}
@@ -63,7 +79,13 @@ as(se, "SingleCellExperiment")
 
 \code{\link{altExps}}, for representation of data for alternative feature sets.
 
+\code{\link{colPairs}} and \code{\link{rowPairs}}, to hold pairing information for rows and columns.
+
 \code{\link{sizeFactors}}, to store size factors for normalization.
+
+\code{\link{colLabels}}, to store cell-level labels.
+
+\code{\link{rowSubset}}, to store a subset of rows.
 
 \code{?"\link{SCE-combine}"}, to combine or subset a SingleCellExperiment object.
 
