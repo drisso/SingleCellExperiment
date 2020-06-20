@@ -21,6 +21,9 @@
         if (!.rowp_key %in% colnames(int_elementMetadata(object))) {
             msg <- c(msg, "no 'rowPairs' field in 'int_elementMetadata'")
         }
+        if (!.colp_key %in% colnames(int_colData(object))) {
+            msg <- c(msg, "no 'colPairs' field in 'int_colData'")
+        }
     }
 
     if (length(msg)) { return(msg) }

@@ -90,6 +90,7 @@ SingleCellExperiment <- function(..., reducedDims=list(), altExps=list(), rowPai
     reducedDims(out) <- reducedDims
     altExps(out) <- altExps
     rowPairs(out) <- rowPairs
+    colPairs(out) <- colPairs
 
     out
 }

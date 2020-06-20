@@ -80,6 +80,7 @@ setMethod("updateObject", "SingleCellExperiment", function(object, ..., verbose=
         int_metadata(object)$version <- packageVersion("SingleCellExperiment")
         
         rowPairs(object) <- list()
+        colPairs(object) <- list()
 
         triggered <- TRUE
     }
