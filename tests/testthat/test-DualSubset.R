@@ -37,20 +37,27 @@ test_that("DualSubset subset replacement works correctly", {
     swap2 <- 101:200
 
     ds2 <- ds
-    dsub <- ds[swap2]
-    ds2[swap1] <- dsub
+    ds2[swap1] <- ds[swap2]
     expect_identical(length(ds), length(ds2))
 
-    sub <- SingleCellExperiment:::.get_hits(dsub)
+    mod <- rhits
+    mod <- mod[!(queryHits(mod) %in% swap1 & subjectHits(mod) %in% swap1)]
+    sub <- SingleCellExperiment:::.get_hits(ds[swap2])
+
     expect_identical(
         sort(SingleCellExperiment:::.get_hits(ds2)),
         sort(SelfHits(
-            c(queryHits(sub), queryHits(sub) + 100L),
-            c(subjectHits(sub), subjectHits(sub) + 100L),
+            c(queryHits(mod), queryHits(sub)),
+            c(subjectHits(mod), subjectHits(sub)),
             nnode=length(ds),
-            value=c(mcols(sub)$value, mcols(sub)$value)
+            value=c(mcols(mod)$value, mcols(sub)$value)
         ))
     )
+
+    # This should be a no-op.
+    ds2 <- ds
+    ds2[swap1] <- ds2[swap1]
+    expect_identical(ds, ds2)
 })
 
 test_that("DualSubset concatenation works correctly", {

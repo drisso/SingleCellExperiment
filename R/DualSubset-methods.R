@@ -42,11 +42,7 @@ setReplaceMethod("[", "DualSubset", function(x, i, j, ..., value) {
     pv <- .get_hits(value)
     matv <- -.hits2mat(pv)
 
-    # Wiping out all pairs involving the elements to be replaced.
-    mat[i,] <- 0
-    mat[,i] <- 0
     mat[i,i] <- matv
-
     p2 <- .mat2hits(mat)
     index <- mcols(p2)$value
     use.left <- index > 0
