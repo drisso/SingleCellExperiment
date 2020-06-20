@@ -210,6 +210,40 @@ we can simply use `swapAltExp()` to switch the RIKEN alternative Experiment with
 swapAltExp(sce, "RIKEN", saved="original")
 ```
 
+# Storing row or column pairings
+
+A common procedure in single-cell analyses is to identify relationships between pairs of cells,
+e.g., to construct a nearest-neighbor graph or to mark putative physical interactions between cells.
+We can capture this information in the `SingleCellExperiment` class with the `colPairs()` functionality.
+To demonstrate, say we have 100 relationships between the cells in `sce`, characterized by some distance measure:
+
+```{r}
+cell1 <- sample(ncol(sce), 100, replace=TRUE)
+cell2 <- sample(ncol(sce), 100, replace=TRUE)
+distance <- runif(100)
+```
+
+We store this in the `SingleCellExperiment` as a `SelfHits` object using the `value` metadata field to hold our data.
+This is easily extracted as a `SelfHits` or, for logical or numeric data, as a sparse matrix from `r CRANpkg("Matrix")`.
+
+```{r}
+colPair(sce, "relationships") <- SelfHits(
+    cell1, cell2, nnode=ncol(sce), value=distance)
+colPair(sce, "relationships")
+class(colPair(sce, asSparse=TRUE))
+```
+
+A particularly useful feature is that the indices of the interacting cells are automatically remapped when `sce` is subsetted.
+This ensures that the pairings are always synchronized with the identities of the cells in `sce`.
+
+```{r}
+sub <- sce[,50:300]
+colPair(sub) # grabs the first pairing, if no 'type' is supplied.
+```
+
+Similar functionality is available for pairings between rows via the `rowPairs()` family of functions, 
+which is potentially useful for representing coexpression or regulatory networks.
+
 # Additional metadata fields
 
 The `SingleCellExperiment` class provides the `sizeFactors()` getter and setter methods,
