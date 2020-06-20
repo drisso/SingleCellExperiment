@@ -89,16 +89,14 @@
 #' reducedDimNames<-,SingleCellExperiment,character-method
 NULL
 
-# Getter/setter functions for reducedDims.
-
 .red_key <- "reducedDims"
 
 #' @export
-#' @importFrom S4Vectors List
-#' @importClassesFrom S4Vectors SimpleList
 setMethod("reducedDims", "SingleCellExperiment", function(x, withDimnames=TRUE) {
-    x <- updateObject(x)
-    value <- as(int_colData(x)[[.red_key]], "SimpleList")
+    value <- .get_internal_all(x, 
+        getfun=int_colData, 
+        key=.red_key)
+
     if (withDimnames) {
         for (i in seq_along(value)) {
             rownames(value[[i]]) <- colnames(x)
@@ -108,63 +106,50 @@ setMethod("reducedDims", "SingleCellExperiment", function(x, withDimnames=TRUE) 
 })
 
 #' @export
-#' @importFrom methods as
-#' @importFrom S4Vectors DataFrame
 setReplaceMethod("reducedDims", "SingleCellExperiment", function(x, value) {
-    x <- updateObject(x)
-
-    if (length(value) == 0L) {
-        collected <- int_colData(x)[, 0]
-    } else {
-        nrows <- vapply(value, nrow, FUN.VALUE = 0L)
-        if (!all(nrows == ncol(x))) {
-            stop("invalid 'value' in 'reducedDims(<", class(x), ">) <- value'\n",
-                "each element of 'value' should have number of rows equal to 'ncol(x)'")
-        }
-        collected <- do.call(DataFrame, lapply(value, I))
-        if (is.null(names(value))) {
-            colnames(collected) <- paste0(.unnamed, seq_along(value))
-        }
-    }
-
-    int_colData(x)[[.red_key]] <- collected
-    x
+    .set_internal_all(x, value, 
+        getfun=int_colData,
+        setfun=`int_colData<-`,
+        key=.red_key,
+        convertfun=NULL,
+        xdimfun=ncol,
+        vdimfun=nrow,
+        funstr="reducedDims",
+        xdimstr="ncol",
+        vdimstr="rows")
 })
 
 #' @export
 setMethod("reducedDimNames", "SingleCellExperiment", function(x) {
-    x <- updateObject(x)
-    colnames(int_colData(x)[[.red_key]])
+    .get_internal_names(x, 
+        getfun=int_colData, 
+        key=.red_key)
 })
 
 #' @export
 setReplaceMethod("reducedDimNames", c("SingleCellExperiment", "character"), function(x, value) {
-    x <- updateObject(x)
-    colnames(int_colData(x)[[.red_key]]) <- value
-    x
+    .set_internal_names(x, value,
+        getfun=int_colData,
+        setfun=`int_colData<-`,
+        key=.red_key)
 })
 
 #' @export
 setMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x, type, withDimnames=TRUE) {
-
-    if (identical(length(reducedDimNames(x)), 0L)) {
-        stop("no available entries for 'reducedDim(<", class(x), ">, ...)'")
-    }
-
-    reducedDim(x, 1L, withDimnames)
+    .get_internal_missing(x, 
+        basefun=reducedDim, 
+        namefun=reducedDimNames, 
+        funstr="reducedDim",
+        withDimnames=withDimnames)
 })
 
 #' @export
-setMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, type=1, withDimnames=TRUE) {
-    x <- updateObject(x)
-    internals <- int_colData(x)[[.red_key]]
-
-    out <- tryCatch({
-        internals[, type]
-    }, error=function(err) {
-        stop("invalid subscript 'type' in 'reducedDim(<", class(x), ">, type=\"numeric\", ...)':\n  ",
-            conditionMessage(err))
-    })
+setMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, type, withDimnames=TRUE) {
+    out <- .get_internal_integer(x, type,
+        getfun=int_colData,
+        key=.red_key,
+        funstr="reducedDim",
+        substr="type")
 
     if (withDimnames) {
         rownames(out) <- colnames(x)
@@ -175,15 +160,12 @@ setMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, type=1
 
 #' @export
 setMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type, withDimnames=TRUE) {
-    x <- updateObject(x)
-    internals <- int_colData(x)[[.red_key]]
-
-    out <- tryCatch({
-        internals[, type]
-    }, error=function(err) {
-        stop("invalid subscript 'type' in 'reducedDim(<", class(x), ">, type=\"character\", ...)':\n  ",
-            "'", type, "' not in 'reducedDimNames(<", class(x), ">)'")
-    })
+    out <- .get_internal_character(x, type,
+        getfun=int_colData,
+        key=.red_key,
+        funstr="reducedDim",
+        substr="type",
+        namestr="reducedDimNames")
 
     if (withDimnames) {
         rownames(out) <- colnames(x)
@@ -194,45 +176,38 @@ setMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type
 
 #' @export
 setReplaceMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x, type, ..., value) {
-    if (0L == length(reducedDimNames(x))){
-        type <- paste0(.unnamed, 1L)
-    } else {
-        type <- 1L
-    }
-    reducedDim(x, type) <- value
-    x
+    .set_internal_missing(x, value,
+        basefun=`reducedDim<-`,
+        namefun=reducedDimNames
+    )
 })
 
 #' @export
 setReplaceMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, type, ..., value) {
-    x <- updateObject(x)
-
-    if (!is.null(value) && !identical(nrow(value), ncol(x))) {
-        stop("invalid 'value' in 'reducedDim(<", class(x), ">, type=\"numeric\") <- value':\n  ",
-            "'value' should have number of rows equal to 'ncol(x)'")
-    }
-
-    internals <- int_colData(x)
-    if (type[1] > ncol(internals[[.red_key]])) {
-        stop("'type' out of bounds in 'reducedDim(<", class(x), ">, type='numeric')")
-    }
-
-    internals[[.red_key]][[type]] <- value
-    int_colData(x) <- internals
-    x
+    .set_internal_numeric(x, type, value,
+        getfun=int_colData,
+        setfun=`int_colData<-`,
+        key=.red_key,
+        convertfun=NULL,
+        xdimfun=ncol,
+        vdimfun=nrow,
+        funstr="reducedDim",
+        xdimstr="ncol",
+        vdimstr="rows",
+        substr="type")
 })
 
 #' @export
 setReplaceMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type, ..., value) {
-    x <- updateObject(x)
-
-    internals <- int_colData(x)
-    if (!is.null(value) && !identical(nrow(value), ncol(x))) {
-        stop("invalid 'value' in 'reducedDim(<", class(x), ">, type=\"character\") <- value':\n  ",
-            "'value' should have number of rows equal to 'ncol(x)'")
-    }
-
-    internals[[.red_key]][[type]] <- value
-    int_colData(x) <- internals
-    x
+    .set_internal_character(x, type, value, 
+        getfun=int_colData,
+        setfun=`int_colData<-`,
+        key=.red_key,
+        convertfun=NULL,
+        xdimfun=ncol, 
+        vdimfun=nrow,
+        funstr="reducedDim", 
+        xdimstr="ncol",
+        vdimstr="rows", 
+        substr="type") 
 })

@@ -123,12 +123,12 @@ test_that("getters and setters throw appropriate errors", {
 
 test_that(".precheck_altExp throws appropriate errors", {
     expect_error(
-        SingleCellExperiment:::.precheck_altExp(sce, assay(sce)),
-        "should be a SummarizedExperiment object"
+        altExp(sce) <- assay(sce),
+        "SummarizedExperiment"
     )
 
     expect_error(
-        SingleCellExperiment:::.precheck_altExp(sce, SummarizedExperiment()),
-        "should have the same number of columns as 'x'"
+        altExp(sce) <- SummarizedExperiment(),
+        "number of columns"
     )
 })

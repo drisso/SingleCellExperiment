@@ -170,7 +170,9 @@ setMethod("rowData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
     if (length(value) == 0L) {
         collected <- getfun(x)[, 0]
     } else {
-        value <- lapply(value, convertfun)
+        if (!is.null(convertfun)) {
+            value <- lapply(value, convertfun)
+        }
 
         N <- vapply(value, vdimfun, 0L)
         if (!all(N == xdimfun(x))) {
@@ -247,7 +249,9 @@ setMethod("rowData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
     x <- updateObject(x)
 
     if (!is.null(value)) {
-        value <- convertfun(value)
+        if (!is.null(convertfun)) {
+            value <- convertfun(value)
+        }
         if (!identical(vdimfun(value), xdimfun(x))) {
             stop("invalid 'value' in '", funstr, "(<", class(x), ">, type=\"numeric\") <- value':\n  ",
                 "'value' should have number of ", vdimstr, " equal to '", xdimstr, "(x)'")
@@ -269,7 +273,9 @@ setMethod("rowData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
     x <- updateObject(x)
 
     if (!is.null(value)) {
-        value <- convertfun(value)
+        if (!is.null(convertfun)) {
+            value <- convertfun(value)
+        }
         if (!identical(vdimfun(value), xdimfun(x))) {
             stop("invalid 'value' in '", funstr, "(<", class(x), ">, type=\"character\") <- value':\n  ",
                 "'value' should have number of ", vdimstr, " equal to '", xdimstr, "(x)'")

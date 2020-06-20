@@ -126,110 +126,101 @@ NULL
 
 .alt_key <- "altExps"
 
-#############################
-# Getters.
-
 #' @export
 setMethod("altExpNames", "SingleCellExperiment", function(x) {
-    colnames(int_colData(x)[[.alt_key]])
+    .get_internal_names(x, 
+        getfun=int_colData, 
+        key=.alt_key)
 })
 
 #' @export
-#' @importFrom S4Vectors List
-#' @importClassesFrom S4Vectors SimpleList
+#' @importFrom S4Vectors endoapply
 setMethod("altExps", "SingleCellExperiment", function(x, withColData=FALSE) {
-    out <- lapply(int_colData(x)[[.alt_key]], .get_se)
+    value <- .get_internal_all(x, 
+        getfun=int_colData, 
+        key=.alt_key)
+
+    value <- endoapply(value, .get_se)
     if (withColData) {
-        for (i in seq_along(out)) {
-            colData(out[[i]]) <- colData(x)
+        for (i in seq_along(value)) {
+            colData(value[[i]]) <- colData(x)
+        }
+    } else {
+        for (i in seq_along(value)) {
+            colnames(value[[i]]) <- colnames(x)
         }
     }
-    as(out, "SimpleList")
+
+    value
 })
 
 #' @export
 setMethod("altExp", c("SingleCellExperiment", "missing"), function(x, e, withColData=FALSE) {
-    if (identical(length(altExpNames(x)), 0L)) {
-        stop("no available entries for 'altExp(<", class(x), ">, ...)'")
-    }
-    altExp(x, e=1, withColData=withColData)
+    .get_internal_missing(x, 
+        basefun=altExp, 
+        namefun=altExpNames, 
+        funstr="altExp",
+        withColData=withColData)
 })
 
 #' @export
-setMethod("altExp", c("SingleCellExperiment", "numeric"), function(x, e=1, withColData=FALSE) {
-    internals <- int_colData(x)
+setMethod("altExp", c("SingleCellExperiment", "numeric"), function(x, e, withColData=FALSE) {
+    out <- .get_internal_integer(x, e,
+        getfun=int_colData,
+        key=.alt_key,
+        funstr="altExp",
+        substr="e")
 
-    out <- tryCatch({
-        .get_se(internals[,.alt_key][,e])
-    }, error=function(err) {
-        stop(
-            "invalid subscript 'e' in 'altExp(<", class(x), ">, e=\"numeric\", ...)'\n",
-            conditionMessage(err))
-    })
-
+    out <- .get_se(out)
     if (withColData) {
         colData(out) <- colData(x)
+    } else {
+        colnames(out) <- colnames(x)
     }
-    colnames(out) <- colnames(x)
+
     out
 })
 
 #' @export
 setMethod("altExp", c("SingleCellExperiment", "character"), function(x, e, withColData=FALSE) {
-    internals <- int_colData(x)
+    out <- .get_internal_character(x, e,
+        getfun=int_colData,
+        key=.alt_key,
+        funstr="altExp",
+        substr="e",
+        namestr="altExpNames")
 
-    out <- tryCatch({
-        .get_se(internals[,.alt_key][,e])
-    }, error=function(err) {
-        stop(
-            "invalid subscript 'e' in 'altExp(<", class(x), ">, e=\"character\", ...)'\n",
-            "'", e, "' not in 'altExpNames(<", class(x), ">)'")
-    })
-
+    out <- .get_se(out)
     if (withColData) {
         colData(out) <- colData(x)
+    } else {
+        colnames(out) <- colnames(x)
     }
-    colnames(out) <- colnames(x)
+
     out
 })
 
-#############################
-# Setters.
-
 #' @export
 setReplaceMethod("altExpNames", c("SingleCellExperiment", "character"), function(x, value) {
-    colnames(int_colData(x)[[.alt_key]]) <- value
-    x
+    .set_internal_names(x, value,
+        getfun=int_colData,
+        setfun=`int_colData<-`,
+        key=.alt_key)
 })
-
-#' @importClassesFrom SummarizedExperiment SummarizedExperiment
-.precheck_altExp <- function(x, val, ...) {
-    if (!is(val, "SummarizedExperiment")) {
-        stop(..., " should be a SummarizedExperiment object")
-    }
-    if (ncol(x)!=ncol(val)) {
-        stop(..., " should have the same number of columns as 'x'")
-    }
-}
 
 #' @export
 #' @importClassesFrom S4Vectors SimpleList
 setReplaceMethod("altExps", "SingleCellExperiment", function(x, value) {
-    collected <- int_colData(x)[,0]
-    for (i in seq_along(value)) {
-        .precheck_altExp(x, value[[i]], "invalid 'value' in 'altExps(<", class(x), ">) <- value'\neach element of 'value'")
-        collected[[i]] <- SummarizedExperimentByColumn(value[[i]])
-    }
-
-    if (is.null(names(value))) {
-        nm <- sprintf("%s%i", .unnamed, seq_along(value))
-    } else {
-        nm <- names(value)
-    }
-
-    colnames(collected) <- nm
-    int_colData(x)[[.alt_key]] <- collected
-    x
+    .set_internal_all(x, value, 
+        getfun=int_colData,
+        setfun=`int_colData<-`,
+        key=.alt_key,
+        convertfun=SummarizedExperimentByColumn,
+        xdimfun=ncol,
+        vdimfun=length,
+        funstr="altExps",
+        xdimstr="ncol",
+        vdimstr="columns")
 })
 
 #' @export
@@ -240,42 +231,37 @@ removeAltExps <- function(x) {
 
 #' @export
 setReplaceMethod("altExp", c("SingleCellExperiment", "missing"), function(x, e, ..., value) {
-    if (0L == length(altExpNames(x))){
-        e <- paste0(.unnamed, 1L)
-    } else {
-        e <- 1L
-    }
-    altExp(x, e) <- value
-    x
+    .set_internal_missing(x, value,
+        basefun=`altExp<-`,
+        namefun=altExpNames)
 })
 
 #' @export
 setReplaceMethod("altExp", c("SingleCellExperiment", "numeric"), function(x, e, ..., value) {
-    internals <- int_colData(x)
-    if (e[1] > ncol(internals[[.alt_key]])) {
-        stop("'e' out of bounds in 'altExp(<", class(x), ">, e='numeric')")
-    }
-
-    if (!is.null(value)) {
-        .precheck_altExp(x, value, "invalid 'value' in altExp(<", class(x), ">, e=\"numeric\") <- value'\n'value'")
-        value <- SummarizedExperimentByColumn(value)
-    }
-
-    internals[[.alt_key]][[e]] <- value
-    int_colData(x) <- internals
-    x
+    .set_internal_numeric(x, e, value,
+        getfun=int_colData,
+        setfun=`int_colData<-`,
+        key=.alt_key,
+        convertfun=SummarizedExperimentByColumn,
+        xdimfun=ncol,
+        vdimfun=length,
+        funstr="altExp",
+        xdimstr="ncol",
+        vdimstr="columns",
+        substr="e")
 })
 
 #' @export
 setReplaceMethod("altExp", c("SingleCellExperiment", "character"), function(x, e, ..., value) {
-    internals <- int_colData(x)
-
-    if (!is.null(value)) {
-        .precheck_altExp(x, value, "invalid 'value' in altExp(<", class(x), ">, e=\"character\") <- value'\n'value'")
-        value <- SummarizedExperimentByColumn(value)
-    }
-
-    internals[[.alt_key]][[e]] <- value
-    int_colData(x) <- internals
-    x
+    .set_internal_character(x, e, value, 
+        getfun=int_colData,
+        setfun=`int_colData<-`,
+        key=.alt_key,
+        convertfun=SummarizedExperimentByColumn,
+        xdimfun=ncol, 
+        vdimfun=length,
+        funstr="altExp", 
+        xdimstr="ncol",
+        vdimstr="columns", 
+        substr="e") 
 })
