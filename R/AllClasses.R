@@ -29,3 +29,5 @@ setClass("LinearEmbeddingMatrix",
          contains = "Annotated")
 
 setClass("SummarizedExperimentByColumn", slots=c(se="SummarizedExperiment"))
+
+setClass("DualSubset", slots=c(hits="SelfHits"))

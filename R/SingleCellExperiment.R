@@ -10,6 +10,12 @@
 #' each of which should have the same number of rows as the output SingleCellExperiment object.
 #' @param altExps A list of any number of \linkS4class{SummarizedExperiment} objects containing alternative Experiments,
 #' each of which should have the same number of columns as the output SingleCellExperiment object.
+#' @param rowPairs A list of any number of \linkS4class{SelfHits} objects describing relationships between pairs of rows.
+#' Each entry should have number of nodes equal to the number of rows of the output SingleCellExperiment object.
+#' Alternatively, entries may be square sparse matrices of order equal to the number of rows of the output object.
+#' @param colPairs A list of any number of \linkS4class{SelfHits} objects describing relationships between pairs of columns.
+#' Each entry should have number of nodes equal to the number of columns of the output SingleCellExperiment object.
+#' Alternatively, entries may be square sparse matrices of order equal to the number of columns of the output object.
 #'
 #' @details
 #' In this class, rows should represent genomic features (e.g., genes) while columns represent samples generated from single cells.
@@ -17,8 +23,10 @@
 #' different quantifications (e.g., counts, CPMs, log-expression) can be stored simultaneously in the \code{\link{assays}} slot,
 #' and row and column metadata can be attached using \code{\link{rowData}} and \code{\link{colData}}, respectively.
 #'
-#' The \code{\link{reducedDims}} and \code{\link{altExps}} concepts are the main extensions of the SingleCellExperiment class.
-#' This enables formalized representation of data structures that are commonly encountered during single-cell data analysis.
+#' The extra arguments in the constructor (e.g., \code{\link{reducedDims}} \code{\link{altExps}})
+#' represent the main extensions implemented in the SingleCellExperiment class.
+#' This enables a consistent, formalized representation of data structures 
+#' that are commonly encountered during single-cell data analysis.
 #' Readers are referred to the specific documentation pages for more details.
 #' 
 #' A SingleCellExperiment can also be created by coercing from a \linkS4class{SummarizedExperiment}
@@ -33,8 +41,14 @@
 #' \code{\link{reducedDims}}, for representation of dimensionality reduction results.
 #'
 #' \code{\link{altExps}}, for representation of data for alternative feature sets.
+#'
+#' \code{\link{colPairs}} and \code{\link{rowPairs}}, to hold pairing information for rows and columns.
 #' 
 #' \code{\link{sizeFactors}}, to store size factors for normalization.
+#'
+#' \code{\link{colLabels}}, to store cell-level labels.
+#'
+#' \code{\link{rowSubset}}, to store a subset of rows.
 #'
 #' \code{?"\link{SCE-combine}"}, to combine or subset a SingleCellExperiment object.
 #'
@@ -64,19 +78,19 @@
 #' @importFrom methods is as
 #' @importFrom SummarizedExperiment SummarizedExperiment
 #' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
-SingleCellExperiment <- function(..., reducedDims=list(), altExps=list()) {
+SingleCellExperiment <- function(..., reducedDims=list(), altExps=list(), rowPairs=list(), colPairs=list()) {
     se <- SummarizedExperiment(...)
     if(!is(se, "RangedSummarizedExperiment")) {
         se <- as(se, "RangedSummarizedExperiment")
     }
-    .rse_to_sce(se, reducedDims, altExps)
+    .rse_to_sce(se, reducedDims=reducedDims, altExps=altExps, rowPairs=rowPairs, colPairs=colPairs)
 }
 
 #' @importFrom S4Vectors DataFrame SimpleList
 #' @importClassesFrom S4Vectors DataFrame
 #' @importFrom methods new
 #' @importFrom BiocGenerics nrow ncol
-.rse_to_sce <- function(rse, reducedDims=SimpleList(), altExps=SimpleList()) {
+.rse_to_sce <- function(rse, reducedDims=list(), altExps=list(), rowPairs=list(), colPairs=list()) {
     old <- S4Vectors:::disableValidity()
     if (!isTRUE(old)) {
         S4Vectors:::disableValidity(TRUE)
@@ -89,6 +103,9 @@ SingleCellExperiment <- function(..., reducedDims=list(), altExps=list()) {
 
     reducedDims(out) <- reducedDims
     altExps(out) <- altExps
+    rowPairs(out) <- rowPairs
+    colPairs(out) <- colPairs
+
     out
 }
 
