@@ -26,6 +26,8 @@ test_that("subsetting by row works correctly", {
 
         expect_identical(assay(sce)[ind,,drop=FALSE], assay(sub.sce)) # check SE elements are subsetted.
         expect_identical(rowData(sce)[ind,], rowData(sub.sce))
+        expect_identical(rowPair(sub.sce), 
+            SingleCellExperiment:::.get_hits(SingleCellExperiment:::DualSubset(rowPair(sce))[ind]))
 
         # Unchanged elements:
         expect_identical(sizeFactors(sub.sce), sizeFactors(sce))
@@ -59,8 +61,12 @@ test_that("subsetting by column works correctly", {
 
         expect_identical(assay(sce)[,ind,drop=FALSE], assay(sub.sce)) # check SE elements are subsetted.
         expect_identical(sizeFactors(sub.sce), sizeFactors(sce)[ind])
+
         expect_identical(reducedDim(sub.sce, "PCA", withDimnames=FALSE), d1[ind,,drop=FALSE])
         expect_identical(reducedDim(sub.sce, "TSNE", withDimnames=FALSE), d2[ind,,drop=FALSE])
+
+        expect_identical(colPair(sub.sce),
+            SingleCellExperiment:::.get_hits(SingleCellExperiment:::DualSubset(colPair(sce))[ind]))
 
         # Unchanged elements:
         expect_identical(int_elementMetadata(sub.sce), int_elementMetadata(sce))
@@ -84,8 +90,16 @@ test_that("subset replacement by row works correctly for basic cases", {
 
     expect_identical(assay(scex)[to,,drop=FALSE], assay(sce)[from,,drop=FALSE])
     expect_equivalent(assay(scex)[-to,,drop=FALSE], assay(sce)[-to,,drop=FALSE])
+
+    sub <- SingleCellExperiment:::DualSubset(rowPair(scex)) 
+    full <- SingleCellExperiment:::DualSubset(rowPair(sce))
+    expect_identical(sub[to], full[from])
+    expect_identical(sub[-to], full[-to])
+
+    # Unchanged elements, to name a few. 
     expect_identical(int_metadata(scex), int_metadata(sce))
-    expect_identical(sizeFactors(scex), sizeFactors(sce))
+    expect_identical(int_colData(scex), int_colData(sce))
+    expect_identical(colData(scex), colData(sce))
 
     # Again for character
     scex2 <- sce.alt 
@@ -118,6 +132,10 @@ test_that("subset replacement by column works correctly for basic cases", {
     expect_equivalent(assay(scex)[,-to,drop=FALSE], assay(sce)[,-to,drop=FALSE])
     expect_identical(sizeFactors(scex)[to], sizeFactors(sce)[from])
     expect_equivalent(sizeFactors(scex)[-to], sizeFactors(sce)[-to])
+
+    # Unchanged elements.
+    expect_identical(int_elementMetadata(scex), int_elementMetadata(sce))
+    expect_identical(rowData(scex), rowData(sce))
     expect_identical(int_metadata(scex), int_metadata(sce))
 })
 

@@ -11,6 +11,13 @@ test_that("rbind works correctly in the basic case", {
     expect_equivalent(assay(sce2), rbind(assay(sce), assay(sce.alt)))
     expect_identical(sizeFactors(sce2), sizeFactors(sce))
     expect_identical(reducedDims(sce2), reducedDims(sce))
+
+    dual1 <- SingleCellExperiment:::DualSubset(rowPair(sce))
+    dual2 <- SingleCellExperiment:::DualSubset(rowPair(sce.alt))
+    expect_identical(
+        SingleCellExperiment:::DualSubset(rowPair(sce2)),
+        c(dual1, dual2) 
+    )
 })
 
 test_that("rbind respects the internal fields correctly", {
@@ -54,6 +61,13 @@ test_that("cbind works correctly in the basic case", {
     expect_identical(sizeFactors(sce2), c(sizeFactors(sce), sizeFactors(sce.alt)))
     expect_identical(reducedDim(sce2, "PCA"), rbind(reducedDim(sce, "PCA"), reducedDim(sce.alt, "PCA")))
     expect_identical(altExp(sce2), cbind(altExp(sce), altExp(sce.alt)))
+
+    dual1 <- SingleCellExperiment:::DualSubset(colPair(sce))
+    dual2 <- SingleCellExperiment:::DualSubset(colPair(sce.alt))
+    expect_identical(
+        SingleCellExperiment:::DualSubset(colPair(sce2)),
+        c(dual1, dual2) 
+    )
 })
 
 test_that("cbind respects the internal fields correctly", {

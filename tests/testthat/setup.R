@@ -38,6 +38,26 @@ altExp(loaded, "Spike") <- se1
 altExp(loaded, "Protein") <- se2
 
 #########################################
+# Adding some pairings.
+
+rhits <- SelfHits(
+    sample(nrow(loaded), 100),
+    sample(nrow(loaded), 100),
+    nnode=nrow(loaded)
+)
+mcols(rhits)$value <- runif(100)
+
+chits <- SelfHits(
+    sample(ncol(loaded), 20),
+    sample(ncol(loaded), 20),
+    nnode=ncol(loaded)
+)
+mcols(chits)$value <- runif(20)
+
+rowPair(loaded) <- rhits
+colPair(loaded) <- chits
+
+#########################################
 # Other load-ups. 
 
 sizeFactors(loaded) <- 2^rnorm(ncells)
