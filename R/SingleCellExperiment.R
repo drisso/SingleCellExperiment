@@ -64,19 +64,19 @@
 #' @importFrom methods is as
 #' @importFrom SummarizedExperiment SummarizedExperiment
 #' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
-SingleCellExperiment <- function(..., reducedDims=list(), altExps=list()) {
+SingleCellExperiment <- function(..., reducedDims=list(), altExps=list(), rowPairs=list(), colPairs=list()) {
     se <- SummarizedExperiment(...)
     if(!is(se, "RangedSummarizedExperiment")) {
         se <- as(se, "RangedSummarizedExperiment")
     }
-    .rse_to_sce(se, reducedDims, altExps)
+    .rse_to_sce(se, reducedDims=reducedDims, altExps=altExps, rowPairs=rowPairs, colPairs=colPairs)
 }
 
 #' @importFrom S4Vectors DataFrame SimpleList
 #' @importClassesFrom S4Vectors DataFrame
 #' @importFrom methods new
 #' @importFrom BiocGenerics nrow ncol
-.rse_to_sce <- function(rse, reducedDims=SimpleList(), altExps=SimpleList()) {
+.rse_to_sce <- function(rse, reducedDims=list(), altExps=list(), rowPairs=list(), colPairs=list()) {
     old <- S4Vectors:::disableValidity()
     if (!isTRUE(old)) {
         S4Vectors:::disableValidity(TRUE)
@@ -89,6 +89,8 @@ SingleCellExperiment <- function(..., reducedDims=list(), altExps=list()) {
 
     reducedDims(out) <- reducedDims
     altExps(out) <- altExps
+    rowPairs(out) <- rowPairs
+
     out
 }
 

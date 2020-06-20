@@ -75,6 +75,16 @@ setMethod("updateObject", "SingleCellExperiment", function(object, ..., verbose=
         triggered <- TRUE
     }
 
+    if (old.ver < "1.11.3") {
+        # Need this to avoid a circular recursion when calling rowPairs()<-.
+        int_metadata(object)$version <- packageVersion("SingleCellExperiment")
+        
+        rowPairs(object) <- list()
+
+        triggered <- TRUE
+    }
+
+
     if (verbose && triggered) {
         message("[updateObject] ", class(object)[1], " object uses ", 
             "internal representation\n", "[updateObject] from SingleCellExperiment ", 
