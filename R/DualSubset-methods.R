@@ -19,12 +19,10 @@ setMethod("length", "DualSubset", function(x) nnode(.get_hits(x)))
 }
 
 #' @importClassesFrom Matrix dgTMatrix
-#' @importFrom S4Vectors mcols SelfHits mcols<-
+#' @importFrom S4Vectors SelfHits 
 .mat2hits <- function(mat) {
     mat <- as(mat, "dgTMatrix")
-    out <- SelfHits(mat@i, mat@j, nnode=nrow(mat))
-    mcols(out)$value <- mat@x
-    out
+    SelfHits(mat@i + 1L, mat@j + 1L, nnode=nrow(mat), value=mat@x)
 }
 
 #' @importFrom S4Vectors mcols mcols<-
@@ -44,7 +42,11 @@ setReplaceMethod("[", "DualSubset", function(x, i, j, ..., value) {
     pv <- .get_hits(value)
     matv <- -.hits2mat(pv)
 
+    # Wiping out all pairs involving the elements to be replaced.
+    mat[i,] <- 0
+    mat[,i] <- 0
     mat[i,i] <- matv
+
     p2 <- .mat2hits(mat)
     index <- mcols(p2)$value
     use.left <- index > 0
@@ -61,15 +63,14 @@ setReplaceMethod("[", "DualSubset", function(x, i, j, ..., value) {
 })
 
 #' @importFrom utils tail 
-#' @importFrom S4Vectors queryHits subjectHits SelfHits mcols mcols<-
+#' @importFrom S4Vectors queryHits subjectHits SelfHits 
 setMethod("c", "DualSubset", function(x, ...) {
     everything <- list(x, ...)
-    N <- sum(lengths(everything))
     shift <- 0L
 
-    all.first <- all.second <- all.values <- vector("list", length(gathered))
-    for (i in seq_along(gathered)) {
-        current <- .get_hits(gathered[[i]])
+    all.first <- all.second <- all.values <- vector("list", length(everything))
+    for (i in seq_along(everything)) {
+        current <- .get_hits(everything[[i]])
         contribution <- nnode(current)
         all.first[[i]] <- queryHits(current) + shift
         all.second[[i]] <- subjectHits(current) + shift
@@ -77,7 +78,7 @@ setMethod("c", "DualSubset", function(x, ...) {
         shift <- shift + contribution
     }
 
-    final <- SelfHits(unlist(all.first), unlist(all.second), nnode=N)
-    mcols(final)$value <- unlist(all.values)
+    final <- SelfHits(unlist(all.first), unlist(all.second), nnode=shift, 
+        value=unlist(all.values))
     initialize(x, hits=final)
 })

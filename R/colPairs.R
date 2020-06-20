@@ -166,6 +166,7 @@ setMethod("colPair", c("SingleCellExperiment", "missing"), function(x, type, asS
     .get_internal_missing(x, 
         basefun=colPair, 
         namefun=colPairNames, 
+        funstr="colPair",
         asSparse=asSparse)
 })
 
