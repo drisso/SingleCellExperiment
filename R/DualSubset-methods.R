@@ -3,19 +3,25 @@
 
 .get_hits <- function(x) x@hits
 
-DualSubset <- function(hits, values) new("DualSubset", hits=hits, values=values)
+DualSubset <- function(hits) new("DualSubset", hits=hits)
 
 #' @importFrom S4Vectors nnode
 setMethod("length", "DualSubset", function(x) nnode(.get_hits(x)))
 
 #' @importFrom Matrix sparseMatrix
-#' @importFrom S4Vectors first second 
-.hits2mat <- function(p) {
-    sparseMatrix(i=first(p), j=second(p), x=seq_along(p), giveCsparse=FALSE)
+#' @importFrom S4Vectors queryHits subjectHits
+.hits2mat <- function(p, x=seq_along(p)) {
+    if (!is.logical(x) && !is.numeric(x) && !is.complex(x)) {
+        stop("values of type '", typeof(x), "' are not supported in sparse matrices")
+    }
+    sparseMatrix(i=queryHits(p), j=subjectHits(p), x=x, 
+        dims=rep(nnode(p), 2L), giveCsparse=FALSE)
 }
 
+#' @importClassesFrom Matrix dgTMatrix
 #' @importFrom S4Vectors mcols SelfHits mcols<-
 .mat2hits <- function(mat) {
+    mat <- as(mat, "dgTMatrix")
     out <- SelfHits(mat@i, mat@j, nnode=nrow(mat))
     mcols(out)$value <- mat@x
     out
@@ -55,7 +61,7 @@ setReplaceMethod("[", "DualSubset", function(x, i, j, ..., value) {
 })
 
 #' @importFrom utils tail 
-#' @importFrom S4Vectors first second SelfHits mcols mcols<-
+#' @importFrom S4Vectors queryHits subjectHits SelfHits mcols mcols<-
 setMethod("c", "DualSubset", function(x, ...) {
     everything <- list(x, ...)
     N <- sum(lengths(everything))
@@ -65,8 +71,8 @@ setMethod("c", "DualSubset", function(x, ...) {
     for (i in seq_along(gathered)) {
         current <- .get_hits(gathered[[i]])
         contribution <- nnode(current)
-        all.first[[i]] <- first(current) + shift
-        all.second[[i]] <- second(current) + shift
+        all.first[[i]] <- queryHits(current) + shift
+        all.second[[i]] <- subjectHits(current) + shift
         all.values[[i]] <- mcols(current)$value
         shift <- shift + contribution
     }

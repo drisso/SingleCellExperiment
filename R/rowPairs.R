@@ -114,7 +114,7 @@ setMethod("rowPairs", "SingleCellExperiment", function(x, asSparse=FALSE) {
         getfun=int_elementMetadata, 
         key=.rowp_key)
 
-    value <- endoapply(out, .get_hits)
+    value <- endoapply(value, .get_hits)
     if (asSparse) {
         for (i in seq_along(value)) {
             value[[i]] <- .hits2mat(value[[i]], mcols(value[[i]])$value)
@@ -229,7 +229,7 @@ setReplaceMethod("rowPair", c("SingleCellExperiment", "numeric"), function(x, ty
 setReplaceMethod("rowPair", c("SingleCellExperiment", "character"), function(x, type, ..., value) {
     .set_internal_character(x, type, value, 
         getfun=int_elementMetadata,
-        setfun=`int_elementMetadata`,
+        setfun=`int_elementMetadata<-`,
         key=.rowp_key,
         convertfun=.any2dualsubset,
         xdimfun=nrow, 
