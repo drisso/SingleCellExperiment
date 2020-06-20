@@ -60,6 +60,14 @@
 #' }
 #' }
 #'
+#' @section A note on subset replacement:
+#' When column-subset replacement is performed on a SingleCellExperiment object (i.e., \code{x[,i] <- y}),
+#' pairings in \code{x} are only replaced if both columns belong in \code{i}.
+#' Pairings with only one column in \code{i} are preserved in order to ensure that \code{x[,i] <- x[,i]} is a no-op.
+#' However, if we are replacing the identity of the features in \code{x[i,]},
+#' it is unlikely that the pairings involving the old identities are applicable to the replacement features in \code{y}.
+#' In such cases, additional pruning may be required to remove all pairs involving \code{i} prior to replacement.
+#'
 #' @author Aaron Lun 
 #'
 #' @examples
@@ -87,6 +95,9 @@
 #'
 #' colPairs(sce) <- SimpleList()
 #' colPairs(sce)
+#'
+#' @seealso
+#' \code{\link{rowPairs}}, for the row equivalent.
 #'
 #' @name colPairs
 #' @docType methods
