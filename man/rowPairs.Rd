@@ -90,14 +90,24 @@ This should be of length equal to the number of results currently in \code{x}.
 }
 }
 
-\section{A note on subset replacement}{
+\section{Interaction with SingleCellExperiment operations}{
 
 When row-subset replacement is performed on a SingleCellExperiment object (i.e., \code{x[i,] <- y}),
-pairings in \code{x} are only replaced if both rows belong in \code{i}.
-Pairings with only one row in \code{i} are preserved in order to ensure that \code{x[i,] <- x[i,]} is a no-op.
-However, if we are replacing the identity of the features in \code{x[i,]},
+a pair of rows in \code{rowPair(x)} is only replaced if both rows are present in \code{i}.
+This replacement not only affects the \code{value} of the pair but also whether it even exists in \code{y}.
+For example, if a pair exists between two rows in \code{x[i,]} but not in the corresponding rows of \code{y},
+it is removed upon subset replacement.
+
+Importantly, pairs in \code{x} with only one row in \code{i} are preserved by replacement.
+This ensures that \code{x[i,] <- x[i,]} is a no-op.
+However, if the replacement is fundamentally altering the identity of the features in \code{x[i,]},
 it is unlikely that the pairings involving the old identities are applicable to the replacement features in \code{y}.
 In such cases, additional pruning may be required to remove all pairs involving \code{i} prior to replacement.
+
+Another interesting note is that, for some \code{i <- 1:n} where \code{n} is in \code{[1, nrow(x))},
+\code{rbind(x[i,], x[-i,])} will not return a SingleCellExperiment equal to \code{x} with respect to \code{\link{rowPairs}}.
+This operation will remove any pairs involving one row in \code{i} and another row outside of \code{i},
+simply because each individual subset operation will remove pairs involving rows outside of the subset.
 }
 
 \examples{

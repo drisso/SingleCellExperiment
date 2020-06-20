@@ -60,13 +60,23 @@
 #' }
 #' }
 #'
-#' @section A note on subset replacement:
+#' @section Interaction with SingleCellExperiment operations:
 #' When column-subset replacement is performed on a SingleCellExperiment object (i.e., \code{x[,i] <- y}),
-#' pairings in \code{x} are only replaced if both columns belong in \code{i}.
-#' Pairings with only one column in \code{i} are preserved in order to ensure that \code{x[,i] <- x[,i]} is a no-op.
-#' However, if we are replacing the identity of the features in \code{x[i,]},
+#' a pair of columns in \code{colPair(x)} is only replaced if both columns are present in \code{i}.
+#' This replacement not only affects the \code{value} of the pair but also whether it even exists in \code{y}.
+#' For example, if a pair exists between two columns in \code{x[,i]} but not in the corresponding columns of \code{y},
+#' it is removed upon subset replacement.
+#'
+#' Importantly, pairs in \code{x} with only one column in \code{i} are preserved by replacement.
+#' This ensures that \code{x[,i] <- x[,i]} is a no-op.
+#' However, if the replacement is fundamentally altering the identity of the features in \code{x[,i]},
 #' it is unlikely that the pairings involving the old identities are applicable to the replacement features in \code{y}.
 #' In such cases, additional pruning may be required to remove all pairs involving \code{i} prior to replacement.
+#'
+#' Another interesting note is that, for some \code{i <- 1:n} where \code{n} is in \code{[1, ncol(x))},
+#' \code{cbind(x[,i], x[,-i])} will not return a SingleCellExperiment equal to \code{x} with respect to \code{\link{colPairs}}.
+#' This operation will remove any pairs involving one column in \code{i} and another column outside of \code{i},
+#' simply because each individual subset operation will remove pairs involving columns outside of the subset.
 #'
 #' @author Aaron Lun 
 #'
