@@ -114,6 +114,10 @@
 #' rowPair<-,SingleCellExperiment,character-method
 #' rowPairs<-,SingleCellExperiment-method
 #' rowPairNames<-,SingleCellExperiment,character-method
+#' [,DualSubset,ANY,ANY,ANY-method
+#' [<-,DualSubset,ANY,ANY,ANY-method
+#' c,DualSubset-method
+#' length,DualSubset-method
 NULL
 
 .rowp_key <- "rowPairs"

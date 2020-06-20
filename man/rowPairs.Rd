@@ -18,6 +18,10 @@
 \alias{rowPair<-,SingleCellExperiment,character-method}
 \alias{rowPairs<-,SingleCellExperiment-method}
 \alias{rowPairNames<-,SingleCellExperiment,character-method}
+\alias{[,DualSubset,ANY,ANY,ANY-method}
+\alias{[<-,DualSubset,ANY,ANY,ANY-method}
+\alias{c,DualSubset-method}
+\alias{length,DualSubset-method}
 \title{Row pair methods}
 \description{
 Methods to get or set row pairings in a \linkS4class{SingleCellExperiment} object.

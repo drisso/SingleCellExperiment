@@ -29,7 +29,7 @@ each of which should have the same number of columns as the output SingleCellExp
 Each entry should have number of nodes equal to the number of rows of the output SingleCellExperiment object.
 Alternatively, entries may be square sparse matrices of order equal to the number of rows of the output object.}
 
-\item{columnPairs}{A list of any number of \linkS4class{SelfHits} objects describing relationships between pairs of columns.
+\item{colPairs}{A list of any number of \linkS4class{SelfHits} objects describing relationships between pairs of columns.
 Each entry should have number of nodes equal to the number of columns of the output SingleCellExperiment object.
 Alternatively, entries may be square sparse matrices of order equal to the number of columns of the output object.}
 }

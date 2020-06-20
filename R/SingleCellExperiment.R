@@ -13,7 +13,7 @@
 #' @param rowPairs A list of any number of \linkS4class{SelfHits} objects describing relationships between pairs of rows.
 #' Each entry should have number of nodes equal to the number of rows of the output SingleCellExperiment object.
 #' Alternatively, entries may be square sparse matrices of order equal to the number of rows of the output object.
-#' @param columnPairs A list of any number of \linkS4class{SelfHits} objects describing relationships between pairs of columns.
+#' @param colPairs A list of any number of \linkS4class{SelfHits} objects describing relationships between pairs of columns.
 #' Each entry should have number of nodes equal to the number of columns of the output SingleCellExperiment object.
 #' Alternatively, entries may be square sparse matrices of order equal to the number of columns of the output object.
 #'
