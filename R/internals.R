@@ -151,3 +151,132 @@ setMethod("rowData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
         callNextMethod(x, ...)
     }
 })
+
+##################################################
+### Defining getters/setters for the internals ###
+##################################################
+
+#' @importClassesFrom S4Vectors SimpleList
+.get_internal_all <- function(x, getfun, key, convertfun) {
+    x <- updateObject(x)
+    as(getfun(x)[[key]], "SimpleList")
+}
+
+#' @importFrom methods as
+#' @importFrom S4Vectors DataFrame
+.set_internal_all <- function(x, value, getfun, setfun, key, convertfun, xdimfun, vdimfun, funstr, xdimstr, vdimstr) {
+    x <- updateObject(x)
+
+    if (length(value) == 0L) {
+        collected <- getfun(x)[, 0]
+    } else {
+        value <- lapply(value, convertfun)
+
+        N <- vapply(value, vdimfun, 0L)
+        if (!all(N == xdimfun(x))) {
+            stop("invalid 'value' in '", funstr, "(<", class(x), ">) <- value'\n",
+                "each element of 'value' should have number of ", vdimstr, " equal to '", xdimstr, "(x)'")
+        }
+
+        collected <- do.call(DataFrame, lapply(value, I))
+        if (is.null(names(value))) {
+            colnames(collected) <- paste0(.unnamed, seq_along(value))
+        }
+    }
+
+    tmp <- getfun(x)
+    tmp[[key]] <- collected
+    setfun(x, tmp)
+}
+
+.get_internal_names <- function(x, getfun, key) {
+    x <- updateObject(x)
+    colnames(getfun(x)[[key]])
+}
+
+.set_internal_names <- function(x, value, getfun, setfun, key) {
+    x <- updateObject(x)
+    tmp <- getfun(x)
+    colnames(tmp[[key]]) <- value
+    setfun(x, tmp)
+}
+
+.get_internal_missing <- function(x, basefun, namefun, funstr, ...) {
+    if (identical(length(namefun(x)), 0L)) {
+        stop("no available entries for '", funstr, "(<", class(x), ">, ...)'")
+    }
+    basefun(x, 1L, ...)
+}
+
+.get_internal_integer <- function(x, index, getfun, key, funstr, substr) {
+    x <- updateObject(x)
+    internals <- getfun(x)[[key]]
+
+    tryCatch({
+        internals[, index]
+    }, error=function(err) {
+        stop("invalid subscript '", substr, "' in '", funstr, "(<", class(x), ">, type=\"numeric\", ...)':\n  ",
+            conditionMessage(err))
+    })
+}
+
+.get_internal_character <- function(x, index, getfun, key, funstr, substr, namestr) {
+    x <- updateObject(x)
+    internals <- getfun(x)[[key]]
+
+    tryCatch({
+        internals[, index]
+    }, error=function(err) {
+        stop("invalid subscript '", substr, "' in '", funstr, "(<", class(x), ">, type=\"character\", ...)':\n  ",
+            "'", index, "' not in '", namestr, "(<", class(x), ">)'")
+    })
+}
+
+.set_internal_missing <- function(x, value, basefun, namefun) {
+    if (length(namefun(x))){
+        type <- 1L
+    } else {
+        type <- paste0(.unnamed, 1L)
+    }
+    basefun(x, type, value=value)
+}
+
+.set_internal_numeric <- function(x, type, value, getfun, setfun, key, 
+    convertfun, xdimfun, vdimfun, funstr, xdimstr, vdimstr, substr) 
+{
+    x <- updateObject(x)
+
+    if (!is.null(value)) {
+        value <- convertfun(value)
+        if (!identical(vdimfun(value), xdimfun(x))) {
+            stop("invalid 'value' in '", funstr, "(<", class(x), ">, type=\"numeric\") <- value':\n  ",
+                "'value' should have number of ", vdimstr, " equal to '", xdimstr, "(x)'")
+        }
+    }
+
+    internals <- getfun(x)
+    if (type[1] > ncol(internals[[key]])) {
+        stop("'", substr, "' out of bounds in '", funstr, "(<", class(x), ">, type='numeric')")
+    }
+
+    internals[[key]][[type]] <- value
+    setfun(x, internals)
+}
+
+.set_internal_character <- function(x, type, value, getfun, setfun, key, 
+    convertfun, xdimfun, vdimfun, funstr, xdimstr, vdimstr, substr) 
+{
+    x <- updateObject(x)
+
+    if (!is.null(value)) {
+        value <- convertfun(value)
+        if (!identical(vdimfun(value), xdimfun(x))) {
+            stop("invalid 'value' in '", funstr, "(<", class(x), ">, type=\"character\") <- value':\n  ",
+                "'value' should have number of ", vdimstr, " equal to '", xdimstr, "(x)'")
+        }
+    }
+
+    internals <- getfun(x)
+    internals[[key]][[type]] <- value
+    setfun(x, internals)
+}    
