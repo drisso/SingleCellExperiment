@@ -3,7 +3,7 @@
 
 .get_hits <- function(x) x@hits
 
-DualSubset <- function(hits) new("DualSubset", hits=hits)
+DualSubset <- function(hits) new("DualSubset", hits=sort(hits))
 
 #' @importFrom S4Vectors nnode
 setMethod("length", "DualSubset", function(x) nnode(.get_hits(x)))
@@ -22,44 +22,52 @@ setMethod("length", "DualSubset", function(x) nnode(.get_hits(x)))
 #' @importFrom S4Vectors SelfHits 
 .mat2hits <- function(mat) {
     mat <- as(mat, "dgTMatrix")
-    SelfHits(mat@i + 1L, mat@j + 1L, nnode=nrow(mat), value=mat@x)
+    SelfHits(mat@i + 1L, mat@j + 1L, nnode=nrow(mat), x=mat@x)
 }
 
-#' @importFrom S4Vectors mcols mcols<-
+#' @importFrom S4Vectors mcols mcols<- findMatches queryHits subjectHits SelfHits
 setMethod("[", "DualSubset", function(x, i, j, ..., drop=FALSE) {
     p <- .get_hits(x)
-    mat <- .hits2mat(p)
-    mat <- mat[i,i,drop=FALSE]
-    p2 <- .mat2hits(mat)
-    mcols(p2)$value <- mcols(p)$value[mcols(p2)$value]
-    initialize(x, hits=p2)
+    i <- normalizeSingleBracketSubscript(i, x)
+
+    mq <- findMatches(i, queryHits(p))
+    ms <- findMatches(i, subjectHits(p))
+    mcom <- findMatches(subjectHits(mq), subjectHits(ms))
+
+    left <- queryHits(mq)[queryHits(mcom)]
+    right <- queryHits(ms)[subjectHits(mcom)]
+    index <- subjectHits(mq)[queryHits(mcom)] # same as subjectHits(ms)[subjectHits(mcom)]
+
+    o <- order(left, right)
+    hits2 <- SelfHits(left[o], right[o], nnode=length(i))
+    mcols(hits2) <- mcols(p)[index[o],,drop=FALSE]
+    initialize(x, hits=hits2)
 })
 
-#' @importFrom S4Vectors mcols mcols<-
+#' @importFrom S4Vectors mcols mcols<- queryHits subjectHits SelfHits
 setReplaceMethod("[", "DualSubset", function(x, i, j, ..., value) {
     p <- .get_hits(x)
-    mat <- .hits2mat(p)
+    i <- normalizeSingleBracketSubscript(i, x)
+
+    # Filtering out all elements to be replaced.
+    p <- p[!(queryHits(p) %in% i & subjectHits(p) %in% i)]
+
     pv <- .get_hits(value)
-    matv <- -.hits2mat(pv)
+    new.q <- i[queryHits(pv)]
+    new.s <- i[subjectHits(pv)]
 
-    mat[i,i] <- matv
-    p2 <- .mat2hits(mat)
-    index <- mcols(p2)$value
-    use.left <- index > 0
+    total.p <- c(queryHits(p), new.q)
+    total.s <- c(subjectHits(p), new.s)
+    total.m <- rbind(mcols(p), mcols(pv))
 
-    if (any(use.left)) {
-        store <- mcols(p)$value[ifelse(use.left, index, 1)]
-        store[!use.left] <- mcols(pv)$value[-index[!use.left]]
-    } else if (any(!use.left)) {
-        store <- mcols(pv)$value[-index]
-    }
-
-    mcols(p2)$value <- store
-    initialize(x, hits=p2)
+    o <- order(total.p, total.s)
+    hits2 <- SelfHits(total.p[o], total.s[o], nnode=length(x))
+    mcols(hits2) <- total.m[o,,drop=FALSE]
+    initialize(x, hits=hits2)
 })
 
 #' @importFrom utils tail 
-#' @importFrom S4Vectors queryHits subjectHits SelfHits 
+#' @importFrom S4Vectors queryHits subjectHits SelfHits mcols mcols<- 
 setMethod("c", "DualSubset", function(x, ...) {
     everything <- list(x, ...)
     shift <- 0L
@@ -70,11 +78,11 @@ setMethod("c", "DualSubset", function(x, ...) {
         contribution <- nnode(current)
         all.first[[i]] <- queryHits(current) + shift
         all.second[[i]] <- subjectHits(current) + shift
-        all.values[[i]] <- mcols(current)$value
+        all.values[[i]] <- mcols(current)
         shift <- shift + contribution
     }
 
-    final <- SelfHits(unlist(all.first), unlist(all.second), nnode=shift, 
-        value=unlist(all.values))
+    final <- SelfHits(unlist(all.first), unlist(all.second), nnode=shift)
+    mcols(final) <- do.call(rbind, all.values)
     initialize(x, hits=final)
 })

@@ -3,26 +3,42 @@
 
 set.seed(1000)
 ds <- SingleCellExperiment:::DualSubset(rhits)
+.hits <- SingleCellExperiment:::.get_hits
 
 test_that("DualSubset subsetting works correctly", {
+    REF_SUB <- function(x, i) {
+        p <- SingleCellExperiment:::.get_hits(x)
+        mat <- SingleCellExperiment:::.hits2mat(p)
+        mat <- mat[i,i,drop=FALSE]
+        p2 <- SingleCellExperiment:::.mat2hits(mat)
+        mcols(p2) <- mcols(p)[mcols(p2)$x,,drop=FALSE]
+        sort(p2)
+    }
+
     keep <- 1:50
-    expect_identical(length(ds[keep]), length(keep))
+    sub <- ds[keep]
+    expect_identical(length(sub), length(keep))
+    expect_identical(.hits(sub), REF_SUB(ds, keep))
     expect_identical(
-        length(SingleCellExperiment:::.get_hits(ds[keep])),
+        length(.hits(sub)),
         sum(queryHits(rhits) %in% keep & subjectHits(rhits) %in% keep)
     )
 
     keep <- sample(length(ds), 50)
-    expect_identical(length(ds[keep]), length(keep))
+    sub <- ds[keep]
+    expect_identical(length(sub), length(keep))
+    expect_identical(.hits(sub), REF_SUB(ds, keep))
     expect_identical(
-        length(SingleCellExperiment:::.get_hits(ds[keep])),
+        length(.hits(sub)),
         sum(queryHits(rhits) %in% keep & subjectHits(rhits) %in% keep)
     )
 
     keep <- length(ds):1
-    expect_identical(length(ds), length(ds[keep]))
+    sub <- ds[keep]
+    expect_identical(length(ds), length(sub))
+    expect_identical(.hits(sub), REF_SUB(ds, keep))
     expect_identical(
-        sort(SingleCellExperiment:::.get_hits(ds[keep])),
+        .hits(sub),
         sort(SelfHits(
             length(ds) - queryHits(rhits) + 1L,
             length(ds) - subjectHits(rhits) + 1L,
@@ -33,19 +49,37 @@ test_that("DualSubset subsetting works correctly", {
 })
 
 test_that("DualSubset subset replacement works correctly", {
+    REF_SUB_REP <- function(x, i, value) {
+        p <- SingleCellExperiment:::.get_hits(x)
+        mat <- SingleCellExperiment:::.hits2mat(p)
+        pv <- SingleCellExperiment:::.get_hits(value)
+        matv <- -SingleCellExperiment:::.hits2mat(pv)
+
+        mat[i,i] <- matv
+        p2 <- SingleCellExperiment:::.mat2hits(mat)
+        index <- mcols(p2)$x
+        use.left <- index > 0
+
+        store <- mcols(p)[ifelse(use.left, index, 1),,drop=FALSE]
+        store[!use.left,] <- mcols(pv)[-index[!use.left],,drop=FALSE]
+        mcols(p2) <- store
+        sort(p2)
+    }
+
     swap1 <- 1:100
     swap2 <- 101:200
 
     ds2 <- ds
     ds2[swap1] <- ds[swap2]
     expect_identical(length(ds), length(ds2))
+    expect_identical(.hits(ds2), REF_SUB_REP(ds, swap1, ds[swap2]))
 
     mod <- rhits
     mod <- mod[!(queryHits(mod) %in% swap1 & subjectHits(mod) %in% swap1)]
-    sub <- SingleCellExperiment:::.get_hits(ds[swap2])
+    sub <- .hits(ds[swap2])
 
     expect_identical(
-        sort(SingleCellExperiment:::.get_hits(ds2)),
+        .hits(ds2),
         sort(SelfHits(
             c(queryHits(mod), queryHits(sub)),
             c(subjectHits(mod), subjectHits(sub)),
@@ -57,14 +91,14 @@ test_that("DualSubset subset replacement works correctly", {
     # This should be a no-op.
     ds2 <- ds
     ds2[swap1] <- ds2[swap1]
-    expect_identical(ds, ds2)
+    expect_identical(.hits(ds), .hits(ds2))
 })
 
 test_that("DualSubset concatenation works correctly", {
     combined <- c(ds, ds)
     expect_identical(length(combined), length(ds)*2L)
     expect_identical(
-        sort(SingleCellExperiment:::.get_hits(combined)),
+        .hits(combined),
         sort(SelfHits(
             c(queryHits(rhits), queryHits(rhits) + nnode(rhits)),
             c(subjectHits(rhits), subjectHits(rhits) + nnode(rhits)),
