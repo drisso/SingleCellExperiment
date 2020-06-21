@@ -12,7 +12,6 @@ Imports:
     methods,
     utils,
     stats,
-    Matrix,
     S4Vectors,
     BiocGenerics
 Suggests: 
@@ -20,6 +19,7 @@ Suggests:
     BiocStyle, 
     knitr, 
     rmarkdown, 
+    Matrix,
     scRNAseq, 
     Rtsne
 biocViews: ImmunoOncology, DataRepresentation, DataImport, Infrastructure, SingleCell

@@ -8,24 +8,8 @@ DualSubset <- function(hits) new("DualSubset", hits=sort(hits))
 #' @importFrom S4Vectors nnode
 setMethod("length", "DualSubset", function(x) nnode(.get_hits(x)))
 
-#' @importFrom Matrix sparseMatrix
-#' @importFrom S4Vectors queryHits subjectHits
-.hits2mat <- function(p, x=seq_along(p)) {
-    if (!is.logical(x) && !is.numeric(x) && !is.complex(x)) {
-        stop("values of type '", typeof(x), "' are not supported in sparse matrices")
-    }
-    sparseMatrix(i=queryHits(p), j=subjectHits(p), x=x, 
-        dims=rep(nnode(p), 2L), giveCsparse=FALSE)
-}
-
-#' @importClassesFrom Matrix dgTMatrix
-#' @importFrom S4Vectors SelfHits 
-.mat2hits <- function(mat) {
-    mat <- as(mat, "dgTMatrix")
-    SelfHits(mat@i + 1L, mat@j + 1L, nnode=nrow(mat), x=mat@x)
-}
-
-#' @importFrom S4Vectors mcols mcols<- findMatches queryHits subjectHits SelfHits
+#' @importFrom S4Vectors mcols mcols<- findMatches queryHits subjectHits 
+#' SelfHits normalizeSingleBracketSubscript
 setMethod("[", "DualSubset", function(x, i, j, ..., drop=FALSE) {
     p <- .get_hits(x)
     i <- normalizeSingleBracketSubscript(i, x)
@@ -45,6 +29,7 @@ setMethod("[", "DualSubset", function(x, i, j, ..., drop=FALSE) {
 })
 
 #' @importFrom S4Vectors mcols mcols<- queryHits subjectHits SelfHits
+#' normalizeSingleBracketSubscript
 setReplaceMethod("[", "DualSubset", function(x, i, j, ..., value) {
     p <- .get_hits(x)
     i <- normalizeSingleBracketSubscript(i, x)
@@ -86,3 +71,26 @@ setMethod("c", "DualSubset", function(x, ...) {
     mcols(final) <- do.call(rbind, all.values)
     initialize(x, hits=final)
 })
+
+#' @importFrom S4Vectors queryHits subjectHits mcols
+.hits2mat <- function(p) {
+    m <- mcols(p)
+    if (ncol(m)) {
+        x <- m[,1]
+        if (!is.logical(x) && !is.numeric(x) && !is.complex(x)) {
+            stop("values of type '", typeof(x), "' are not supported in sparse matrices")
+        }
+    } else {
+        x <- rep(TRUE, length(p))
+    }
+
+    Matrix::sparseMatrix(i=queryHits(p), j=subjectHits(p), x=x, 
+        dims=rep(nnode(p), 2L), use.last.ij=TRUE)
+}
+
+#' @importFrom BiocGenerics which
+#' @importFrom S4Vectors SelfHits 
+.mat2hits <- function(mat) {
+    i <- which(mat!=0, arr.ind=TRUE) 
+    SelfHits(i[,1], i[,2], nnode=nrow(mat), x=mat[i])
+}

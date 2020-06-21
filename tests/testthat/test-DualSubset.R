@@ -7,8 +7,10 @@ ds <- SingleCellExperiment:::DualSubset(rhits)
 
 test_that("DualSubset subsetting works correctly", {
     REF_SUB <- function(x, i) {
-        p <- SingleCellExperiment:::.get_hits(x)
-        mat <- SingleCellExperiment:::.hits2mat(p)
+        p <- alt <- SingleCellExperiment:::.get_hits(x)
+        mcols(alt)[,1] <- seq_along(alt)
+        mat <- SingleCellExperiment:::.hits2mat(alt)
+
         mat <- mat[i,i,drop=FALSE]
         p2 <- SingleCellExperiment:::.mat2hits(mat)
         mcols(p2) <- mcols(p)[mcols(p2)$x,,drop=FALSE]
@@ -50,10 +52,13 @@ test_that("DualSubset subsetting works correctly", {
 
 test_that("DualSubset subset replacement works correctly", {
     REF_SUB_REP <- function(x, i, value) {
-        p <- SingleCellExperiment:::.get_hits(x)
-        mat <- SingleCellExperiment:::.hits2mat(p)
-        pv <- SingleCellExperiment:::.get_hits(value)
-        matv <- -SingleCellExperiment:::.hits2mat(pv)
+        p <- alt <- SingleCellExperiment:::.get_hits(x)
+        mcols(alt)[,1] <- seq_along(alt)
+        mat <- SingleCellExperiment:::.hits2mat(alt)
+
+        pv <- altv <- SingleCellExperiment:::.get_hits(value)
+        mcols(altv)[,1] <- seq_along(altv)
+        matv <- -SingleCellExperiment:::.hits2mat(altv)
 
         mat[i,i] <- matv
         p2 <- SingleCellExperiment:::.mat2hits(mat)
@@ -107,3 +112,31 @@ test_that("DualSubset concatenation works correctly", {
         ))
     )
 })
+
+test_that("SelfHits conversion to/from matrix works correctly", {
+    p <- .hits(ds)
+
+    mat <- SingleCellExperiment:::.hits2mat(p)
+    expect_identical(nrow(mat), nnode(p))
+    expect_identical(ncol(mat), nnode(p))
+    expect_equal(sum(mat), sum(mcols(p)$value))
+
+    roundtrip <- sort(SingleCellExperiment:::.mat2hits(mat))
+    expect_identical(queryHits(roundtrip), queryHits(p))
+    expect_identical(subjectHits(roundtrip), subjectHits(p))
+    expect_identical(mcols(roundtrip)$x, mcols(p)$value)
+
+    # Conversion still uses the first metadata field.
+    mcols(p)$more <- "A"
+    mat2 <- SingleCellExperiment:::.hits2mat(p)
+    expect_identical(mat, mat2)
+
+    mcols(p)$value <- NULL
+    expect_error(SingleCellExperiment:::.hits2mat(p), "not supported")
+
+    mcols(p)$more <- NULL
+    mat2 <- SingleCellExperiment:::.hits2mat(p)
+    expect_type(as.vector(mat2[0,0]), "logical")
+    expect_equal(sum(mat2), length(p)) 
+})
+

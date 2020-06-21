@@ -3,6 +3,7 @@
 
 sce <- empty
 
+chits <- sort(chits)
 chits2 <- chits
 mcols(chits2)$value <- mcols(chits2)$value * 2 
 chits0 <- SelfHits(queryHits(chits), subjectHits(chits), nnode=nnode(chits) * 2L)
@@ -98,6 +99,19 @@ test_that("colPairs getters/setters are functioning", {
     # Checking for errors.
     expect_error(colPairs(sce) <- list(chits, chits0), "number of nodes")
     expect_error(colPairs(sce) <- list(chits0, chits0), "number of nodes")
+})
+
+test_that("colPair getters/setters work with matrices", {
+    mat <- SingleCellExperiment:::.hits2mat(chits)
+    colPair(sce, "thing") <- mat
+    expect_identical(colPair(sce, "thing", asSparse=TRUE), mat)
+
+    colPairs(sce) <- list(thing=chits, TSNE=mat)
+    everything <- colPairs(sce, asSparse=TRUE)
+    expect_identical(everything[[1]], mat)
+
+    colnames(mcols(chits)) <- "x"
+    expect_identical(everything[[2]], chits)
 })
 
 test_that("colPairNames getters/setters work correctly", {

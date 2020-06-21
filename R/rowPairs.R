@@ -146,20 +146,20 @@ NULL
 .rowp_key <- "rowPairs"
 
 #' @export
-#' @importFrom S4Vectors mcols endoapply
+#' @importFrom S4Vectors SimpleList
 setMethod("rowPairs", "SingleCellExperiment", function(x, asSparse=FALSE) {
     value <- .get_internal_all(x, 
         getfun=int_elementMetadata, 
         key=.rowp_key)
 
-    value <- endoapply(value, .get_hits)
+    value <- lapply(value, .get_hits)
     if (asSparse) {
         for (i in seq_along(value)) {
-            value[[i]] <- .hits2mat(value[[i]], mcols(value[[i]])$value)
+            value[[i]] <- .hits2mat(value[[i]])
         }
     }
 
-    value
+    SimpleList(value)
 })
 
 #' @importClassesFrom S4Vectors SelfHits
