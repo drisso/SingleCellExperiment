@@ -85,7 +85,7 @@ test_that("rowPairs getters/setters are functioning", {
 
     # Clearing via NULL.
     rowPairs(sce) <- List(DM=rhits)
-    expect_identical(List(DM=rhits), rowPairs(sce))
+    expect_identical(SimpleList(DM=rhits), rowPairs(sce))
     expect_identical(rhits, rowPair(sce))
 
     alt <- sce
@@ -111,7 +111,7 @@ test_that("rowPair getters/setters work with matrices", {
     expect_identical(everything[[1]], mat)
 
     colnames(mcols(rhits)) <- "x"
-    expect_identical(everything[[2]], rhits)
+    expect_identical(rowPair(sce, 2), rhits)
 })
 
 test_that("rowPairNames getters/setters work correctly", {

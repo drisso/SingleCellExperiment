@@ -72,6 +72,8 @@ test_that("colPair getters/setters work with integer 'type'", {
 
 test_that("colPairs getters/setters are functioning", {
     colPairs(sce) <- list(thing=chits, TSNE=chits2)
+    expect_identical(colPairs(sce), SimpleList(thing=chits, TSNE=chits2))
+
     expect_identical(colPairNames(sce), c("thing", "TSNE"))
     expect_identical(colPair(sce, "thing"), chits)
     expect_identical(colPair(sce, 1), chits)
@@ -85,7 +87,7 @@ test_that("colPairs getters/setters are functioning", {
 
     # Clearing via NULL.
     colPairs(sce) <- List(DM=chits)
-    expect_identical(List(DM=chits), colPairs(sce))
+    expect_identical(SimpleList(DM=chits), colPairs(sce))
     expect_identical(chits, colPair(sce))
 
     alt <- sce
@@ -111,7 +113,7 @@ test_that("colPair getters/setters work with matrices", {
     expect_identical(everything[[1]], mat)
 
     colnames(mcols(chits)) <- "x"
-    expect_identical(everything[[2]], chits)
+    expect_identical(colPair(sce, 2), chits)
 })
 
 test_that("colPairNames getters/setters work correctly", {
