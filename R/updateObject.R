@@ -34,13 +34,13 @@ setMethod("updateObject", "SingleCellExperiment", function(object, ..., verbose=
     old.ver <- objectVersion(object)
     triggered <- FALSE
 
-    if (old.ver < "1.7.1") {
-        old <- S4Vectors:::disableValidity()
-        if (!isTRUE(old)) {
-            S4Vectors:::disableValidity(TRUE)
-            on.exit(S4Vectors:::disableValidity(old))
-        }
+    old <- S4Vectors:::disableValidity()
+    if (!isTRUE(old)) {
+        S4Vectors:::disableValidity(TRUE)
+        on.exit(S4Vectors:::disableValidity(old))
+    }
 
+    if (old.ver < "1.7.1") {
         # Need this to avoid a circular recursion when calling reducedDims()<-.
         int_metadata(object)$version <- packageVersion("SingleCellExperiment")
 
@@ -84,7 +84,6 @@ setMethod("updateObject", "SingleCellExperiment", function(object, ..., verbose=
 
         triggered <- TRUE
     }
-
 
     if (verbose && triggered) {
         message("[updateObject] ", class(object)[1], " object uses ", 
