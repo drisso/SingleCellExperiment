@@ -56,10 +56,10 @@ In the following code snippets, \code{x} is a \linkS4class{SingleCellExperiment}
 \describe{
 \item{\code{int_elementMetadata(x) <- value}:}{Replaces the internal row metadata with \code{value},
 a \linkS4class{DataFrame} with number of rows equal to \code{nrow(x)}.
-This is analogous to the user-visible \code{\link{colData<-}}.}
+This is analogous to the user-visible \code{\link{rowData<-}}.}
 \item{\code{int_colData(x) <- value}:}{Replaces the internal column metadata with \code{value},
 a \linkS4class{DataFrame} with number of rows equal to \code{ncol(x)}.
-This is analogous to the user-visible \code{\link{rowData<-}}.}
+This is analogous to the user-visible \code{\link{colData<-}}.}
 \item{\code{int_metadata(x) <- value}:}{Replaces the internal metadata with \code{value}, 
 analogous to the user-visible \code{\link{metadata<-}}.}
 }
