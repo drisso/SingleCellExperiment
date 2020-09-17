@@ -1,6 +1,6 @@
 Package: SingleCellExperiment
-Version: 1.11.6
-Date: 2020-06-21
+Version: 1.11.7
+Date: 2020-09-17
 Title: S4 Classes for Single Cell Data
 Authors@R: c(
         person("Aaron", "Lun", role=c("aut", "cph"), email="infinite.monkeys.with.keyboards@gmail.com"),
@@ -30,4 +30,4 @@ Description: Defines a S4 class for storing data from single-cell
         usual metadata for genes and libraries.
 License: GPL-3
 VignetteBuilder: knitr
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

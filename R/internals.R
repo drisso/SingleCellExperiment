@@ -11,10 +11,10 @@
 #' \describe{
 #' \item{\code{int_elementMetadata(x)}:}{Returns a \linkS4class{DataFrame} of internal row metadata,
 #' with number of rows equal to \code{nrow(x)}.
-#' This is analogous to the user-visible \code{\link{colData}}.}
+#' This is analogous to the user-visible \code{\link{rowData}}.}
 #' \item{\code{int_colData(x)}:}{Returns a \linkS4class{DataFrame} of internal column metadata,
 #' with number of rows equal to \code{ncol(x)}.
-#' This is analogous to the user-visible \code{\link{rowData}}.}
+#' This is analogous to the user-visible \code{\link{colData}}.}
 #' \item{\code{int_metadata(x)}:}{Returns a list of internal metadata, analogous to the user-visible \code{\link{metadata}}.}
 #' }
 #'
