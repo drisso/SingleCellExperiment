@@ -80,6 +80,7 @@
 #' int_metadata<-,SingleCellExperiment-method
 #' colData,SingleCellExperiment-method
 #' rowData,SingleCellExperiment-method
+#' parallel_slot_names,SingleCellExperiment-method
 #'
 #' @examples
 #' example(SingleCellExperiment, echo=FALSE) # Using the class example
@@ -93,6 +94,12 @@ setMethod("int_elementMetadata", "SingleCellExperiment", function(x) x@int_eleme
 setReplaceMethod("int_elementMetadata", "SingleCellExperiment", function(x, value) {
     x@int_elementMetadata <- value
     return(x)
+})
+
+#' @export
+#' @importFrom S4Vectors parallel_slot_names
+setMethod("parallel_slot_names", "SingleCellExperiment", function(x) {
+    c("int_elementMetadata", callNextMethod())
 })
 
 #' @export

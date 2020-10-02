@@ -175,3 +175,15 @@ test_that("subset replacement by both rows and columns work correctly", {
     ref[,to] <- sce[,from]
     expect_identical(int_colData(ref), int_colData(scex))
 })
+
+test_that("S4Vectors subsetting works correctly", {
+    out <- extractROWS(sce, 1:10)
+    expect_identical(out, sce[1:10,])
+
+    set.seed(100)
+    f <- sample(10, nrow(sce), replace=TRUE)
+    out <- split(sce, f)
+    expect_identical(out[["1"]], sce[f==1,])
+    expect_identical(out[["5"]], sce[f==5,])
+    expect_identical(out[["8"]], sce[f==8,])
+})

@@ -3,7 +3,11 @@
 \encoding{UTF-8}
 
 \section{Version 1.12.0}{\itemize{
-\item Added the \code{rowSubset} function as a standard location for a row subset.
+\item Added the \code{rowSubset()} function as a standard location for a row subset.
+
+\item Added \code{colPairs()} and \code{rowPairs()} to store pairwise information (e.g., for graphs).
+
+\item Added method specifications for \pkg{S4Vectors} compatibility.
 }}
 
 \section{Version 1.10.0}{\itemize{

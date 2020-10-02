@@ -17,6 +17,7 @@
 \alias{int_metadata<-,SingleCellExperiment-method}
 \alias{colData,SingleCellExperiment-method}
 \alias{rowData,SingleCellExperiment-method}
+\alias{parallel_slot_names,SingleCellExperiment-method}
 \title{Internal SingleCellExperiment functions}
 \description{
 Methods to get or set internal fields from the SingleCellExperiment class.
