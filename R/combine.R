@@ -104,6 +104,13 @@ NULL
 #' @export
 #' @importFrom BiocGenerics rbind cbind
 setMethod("cbind", "SingleCellExperiment", function(..., deparse.level=1) {
+    old <- S4Vectors:::disableValidity()
+    if (!isTRUE(old)) {
+        S4Vectors:::disableValidity(TRUE)
+        on.exit(S4Vectors:::disableValidity(old))
+    }
+    out <- callNextMethod()
+
     args <- list(...)
     args <- lapply(args, updateObject)
     int_m <- do.call(c, unname(lapply(args, int_metadata)))
@@ -128,12 +135,6 @@ setMethod("cbind", "SingleCellExperiment", function(..., deparse.level=1) {
     })
     int_em <- rowData(combined)
 
-    old <- S4Vectors:::disableValidity()
-    if (!isTRUE(old)) {
-        S4Vectors:::disableValidity(TRUE)
-        on.exit(S4Vectors:::disableValidity(old))
-    }
-    out <- callNextMethod()
     BiocGenerics:::replaceSlots(out, int_colData=int_cd, int_elementMetadata=int_em,
         int_metadata=int_m, check=FALSE)
 })
@@ -141,6 +142,13 @@ setMethod("cbind", "SingleCellExperiment", function(..., deparse.level=1) {
 #' @export
 #' @importFrom BiocGenerics rbind cbind
 setMethod("rbind", "SingleCellExperiment", function(..., deparse.level=1) {
+    old <- S4Vectors:::disableValidity()
+    if (!isTRUE(old)) {
+        S4Vectors:::disableValidity(TRUE)
+        on.exit(S4Vectors:::disableValidity(old))
+    }
+    out <- callNextMethod()
+
     args <- list(...)
     args <- lapply(args, updateObject)
     int_m <- do.call(c, unname(lapply(args, int_metadata)))
@@ -165,12 +173,6 @@ setMethod("rbind", "SingleCellExperiment", function(..., deparse.level=1) {
     })
     int_cd <- colData(combined)
 
-    old <- S4Vectors:::disableValidity()
-    if (!isTRUE(old)) {
-        S4Vectors:::disableValidity(TRUE)
-        on.exit(S4Vectors:::disableValidity(old))
-    }
-    out <- callNextMethod()
     BiocGenerics:::replaceSlots(out, int_colData=int_cd, int_elementMetadata=int_em,
         int_metadata=int_m, check=FALSE)
 })
