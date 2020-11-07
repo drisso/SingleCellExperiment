@@ -1,5 +1,5 @@
 # Checks for proper construction and get/setting of the slots of a SingleCellExperiment.
-# library(SingleCellExperiment); library(testthat); source("test-sce-class.R")
+# library(SingleCellExperiment); library(testthat); source("setup.R"); source("test-sce-class.R")
 context("SingleCellExperiment class")
 
 set.seed(1000)
@@ -65,24 +65,24 @@ test_that("manipulation of SE metadata is correct", {
 
 test_that("internal functions work correctly", {
     sce <- SingleCellExperiment(assay=u)
-    expect_identical(nrow(SingleCellExperiment:::int_elementMetadata(sce)), nrow(sce))
-    expect_identical(nrow(SingleCellExperiment:::int_colData(sce)), ncol(sce))
-    expect_identical(length(SingleCellExperiment:::int_metadata(sce)), 3L)
+    expect_identical(nrow(int_elementMetadata(sce)), nrow(sce))
+    expect_identical(nrow(int_colData(sce)), ncol(sce))
+    expect_identical(length(int_metadata(sce)), 3L)
 
     rextra <- rnorm(nrow(v))
-    SingleCellExperiment:::int_elementMetadata(sce)$whee <- rextra
-    expect_equal(rextra, SingleCellExperiment:::int_elementMetadata(sce)$whee)
-    SingleCellExperiment:::int_elementMetadata(sce) <- DataFrame(1:5)
+    int_elementMetadata(sce)$whee <- rextra
+    expect_equal(rextra, int_elementMetadata(sce)$whee)
+    int_elementMetadata(sce) <- int_elementMetadata(sce)[1:5,]
     expect_error(validObject(sce), "'nrow' of 'int_elementMetadata' not equal to 'nrow(object)'", fixed=TRUE)
 
     cextra <- rnorm(ncells)
-    SingleCellExperiment:::int_colData(sce)$stuff <- cextra
-    expect_equal(cextra, SingleCellExperiment:::int_colData(sce)$stuff)
-    SingleCellExperiment:::int_colData(sce) <- DataFrame(1:5)
+    int_colData(sce)$stuff <- cextra
+    expect_equal(cextra, int_colData(sce)$stuff)
+    int_colData(sce) <- DataFrame(1:5)
     expect_error(validObject(sce), "'nrow' of 'int_colData' not equal to 'ncol(object)'", fixed=TRUE)
 
-    SingleCellExperiment:::int_metadata(sce)$urg <- "I was here"
-    expect_identical(SingleCellExperiment:::int_metadata(sce)$urg, "I was here")
+    int_metadata(sce)$urg <- "I was here"
+    expect_identical(int_metadata(sce)$urg, "I was here")
 })
 
 test_that(".sce_show works", {
