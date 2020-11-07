@@ -18,8 +18,6 @@ test_that("SCE construction works correctly with LEM", {
 
     expect_identical(reducedDim(sce1, "rd1"), reducedDim(sce2, "rd1"))
 
-    # Weird hack required as a round-trip through a DataFrame seems to strip attributes.
-    class(lem) <- as.character(class(lem))
     expect_identical(reducedDim(sce1, "rd1"), lem)
 })
 

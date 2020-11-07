@@ -170,7 +170,7 @@ setMethod("rowData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
 }
 
 #' @importFrom methods as
-#' @importFrom S4Vectors DataFrame
+#' @importFrom S4Vectors DataFrame I
 .set_internal_all <- function(x, value, getfun, setfun, key, convertfun, xdimfun, vdimfun, funstr, xdimstr, vdimstr) {
     x <- updateObject(x)
 
