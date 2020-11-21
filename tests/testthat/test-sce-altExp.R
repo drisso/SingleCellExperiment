@@ -57,15 +57,25 @@ test_that("altExps setters work correctly", {
     expect_identical(altExp(sce,1), se1)
 
     # Works without names.
-    altExps(sce) <- list(se1, se2)
+    expect_warning(altExps(sce) <- list(se1, se2), "NULL")
     expect_identical(altExpNames(sce), c("unnamed1", "unnamed2"))
     expect_identical(altExp(sce,1), se1)
     expect_identical(altExp(sce,2), se2)
+
+    expect_warning(altExps(sce) <- list(X=se1, se2), "empty")
+    expect_identical(altExpNames(sce), c("X", "unnamed1"))
+
+    # Handles non-syntactical names.
+    altExps(sce) <- list(`first thing`=se1, `second thing`=se2)
+    expect_identical(altExpNames(sce), c("first thing", "second thing"))
 })
 
 test_that("altExpNames setters work correctly", {
     altExpNames(sce) <- c("A", "B")
     expect_identical(altExpNames(sce), c("A", "B"))
+
+    expect_warning(altExpNames(sce) <- c("X", ""), "empty")
+    expect_identical(altExpNames(sce), c("X", "unnamed1"))
 
     expect_error(altExpNames(empty) <- c("A", "B"), "more column names")
     expect_error(altExpNames(empty) <- NULL, "unable to find an inherited method")

@@ -51,8 +51,11 @@ test_that("reducedDims getters/setters are functioning", {
     expect_identical(reducedDims(alt), setNames(SimpleList(), character(0)))
 
     # Setting with an unnamed list works.
-    reducedDims(sce) <- list(d1, d2)
+    expect_warning(reducedDims(sce) <- list(d1, d2), "NULL")
     expect_identical(reducedDimNames(sce), c("unnamed1", "unnamed2"))
+
+    expect_warning(reducedDims(sce) <- list(X=d1, d2), "empty")
+    expect_identical(reducedDimNames(sce), c("X", "unnamed1"))
 
     # Checking for errors.
     expect_error(reducedDims(sce) <- list(d1, d2[1:10,]), "number of rows")
@@ -92,7 +95,7 @@ test_that("reducedDim getters/setters work with numeric indices", {
     expect_error(reducedDim(sce, 2) <- d1, "out of bounds")
 
     # This gets a bit confusing as the order changes when earlier elements are wiped out.
-    reducedDims(sce) <- list(d1, d2)
+    expect_warning(reducedDims(sce) <- list(d1, d2), "NULL")
     expect_identical(reducedDim(sce), d1)
     expect_identical(reducedDim(sce, 2), d2)
     expect_identical(reducedDimNames(sce), c("unnamed1", "unnamed2"))
@@ -121,7 +124,7 @@ test_that("reducedDim getters/setters work with numeric indices", {
 })
 
 test_that("reducedDimNames getters/setters work correctly", {
-    reducedDims(sce) <- list(d1, d2)
+    expect_warning(reducedDims(sce) <- list(d1, d2), "NULL")
     expect_identical(reducedDimNames(sce), c("unnamed1", "unnamed2"))
     reducedDims(sce) <- list(PCA=d1, TSNE=d2)
     expect_identical(reducedDimNames(sce), c("PCA", "TSNE"))
@@ -129,6 +132,10 @@ test_that("reducedDimNames getters/setters work correctly", {
     # Directly setting.
     reducedDimNames(sce) <- c("A", "B")
     expect_identical(reducedDimNames(sce), c("A", "B"))
+
+    # Responds to empty names.
+    expect_warning(reducedDimNames(sce) <- c("X", ""), "empty")
+    expect_identical(reducedDimNames(sce), c("X", "unnamed1"))
 
     # When wiped.
     reducedDims(sce) <- NULL

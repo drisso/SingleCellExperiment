@@ -187,15 +187,24 @@ setMethod("rowData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
                 "each element of 'value' should have number of ", vdimstr, " equal to '", xdimstr, "(x)'")
         }
 
-        collected <- do.call(DataFrame, lapply(value, I))
-        if (is.null(names(value))) {
-            colnames(collected) <- paste0(.unnamed, seq_along(value))
-        }
+        names(value) <- .clean_internal_names(names(value), N=length(value), msg="names(value)")
+        collected <- do.call(DataFrame, c(lapply(value, I), list(row.names=NULL, check.names=FALSE)))
     }
 
     tmp <- getfun(x)
     tmp[[key]] <- collected
     setfun(x, tmp)
+}
+
+.clean_internal_names <- function(names, N, msg) {
+    if (is.null(names) && N > 0) {
+        warning("'", msg, "' is NULL, replacing with 'unnamed'")
+        names <- paste0(.unnamed, seq_len(N))
+    } else if (any(empty <- names=="")) {
+        warning("'", msg, "' contains empty strings, replacing with 'unnamed'")
+        names[empty] <- paste0(.unnamed, seq_along(sum(empty)))
+    }
+    names
 }
 
 .get_internal_names <- function(x, getfun, key) {
@@ -206,6 +215,7 @@ setMethod("rowData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
 .set_internal_names <- function(x, value, getfun, setfun, key) {
     x <- updateObject(x)
     tmp <- getfun(x)
+    value <- .clean_internal_names(value, N=ncol(tmp[[key]]), msg="value")
     colnames(tmp[[key]]) <- value
     setfun(x, tmp)
 }
