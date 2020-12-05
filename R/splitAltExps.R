@@ -23,6 +23,7 @@
 #' @seealso
 #' \code{\link{altExp}}, to access and manipulate the alternative Experiment fields.
 #'
+#' \code{\link{unsplitAltExps}}, to reverse the splitting.
 #' @examples
 #' example(SingleCellExperiment, echo=FALSE)
 #' feat.type <- sample(c("endog", "ERCC", "CITE"), nrow(sce),

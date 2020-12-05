@@ -1,6 +1,6 @@
 Package: SingleCellExperiment
-Version: 1.13.2
-Date: 2020-11-21
+Version: 1.13.3
+Date: 2020-12-05
 Title: S4 Classes for Single Cell Data
 Authors@R: c(
         person("Aaron", "Lun", role=c("aut", "cph"), email="infinite.monkeys.with.keyboards@gmail.com"),
@@ -13,7 +13,9 @@ Imports:
     utils,
     stats,
     S4Vectors,
-    BiocGenerics
+    BiocGenerics,
+    GenomicRanges,
+    DelayedArray
 Suggests: 
     testthat, 
     BiocStyle, 

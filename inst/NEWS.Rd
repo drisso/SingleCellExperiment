@@ -2,6 +2,10 @@
 \title{SingleCellExperiment News}
 \encoding{UTF-8}
 
+\section{Version 1.14.0}{\itemize{
+\item Added the \code{unsplitAltExps()} function to reverse the effect of splitting alternative experiments.
+}}
+
 \section{Version 1.12.0}{\itemize{
 \item Added the \code{rowSubset()} function as a standard location for a row subset.
 

@@ -37,6 +37,8 @@ sce2
 }
 \seealso{
 \code{\link{altExp}}, to access and manipulate the alternative Experiment fields.
+
+\code{\link{unsplitAltExps}}, to reverse the splitting.
 }
 \author{
 Aaron Lun
