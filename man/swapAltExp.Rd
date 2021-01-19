@@ -4,7 +4,7 @@
 \alias{swapAltExp}
 \title{Swap main and alternative Experiments}
 \usage{
-swapAltExp(x, name, saved = NULL, withColData = TRUE)
+swapAltExp(x, name, saved = mainExpName(x), withColData = TRUE)
 }
 \arguments{
 \item{x}{A \linkS4class{SingleCellExperiment} object.}
@@ -18,9 +18,8 @@ If \code{NULL}, the original is not saved.}
 }
 \value{
 A SingleCellExperiment derived from \code{altExp(x, name)}.
-This contains all alternative Experiments in \code{altExps(x)},
-with an additional entry containing \code{x} if \code{saved} is specified.
-If \code{withColData=TRUE}, the column metadata is set to \code{colData(x)}.
+This contains all alternative Experiments in \code{altExps(x)}, excluding the one that was promoted to the main Experiment.
+An additional alternative Experiment containing \code{x} may be included if \code{saved} is specified.
 }
 \description{
 Swap the main Experiment for an alternative Experiment in a \linkS4class{SingleCellExperiment} object.
@@ -36,6 +35,15 @@ At some point, we might want to focus only on a subset of features of interest,
 but we do not want to discard the rest of the features.
 This can be achieved by storing the subset as an alternative Experiment and swapping it with the main Experiment,
 as shown in the Examples below.
+
+If \code{withColData=TRUE}, the column metadata of the output object is set to \code{colData(x)}.
+As a side-effect, any column data previously \code{altExp(x, name)} is stored in the \code{saved} alternative Experiment of the output.
+This is necessary to preserve the column metadata while achieving reversibility (see below).
+Setting \code{withColData=FALSE} will omit the \code{colData} exchange.
+
+\code{swapAltExp} is almost perfectly reversible, i.e., \code{swapAltExp(swapAltExp(x, name, saved), saved, name)} should return something very similar to \code{x}. 
+The only exceptions are that the order of \code{\link{altExpNames}} is changed,
+and that any non-\code{NULL} \code{\link{mainExpName}} in \code{altExp(x, name)} will be lost.
 }
 \examples{
 example(SingleCellExperiment, echo=FALSE) # using the class example

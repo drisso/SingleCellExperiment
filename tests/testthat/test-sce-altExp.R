@@ -88,15 +88,22 @@ test_that("splitAltExps works correctly", {
     out <- splitAltExps(empty, feat.type)
 
     expect_identical(assay(out), assay(empty[feat.type=="endog",]))
-    expect_identical(altExp(out, "ERCC"), empty[feat.type=="ERCC",])
-    expect_identical(altExp(out, "CITE"), empty[feat.type=="CITE",])
 
-    # Handles alternative reference.
+    test <- empty
+    mainExpName(test) <- NULL
+    expect_identical(altExp(out, "ERCC"), test[feat.type=="ERCC",])
+    expect_identical(altExp(out, "CITE"), test[feat.type=="CITE",])
+
+    expect_identical(mainExpName(out), "endog")
+    expect_null(mainExpName(altExp(out)))
+
+    # Handles alternative references.
     out <- splitAltExps(empty, feat.type, ref="ERCC")
 
     expect_identical(assay(out), assay(empty[feat.type=="ERCC",]))
-    expect_identical(altExp(out, "endog"), empty[feat.type=="endog",])
-    expect_identical(altExp(out, "CITE"), empty[feat.type=="CITE",])
+    expect_identical(altExp(out, "endog"), test[feat.type=="endog",])
+    expect_identical(altExp(out, "CITE"), test[feat.type=="CITE",])
+    expect_identical(mainExpName(out), "ERCC")
 
     # Clears out colData
     empty$blah <- sample(LETTERS, ncol(empty), replace=TRUE)
@@ -110,18 +117,23 @@ test_that("swapAltExp works correctly", {
     ref <- splitAltExps(empty, feat.type)
     ref$A <- seq_len(ncol(ref))
 
-    swapped <- swapAltExp(ref, "CITE", save="all")
+    swapped <- swapAltExp(ref, "CITE")
     expect_identical(assay(swapped), assay(altExp(ref, "CITE")))
     expect_identical(colData(swapped), colData(ref))
-    expect_identical(altExpNames(swapped), c(altExpNames(ref), "all"))
 
-    swapped2 <- swapAltExp(swapped, "all")
-    expect_identical(assay(swapped2), assay(ref))
-    expect_identical(colData(swapped2), colData(ref))
-    expect_identical(altExps(swapped2), altExps(swapped))
+    expect_identical(altExpNames(swapped), c("ERCC", "endog"))
+    expect_null(mainExpName(altExp(swapped, "endog")))
+    expect_identical(mainExpName(swapped), "CITE")
 
-    swapped3 <- swapAltExp(swapped, "CITE", withColData=FALSE)
+    # Operation is perfectly reversible.
+    swapped2 <- swapAltExp(swapped, "endog")
+    altExps(swapped2) <- rev(altExps(swapped2))
+    expect_identical(swapped2, ref)
+
+    # More predictable behavior with withColData=FALSE.
+    swapped3 <- swapAltExp(ref, "CITE", withColData=FALSE)
     expect_identical(ncol(colData(swapped3)), 0L)
+    expect_identical(colnames(colData(altExp(swapped3, "endog"))), "A")
 })
 
 test_that("getters and setters throw appropriate errors", {

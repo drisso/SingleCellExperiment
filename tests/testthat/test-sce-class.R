@@ -67,7 +67,7 @@ test_that("internal functions work correctly", {
     sce <- SingleCellExperiment(assay=u)
     expect_identical(nrow(int_elementMetadata(sce)), nrow(sce))
     expect_identical(nrow(int_colData(sce)), ncol(sce))
-    expect_identical(length(int_metadata(sce)), 3L)
+    expect_identical(length(int_metadata(sce)), 1L)
 
     rextra <- rnorm(nrow(v))
     int_elementMetadata(sce)$whee <- rextra

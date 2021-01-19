@@ -13,8 +13,7 @@ setClass("SingleCellExperiment",
     prototype = prototype(
         int_metadata=list(
             version=packageVersion("SingleCellExperiment"),
-            spike_names=character(0),
-            size_factor_names=character(0)
+            mainExpName=NULL
         )
     )
 )

@@ -16,6 +16,8 @@
 #' @param colPairs A list of any number of \linkS4class{SelfHits} objects describing relationships between pairs of columns.
 #' Each entry should have number of nodes equal to the number of columns of the output SingleCellExperiment object.
 #' Alternatively, entries may be square sparse matrices of order equal to the number of columns of the output object.
+#' @param mainExpName String containing the name of the main Experiment.
+#' This is comparable to the names assigned to each of the \code{altExps}.
 #'
 #' @details
 #' In this class, rows should represent genomic features (e.g., genes) while columns represent samples generated from single cells.
@@ -78,19 +80,19 @@
 #' @importFrom methods is as
 #' @importFrom SummarizedExperiment SummarizedExperiment
 #' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
-SingleCellExperiment <- function(..., reducedDims=list(), altExps=list(), rowPairs=list(), colPairs=list()) {
+SingleCellExperiment <- function(..., reducedDims=list(), altExps=list(), rowPairs=list(), colPairs=list(), mainExpName=NULL) {
     se <- SummarizedExperiment(...)
     if(!is(se, "RangedSummarizedExperiment")) {
         se <- as(se, "RangedSummarizedExperiment")
     }
-    .rse_to_sce(se, reducedDims=reducedDims, altExps=altExps, rowPairs=rowPairs, colPairs=colPairs)
+    .rse_to_sce(se, reducedDims=reducedDims, altExps=altExps, rowPairs=rowPairs, colPairs=colPairs, mainExpName=mainExpName)
 }
 
 #' @importFrom S4Vectors DataFrame SimpleList
 #' @importClassesFrom S4Vectors DataFrame
 #' @importFrom methods new
 #' @importFrom BiocGenerics nrow ncol
-.rse_to_sce <- function(rse, reducedDims=list(), altExps=list(), rowPairs=list(), colPairs=list()) {
+.rse_to_sce <- function(rse, reducedDims=list(), altExps=list(), rowPairs=list(), colPairs=list(), mainExpName=NULL) {
     old <- S4Vectors:::disableValidity()
     if (!isTRUE(old)) {
         S4Vectors:::disableValidity(TRUE)
@@ -105,6 +107,7 @@ SingleCellExperiment <- function(..., reducedDims=list(), altExps=list(), rowPai
     altExps(out) <- altExps
     rowPairs(out) <- rowPairs
     colPairs(out) <- colPairs
+    mainExpName(out) <- mainExpName
 
     out
 }

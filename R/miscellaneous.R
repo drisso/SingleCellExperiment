@@ -53,6 +53,11 @@ setMethod("objectVersion", "SingleCellExperiment", function(x) {
 .sce_show <- function(object) {
     callNextMethod()
     coolcat("reducedDimNames(%d): %s\n", reducedDimNames(object))
+
+    me <- mainExpName(object)
+    if (is.null(me)) me <- "NULL"
+    cat(sprintf("mainExpName: %s\n", me))
+
     coolcat("altExpNames(%d): %s\n", altExpNames(object))
 }
 

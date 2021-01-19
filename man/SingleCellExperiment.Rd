@@ -13,7 +13,8 @@ SingleCellExperiment(
   reducedDims = list(),
   altExps = list(),
   rowPairs = list(),
-  colPairs = list()
+  colPairs = list(),
+  mainExpName = NULL
 )
 }
 \arguments{
@@ -32,6 +33,9 @@ Alternatively, entries may be square sparse matrices of order equal to the numbe
 \item{colPairs}{A list of any number of \linkS4class{SelfHits} objects describing relationships between pairs of columns.
 Each entry should have number of nodes equal to the number of columns of the output SingleCellExperiment object.
 Alternatively, entries may be square sparse matrices of order equal to the number of columns of the output object.}
+
+\item{mainExpName}{String containing the name of the main Experiment.
+This is comparable to the names assigned to each of the \code{altExps}.}
 }
 \value{
 A SingleCellExperiment object.

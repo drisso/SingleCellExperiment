@@ -4,6 +4,14 @@
 
 \section{Version 1.14.0}{\itemize{
 \item Added the \code{unsplitAltExps()} function to reverse the effect of splitting alternative experiments.
+
+\item Added a \code{mainExpName()} getter and setter to remember the name of the main experiment.
+
+\item \code{splitAltExps()} will now store the chosen \code{ref} as the \code{mainExpName}.
+
+\item \code{swapAltExp()} now discards the promoted experiment from the list of alternative experiments in the output.
+It will also exchange the \code{colData} between the swapped experiments when \code{withColData=TRUE}.
+These changes assist in achieving reversibility of the output.
 }}
 
 \section{Version 1.12.0}{\itemize{

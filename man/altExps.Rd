@@ -25,6 +25,10 @@
 \alias{names,SummarizedExperimentByColumn-method}
 \alias{names<-,SummarizedExperimentByColumn-method}
 \alias{removeAltExps}
+\alias{mainExpName}
+\alias{mainExpName,SingleCellExperiment-method}
+\alias{mainExpName<-}
+\alias{mainExpName<-,SingleCellExperiment,character_OR_NULL-method}
 \alias{\%}
 \alias{Dumping}
 \alias{the}
@@ -110,6 +114,28 @@ This should be of length equal to the number of results currently in \code{x}.
 
 \code{removeAltExps(x)} will remove all alternative Experiments from \code{x}.
 This has the same effect as \code{altExps(x) <- NULL} but may be more convenient as it directly returns a SingleCellExperiment.
+}
+
+\section{Main Experiment naming}{
+
+The alternative Experiments are naturally associated with names (\code{e} during assignment).
+However, we can also name the main Experiment in a \linkS4class{SingleCellExperiment} \code{x}:
+\describe{
+\item{\code{mainExpName(x) <- value}:}{
+Set the name of the main Experiment to a non-\code{NA} string \code{value}.
+This can also be used to unset the name if \code{value=NULL}.
+}
+\item{\code{mainExpName(x)}:}{
+Returns a string containing the name of the main Experiment.
+This may also be \code{NULL} if no name is specified.
+}
+}
+The presence of a non-\code{NULL} main Experiment name is helpful for functions like \code{\link{swapAltExp}}.
+An appropriate name is automatically added by functions like \code{\link{splitAltExps}}.
+
+Note that, if a SingleCellExperiment is assigned as an alternative Experiment to another SingleCellExperiment via \code{altExp(x, e) <- value},
+no attempt is made to synchronize \code{mainExpName(value)} with \code{e}.
+In such cases, we suggest setting \code{mainExpName(value)} to \code{NULL} to avoid any confusion during interpretation.
 }
 
 \examples{

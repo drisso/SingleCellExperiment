@@ -100,6 +100,12 @@ setGeneric("altExps<-", function(x, ..., value) standardGeneric("altExps<-"))
 #' @export
 setGeneric("altExpNames<-", function(x, ..., value) standardGeneric("altExpNames<-"))
 
+#' @export
+setGeneric("mainExpName", function(x) standardGeneric("mainExpName"))
+
+#' @export
+setGeneric("mainExpName<-", function(x, value) standardGeneric("mainExpName<-"))
+
 ########################################
 # Pairing getter/setters.
 

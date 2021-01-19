@@ -16,6 +16,7 @@ splitAltExps(x, f, ref = NULL)
 \value{
 A SingleCellExperiment where each row corresponds to a feature in the main set.
 Each other feature type is stored as an alternative Experiment, accessible by \code{\link{altExp}}.
+\code{ref} is used as the \code{\link{mainExpName}}.
 }
 \description{
 Split a \linkS4class{SingleCellExperiment} based on the feature type, creating alternative Experiments to hold features that are not in the majority set.

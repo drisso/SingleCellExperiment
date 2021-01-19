@@ -9,6 +9,7 @@
 #' @return
 #' A SingleCellExperiment where each row corresponds to a feature in the main set.
 #' Each other feature type is stored as an alternative Experiment, accessible by \code{\link{altExp}}.
+#' \code{ref} is used as the \code{\link{mainExpName}}.
 #'
 #' @details
 #' This function provides a convenient way to create a SingleCellExperiment with alternative Experiments.
@@ -44,7 +45,10 @@ splitAltExps <- function(x, f, ref=NULL) {
         # Clearing out the colData() before adding it.
         subset <- x[by.feat[[other]],]
         colData(subset) <- colData(subset)[, 0]
+        mainExpName(subset) <- NULL
         altExp(x0, other) <- subset
     }
+
+    mainExpName(x0) <- ref
     x0
 }

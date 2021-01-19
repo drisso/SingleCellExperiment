@@ -68,6 +68,27 @@
 #'
 #' \code{removeAltExps(x)} will remove all alternative Experiments from \code{x}.
 #' This has the same effect as \code{altExps(x) <- NULL} but may be more convenient as it directly returns a SingleCellExperiment.
+#'
+#' @section Main Experiment naming:
+#' The alternative Experiments are naturally associated with names (\code{e} during assignment).
+#' However, we can also name the main Experiment in a \linkS4class{SingleCellExperiment} \code{x}:
+#' \describe{
+#' \item{\code{mainExpName(x) <- value}:}{
+#' Set the name of the main Experiment to a non-\code{NA} string \code{value}.
+#' This can also be used to unset the name if \code{value=NULL}.
+#' }
+#' \item{\code{mainExpName(x)}:}{
+#' Returns a string containing the name of the main Experiment.
+#' This may also be \code{NULL} if no name is specified.
+#' }
+#' }
+#' The presence of a non-\code{NULL} main Experiment name is helpful for functions like \code{\link{swapAltExp}}.
+#' An appropriate name is automatically added by functions like \code{\link{splitAltExps}}.
+#' 
+#' Note that, if a SingleCellExperiment is assigned as an alternative Experiment to another SingleCellExperiment via \code{altExp(x, e) <- value},
+#' no attempt is made to synchronize \code{mainExpName(value)} with \code{e}.
+#' In such cases, we suggest setting \code{mainExpName(value)} to \code{NULL} to avoid any confusion during interpretation.
+#' 
 #' @seealso
 #' \code{\link{splitAltExps}}, for a convenient way of adding alternative Experiments from existing features.
 #'
@@ -120,6 +141,10 @@
 #' names,SummarizedExperimentByColumn-method
 #' names<-,SummarizedExperimentByColumn-method
 #' removeAltExps
+#' mainExpName
+#' mainExpName,SingleCellExperiment-method
+#' mainExpName<-
+#' mainExpName<-,SingleCellExperiment,character_OR_NULL-method
 #'
 #' % Dumping the SEBC methods here, so that check doesn't complain.
 NULL
@@ -264,4 +289,15 @@ setReplaceMethod("altExp", c("SingleCellExperiment", "character"), function(x, e
         xdimstr="ncol",
         vdimstr="columns", 
         substr="e") 
+})
+
+#' @export
+setMethod("mainExpName", "SingleCellExperiment", function(x) {
+    int_metadata(x)$mainExpName
+})
+
+#' @export
+setReplaceMethod("mainExpName", c("SingleCellExperiment", "character_OR_NULL"), function(x, value) {
+    int_metadata(x)$mainExpName <- value
+    x
 })
