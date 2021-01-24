@@ -4,11 +4,15 @@
 #'
 #' @param x A \linkS4class{SingleCellExperiment} object.
 #' @param which A list of \linkS4class{SCEInput} objects.
-#' Each one may have different arguments to pass to \code{FUN}.
+#' Each entry may contain different arguments to pass to \code{FUN}.
 #' @param FUN A function to apply to each piece of data extracted with \code{\link{getInput}}.
 #' @param ... Further (named) arguments to pass to \code{FUN}.
+#' @param SIMPLIFY Logical scalar indicating whether the output should be simplified.
 #' 
-#' @return A list of the same length and names as \code{which},
+#' @return 
+#' If \code{SIMPLIFY=TRUE}, a SingleCellExperiment where the results for each \code{which} are mapped to the relevant main or alternative Experiments.
+#'
+#' Otherwise, a list of the same length and names as \code{which},
 #' containing the output of \code{FUN} applied to each corresponding piece of data.
 #' 
 #' @author Aaron Lun
@@ -19,6 +23,11 @@
 #'
 #' The \linkS4class{SCEInput} subclasses that can be used in \code{which} depend on what is supported by \code{FUN}.
 #' For example, if a function can accept both matrix and SingleCellExperiment inputs, it can be used with, e.g., both \linkS4class{MainExpInput} and \linkS4class{AssayInput} objects.
+#'
+#' The default of \code{SIMPLIFY=TRUE} is intended as a user-level convenience when \code{FUN} returns a SingleCellExperiment with a consistent number of columns
+#' and \code{which} contains no more than one reference to the main or each alternative Experiment in \code{x}.
+#' When these conditions are fulfilled, the results are collated into a single SingleCellExperiment for easier downstream manipulation.
+#' Developers are likely to want to set \code{SIMPLIFY=FALSE} to guarantee consistent output for arbitrary \code{which}.
 #'
 #' @examples
 #' ncells <- 100
@@ -38,7 +47,7 @@
 #' }
 #' 
 #' # Applying over all of the specified parts of 'sce'.
-#' sceApply(sce, FUN=FUN, which=list(
+#' applySCE(sce, FUN=FUN, which=list(
 #'     AssayInput(assay=1),
 #'     ReducedDimInput(type=1, transposed=TRUE),
 #'     AltAssayInput(experiment=1, assay="counts", multiplier=2),
@@ -47,8 +56,10 @@
 #' 
 #' @seealso
 #' \linkS4class{SCEInput} and the related class hierarchy, to specify different parts of the SingleCellExperiment.
+#'
+#' \code{\link{simplifyToSCE}}, which is used when \code{SIMPLIFY=TRUE}.
 #' @export
-sceApply <- function(x, which, FUN, ...) {
+applySCE <- function(x, which, FUN, ..., SIMPLIFY=TRUE) {
     output <- which
     common <- list(...)
 
@@ -58,6 +69,13 @@ sceApply <- function(x, which, FUN, ...) {
         args <- args[!duplicated(names(args))]
         all.args <- c(list(getInput(x, current)), args)
         output[[i]] <- do.call(FUN, all.args)
+    }
+
+    if (SIMPLIFY) {
+        attempt <- suppressWarnings(simplifyToSCE(output, which, x))
+        if (!is.null(attempt)) {
+            output <- attempt
+        }
     }
 
     output

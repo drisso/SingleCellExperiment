@@ -3,7 +3,7 @@
 #' The SCEInput classes provide a flexible approach to extracting different types of data from a \linkS4class{SingleCellExperiment} object.
 #' Each subclass specifies a different piece of data to fetch from the SingleCellExperiment in a generic manner,
 #' as well as storing custom arguments that can be to process that particular piece of data.
-#' This is helpful for general-purpose functions like \code{\link{sceApply}},
+#' This is helpful for general-purpose functions like \code{\link{applySCE}},
 #' as well as complex functions that use multiple pieces of information from a SingleCellExperiment object.
 #'
 #' @section Constructors:
@@ -19,7 +19,7 @@
 #' 
 #' With the following arguments:
 #' \describe{
-#' \item{...}{Aguments (usually named) to pass to other functions, e.g., \code{FUN} in \code{\link{sceApply}}.}
+#' \item{...}{Aguments (usually named) to pass to other functions, e.g., \code{FUN} in \code{\link{applySCE}}.}
 #' \item{assay}{String or integer specifying the assay to use.}
 #' \item{type}{String or integer specifying the \code{\link{reducedDim}} to use.}
 #' \item{experiment}{String or integer specifying the \code{\link{altExp}} to use.}
@@ -66,7 +66,7 @@
 #' str(getInput(sce, AltReducedDimInput("BLAH", "PCA")))
 #' 
 #' @seealso
-#' \code{\link{sceApply}}, for an example of how this can be used in a generic manner.
+#' \code{\link{applySCE}}, for an example of how this can be used in a generic manner.
 #'
 #' @docType class
 #' @name SCEInput
