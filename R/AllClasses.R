@@ -30,3 +30,24 @@ setClass("LinearEmbeddingMatrix",
 setClass("SummarizedExperimentByColumn", slots=c(se="SummarizedExperiment"))
 
 setClass("DualSubset", slots=c(hits="SelfHits"))
+
+#' @export
+setClass("SCEInput", contains="VIRTUAL", slots=c(arguments="list"))
+
+#' @export
+setClass("MainExpInput", contains="SCEInput")
+
+#' @export
+setClass("AssayInput", contains="SCEInput", slots=c(assay="ANY"))
+
+#' @export
+setClass("ReducedDimInput", contains="SCEInput", slots=c(type="ANY"))
+
+#' @export
+setClass("AltExpInput", contains="SCEInput", slots=c(experiment="ANY"))
+
+#' @export
+setClass("AltAssayInput", contains="AltExpInput", slots=c(assay="ANY"))
+
+#' @export
+setClass("AltReducedDimInput", contains="AltExpInput", slots=c(type="ANY"))
