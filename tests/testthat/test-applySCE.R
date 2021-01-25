@@ -41,10 +41,17 @@ test_that("simplification works correctly", {
     raw <- applySCE(loaded, FUN=identity, which=which, SIMPLIFY=FALSE)
     expect_identical(raw, list(loaded, altExp(loaded), altExp(loaded)))
 
-    # And it also fails correctly, in some cases.
+    which <- list(AltExpInput("Spike"), AltExpInput("Protein"))
+    raw <- applySCE(loaded, FUN=identity, which=which)
+    expect_identical(nrow(raw), 0L)
+    expect_identical(altExps(raw), altExps(loaded)) 
+})
+
+test_that("simplification fails correctly", {
     which <- list(MainExpInput(), AltExpInput("Spike"), AltExpInput("Spike"))
     raw <- applySCE(loaded, FUN=identity, SIMPLIFY=FALSE, which=which)
     expect_warning(results <- simplifyToSCE(raw, which, loaded), "multiple references.*Spike")
+    expect_error(results <- simplifyToSCE(raw, which, loaded, warn.level=3), "multiple references.*Spike")
     expect_null(results)
 
     which <- list(MainExpInput(), MainExpInput())
@@ -54,17 +61,20 @@ test_that("simplification works correctly", {
 
     which <- list(MainExpInput(), AssayInput(1))
     raw <- applySCE(loaded, FUN=identity, SIMPLIFY=FALSE, which=which)
+    expect_warning(results <- simplifyToSCE(raw, which, loaded, warn.level=1), NA)
     expect_warning(results <- simplifyToSCE(raw, which, loaded), "not a SummarizedExperiment")
     expect_null(results)
 
     set.seed(1000)
     which <- list(MainExpInput(), AltExpInput("Spike"))
     raw <- applySCE(loaded, FUN=function(x) { x[,sample(ncol(x), sample(ncol(x), 1))] }, SIMPLIFY=FALSE, which=which)
+    expect_warning(results <- simplifyToSCE(raw, which, loaded, warn.level=0), NA)
     expect_warning(results <- simplifyToSCE(raw, which, loaded), "columns are different")
     expect_null(results)
 
     which <- list(MainExpInput(), AltExpInput("Spike"))
     raw <- applySCE(loaded, FUN=function(x) { as(x, "SummarizedExperiment") }, SIMPLIFY=FALSE, which=which)
+    expect_warning(results <- simplifyToSCE(raw, which, loaded, warn.level=1), NA)
     expect_warning(results <- simplifyToSCE(raw, which, loaded), "not a SingleCellExperiment")
     expect_null(results)
 })

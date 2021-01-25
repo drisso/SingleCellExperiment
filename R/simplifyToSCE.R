@@ -7,12 +7,13 @@
 #' @param which A list of \linkS4class{SCEInput} objects of the same length as \code{results}.
 #' This should be of the same length as that used to construct \code{results}.
 #' @param x The original SingleCellExperiment from which \code{results} were computed.
+#' @param warn.level Integer scalar specifying the type of warnings that can be emitted.
 #'
 #' @return 
 #' A SingleCellExperiment corresponding to the entry of \code{results} generated from any part of the main Experiment of \code{x}.
 #' All results generated from the alternative Experiments of \code{x} are stored in the \code{\link{altExps}} of the output.
 #' 
-#' Alternatively, if simplification could not be performed, \code{NULL} is returned with a warning.
+#' Alternatively, if simplification could not be performed, \code{NULL} is returned with a warning (depending on \code{warn.level}.
 #'
 #' @author Aaron Lun
 #'
@@ -26,6 +27,11 @@
 #'
 #' In \code{which}, there should be no more than one reference to each alternative Experiment in \code{x}.
 #' For each reference, the corresponding entry of \code{results} is stored in the \code{\link{altExps}} of the output under the same name that was used in \code{x}.
+#'
+#' The type of warnings that are emitted can be controlled with \code{warn.level}.
+#' If \code{warn.level=0}, no warnings are emitted.
+#' If \code{warn.level=1}, all warnings are emitted except for those related to \code{results} not being of the appropriate class.
+#' If \code{warn.level=2}, all warnings are emitted, and if \code{warn.level=3}, warnings are promoted to errors.
 #'
 #' @examples
 #' ncells <- 100
@@ -51,9 +57,17 @@
 #' 
 #' @export
 #' @importFrom S4Vectors make_zero_col_DFrame
-simplifyToSCE <- function(results, which, x) {
+simplifyToSCE <- function(results, which, x, warn.level=2) {
     N <- length(which)
     stopifnot(length(results)==N)
+
+    if (warn.level==3) {
+        WTFUN <- stop
+    } else if (warn.level==0) {
+        WTFUN <- identity
+    } else {
+        WTFUN <- warning
+    }
 
     # Checking that simplification is possible.
     ae.name <- rep(NA_character_, N)
@@ -71,33 +85,39 @@ simplifyToSCE <- function(results, which, x) {
 
         curres <- results[[i]]
         if (!is(curres, "SummarizedExperiment")) {
-            warning("could not simplify as result ", i, " is not a SummarizedExperiment")
+            if (warn.level > 1) {
+                WTFUN("could not simplify as result ", i, " is not a SummarizedExperiment")
+            }
             return(NULL)
         } 
     }
 
     main <- which(is.na(ae.name))
     if (length(main) > 1) {
-        warning(paste(strwrap("could not simplify results due to multiple references to the main Experiment in 'which'"), collapse="\n"))
+        WTFUN(paste(strwrap("could not simplify results due to multiple references to the main Experiment in 'which'"), collapse="\n"))
         return(NULL)
     }
 
     if (dup <- anyDuplicated(ae.name)) {
-        warning(paste(strwrap(paste0("could not simplify results due to multiple references to the '", ae.name[dup], "' alternative Experiment in 'which'")), collapse="\n"))
+        WTFUN(paste(strwrap(paste0("could not simplify results due to multiple references to the '", ae.name[dup], "' alternative Experiment in 'which'")), collapse="\n"))
         return(NULL)
     }
 
     u.ncols <- unique(lapply(results, ncol))
     u.colnames <- unique(lapply(results, colnames))
     if (length(u.ncols)!=1 || length(u.colnames)!=1) {
-        warning("could not simplify results as the columns are different")
+        if (warn.level > 0) {
+            WTFUN("could not simplify results as the columns are different")
+        }
         return(NULL)
     }
 
     if (length(main)) {
         sce <- results[[main]]
         if (!is(sce, "SingleCellExperiment")) {
-            warning("entry of 'results' corresponding to main Experiment is not a SingleCellExperiment")
+            if (warn.level > 1) {
+                WTFUN("entry of 'results' corresponding to main Experiment is not a SingleCellExperiment")
+            }
             return(NULL)
         }
     } else {

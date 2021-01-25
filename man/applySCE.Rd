@@ -19,10 +19,11 @@ Each entry may contain different arguments to pass to \code{FUN}.}
 \item{SIMPLIFY}{Logical scalar indicating whether the output should be simplified.}
 }
 \value{
-If \code{SIMPLIFY=TRUE}, a SingleCellExperiment where the results for each \code{which} are mapped to the relevant main or alternative Experiments.
-
-Otherwise, a list of the same length and names as \code{which},
+In most cases or when \code{SIMPLIFY=FALSE}, a list of the same length and names as \code{which} is returned,
 containing the output of \code{FUN} applied to each corresponding piece of data.
+
+If \code{SIMPLIFY=TRUE} and certain conditions are fulfilled,
+a SingleCellExperiment is returned where the results for each \code{which} are mapped to the relevant main or alternative Experiments of the output.
 }
 \description{
 Apply a function over different pieces of data extracted from a \linkS4class{SingleCellExperiment}.
@@ -34,11 +35,17 @@ This enables \code{FUN} to use data-specific arguments while retaining the conve
 The \linkS4class{SCEInput} subclasses that can be used in \code{which} depend on what is supported by \code{FUN}.
 For example, if a function can accept both matrix and SingleCellExperiment inputs, it can be used with, e.g., both \linkS4class{MainExpInput} and \linkS4class{AssayInput} objects.
 
-The default of \code{SIMPLIFY=TRUE} is intended as a user-level convenience when \code{FUN} returns a SingleCellExperiment with a consistent number of columns
-and \code{which} contains no more than one reference to the main or each alternative Experiment in \code{x}.
+The default of \code{SIMPLIFY=TRUE} is intended as a user-level convenience when \code{FUN} returns a SingleCellExperiment with the same number of columns for all \code{which},
+and \code{which} itself contains no more than one reference to the main or each alternative Experiment in \code{x}.
 When these conditions are fulfilled, the results are collated into a single SingleCellExperiment for easier downstream manipulation.
-Developers are likely to want to set \code{SIMPLIFY=FALSE} to guarantee consistent output for arbitrary \code{which}.
 }
+\section{Developer note}{
+
+When using this function inside other functions, developers should set \code{SIMPLIFY=FALSE} to guarantee consistent output for arbitrary \code{which}.
+If simplification is necessary, the output of this function can be explicitly passed to \code{\link{simplifyToSCE}},
+typically with \code{\link{warn.level=3}} to throw an error if simplification is not possible.
+}
+
 \examples{
 ncells <- 100
 u <- matrix(rpois(20000, 5), ncol=ncells)
