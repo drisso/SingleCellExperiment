@@ -4,15 +4,16 @@
 \alias{applySCE}
 \title{Applying over parts of a SingleCellExperiment}
 \usage{
-applySCE(x, which, FUN, ..., SIMPLIFY = TRUE)
+applySCE(x, FUN, which = makeAllExpInputs(x), ..., SIMPLIFY = TRUE)
 }
 \arguments{
 \item{x}{A \linkS4class{SingleCellExperiment} object.}
 
-\item{which}{A list of \linkS4class{SCEInput} objects.
-Each entry may contain different arguments to pass to \code{FUN}.}
-
 \item{FUN}{A function to apply to each piece of data extracted with \code{\link{getInput}}.}
+
+\item{which}{A list of \linkS4class{SCEInput} objects.
+Each entry may contain different arguments to pass to \code{FUN}.
+Defaults to all main and alternative Experiments in \code{x}.}
 
 \item{...}{Further (named) arguments to pass to \code{FUN}.}
 

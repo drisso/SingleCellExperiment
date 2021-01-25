@@ -5,6 +5,7 @@
 #' @param x A \linkS4class{SingleCellExperiment} object.
 #' @param which A list of \linkS4class{SCEInput} objects.
 #' Each entry may contain different arguments to pass to \code{FUN}.
+#' Defaults to all main and alternative Experiments in \code{x}.
 #' @param FUN A function to apply to each piece of data extracted with \code{\link{getInput}}.
 #' @param ... Further (named) arguments to pass to \code{FUN}.
 #' @param SIMPLIFY Logical scalar indicating whether the output should be simplified.
@@ -64,7 +65,7 @@
 #'
 #' \code{\link{simplifyToSCE}}, which is used when \code{SIMPLIFY=TRUE}.
 #' @export
-applySCE <- function(x, which, FUN, ..., SIMPLIFY=TRUE) {
+applySCE <- function(x, FUN, which=makeAllExpInputs(x), ..., SIMPLIFY=TRUE) {
     output <- which
     common <- list(...)
 

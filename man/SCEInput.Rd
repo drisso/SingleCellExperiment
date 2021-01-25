@@ -37,6 +37,8 @@
 \alias{isInputAltExp,SCEInput-method}
 \alias{isInputAltExp,AltExpInput-method}
 \alias{inputArguments}
+\alias{makeAllExpInputs}
+\alias{makeSameAssayInputs}
 \title{The SCEInput class}
 \description{
 The SCEInput classes provide a flexible approach to extracting different types of data from a \linkS4class{SingleCellExperiment} object.
@@ -82,13 +84,26 @@ based on the SCEInput object \code{input}.
 
 \section{Input properties}{
 
-\code{inputArguments(input)} will return a list of arguments from the SCEInput object \code{input}.
+In the following code snippets, \code{input} is a SCEInput object.
+
+\code{inputArguments(input)} will return a list of arguments from \code{input}.
 
 \code{isReducedDimInput(input)} will return \code{TRUE} for ReducedDimInput and AltExpReducedInput objects, and \code{FALSE} otherwise.
 
-\code{isInputSameShape(input)} will return \code{TRUE} for all \code{input} where \code{getInput(x, input)} has the same dimensions as \code{x}.
+\code{isInputSameShape(input)} will return \code{TRUE} for all \code{input} where \code{getInput(x, input)} is guaranteed to have the same dimensions as \code{x}.
 
 \code{isInputAltExp(input)} will return \code{TRUE} for all \code{input} where \code{getInput(x, input)} pulls data from \code{altExps(x)}.
+}
+
+\section{Constructing lists of SCEInputs}{
+
+In the following code snippets, \code{x} is a SingleCellExperiment object.
+
+\code{makeAllExpInputs(x, include.main=TRUE)} will return a list containing AltExpInputs for all \code{\link{altExpNames}(x)}.
+If \code{include.main=TRUE}, a MainExpInput is prepended to the list.
+
+\code{makeSameAssayInputs(x, assay, include.main=TRUE)} will return a list containing AltAssayInputs with the specified \code{assay} for all \code{\link{altExpNames}(x)}.
+If \code{include.main=TRUE}, an AssayInput is prepended to the list.
 }
 
 \examples{

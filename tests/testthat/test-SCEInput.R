@@ -86,3 +86,17 @@ test_that("AltReducedDimInput works as expected", {
     expect_true(isInputReducedDim(out))
     expect_true(isInputAltExp(out))
 })
+
+test_that("list creators work as expected", {
+    out <- makeAllExpInputs(loaded)
+    expect_identical(length(out), 3L)
+
+    out <- makeAllExpInputs(loaded, include.main=FALSE)
+    expect_identical(length(out), 2L)
+
+    out <- makeSameAssayInputs(loaded, 1L)
+    expect_identical(length(out), 3L)
+
+    out <- makeSameAssayInputs(loaded, 1L, include.main=FALSE)
+    expect_identical(length(out), 2L)
+})
