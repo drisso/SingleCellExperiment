@@ -63,14 +63,14 @@ sce <- SingleCellExperiment(list(counts=counts),
 sce
 ```
 
-We can also construct a `SingleCellExperiment` by coercing an existing `(Ranged)SummarizedExperiment` object:
+Alternatively, we can construct a `SingleCellExperiment` by coercing an existing `(Ranged)SummarizedExperiment` object:
 
 ```{r coerce}
 se <- SummarizedExperiment(list(counts=counts))
 as(se, "SingleCellExperiment")
 ```
 
-The set of operations that can be applied to a `RangedSummarizedExperiment` are also applicable to any instance of a `SingleCellExperiment`.
+Any operation that can be applied to a `RangedSummarizedExperiment` is also applicable to any instance of a `SingleCellExperiment`.
 This includes access to assay data via `assay()`, column metadata with `colData()`, and so on.
 Again, without going into too much detail:
 
@@ -294,7 +294,7 @@ rowSubset(sce, "my gene set 1") <- NULL
 rowSubset(sce, "my gene set 1")
 ```
 
-# Session Info
+# Session information {-}
 
 ```{r}
 sessionInfo()

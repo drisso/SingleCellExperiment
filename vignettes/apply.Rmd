@@ -1,0 +1,201 @@
+---
+title: "Applying a function over a SingleCellExperiment's contents"
+author: 
+- name: Aaron Lun
+  email: infinite.monkeys.with.keyboards@gmail.com
+package: SingleCellExperiment
+output:
+  BiocStyle::html_document:
+    toc_float: true
+vignette: >
+  %\VignetteIndexEntry{2. Applying over a SingleCellExperiment object}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r options, include=FALSE, echo=FALSE}
+library(BiocStyle)
+knitr::opts_chunk$set(warning=FALSE, error=FALSE, message=FALSE)
+```
+
+# Motivation
+
+The `SingleCellExperiment` is quite a complex class that can hold multiple aspects of the same dataset.
+It is possible to have multiple assays, multiple dimensionality reduction results, and multiple alternative Experiments - 
+each of which can further have multiple assays and `reducedDims`!
+In some scenarios, it may be desirable to loop over these pieces and apply the same function to each of them.
+This is made conveniently possible via the `applySCE()` framework.
+
+# Quick start
+
+Let's say we have a moderately complicated `SingleCellExperiment` object, 
+containing multiple alternative Experiments for different data modalities.
+
+```{r}
+library(SingleCellExperiment)
+counts <- matrix(rpois(100, lambda = 10), ncol=10, nrow=10)
+sce <- SingleCellExperiment(counts)
+
+altExp(sce, "Spike") <- SingleCellExperiment(matrix(rpois(20, lambda = 5), ncol=10, nrow=2))
+altExp(sce, "Protein") <- SingleCellExperiment(matrix(rpois(50, lambda = 100), ncol=10, nrow=5))
+altExp(sce, "CRISPR") <- SingleCellExperiment(matrix(rbinom(80, p=0.1, 1), ncol=10, nrow=8))
+
+sce
+```
+
+Assume that we want to compute the total count for each modality, using the first assay.
+We might define a function that looks like the below.
+(We will come back to the purpose of `multiplier=` and `subset.row=` later.)
+
+```{r}
+totalCount <- function(x, i=1, multiplier=1, subset.row=NULL) {
+    mat <- assay(x, i)
+    if (!is.null(subset.row)) {
+        mat <- mat[subset.row,,drop=FALSE]
+    }
+    colSums(mat) * multiplier
+}
+```
+
+We can then easily apply this function across the main and alternative Experiments with:
+
+```{r}
+totals <- applySCE(sce, FUN=totalCount)
+totals
+```
+
+The `which=` argument specifies which parts of the `SingleCellExperiment` we want to apply over.
+Here, we have just considered the main and alternative Experiments but it is also possible to extract specific assays and the reduced dimensions.
+
+# Design explanation 
+
+The `applySCE()` call above is functionally equivalent to:
+
+```{r}
+totals.manual <- list( 
+    totalCount(sce),
+    totalCount(altExp(sce, "Spike")),
+    totalCount(altExp(sce, "Protein")),
+    totalCount(altExp(sce, "CRISPR"))
+)
+stopifnot(identical(totals, totals.manual))
+```
+
+Besides being more verbose than `applySCE()`, this approach does not deal well with common arguments.
+Say we wanted to set `multiplier=10` for all calls.
+With the manual approach above, this would involve specifying the argument multiple times:
+
+```{r}
+totals10.manual <- list( 
+    totalCount(sce, multiplier=10),
+    totalCount(altExp(sce, "Spike"), multiplier=10),
+    totalCount(altExp(sce, "Protein"), multiplier=10),
+    totalCount(altExp(sce, "CRISPR"), multiplier=10)
+)
+```
+
+Whereas with the `applySCE()` approach, we can just set it once.
+This makes it easier to change and reduces the possibility of errors when copy-pasting parameter lists across calls.
+
+```{r}
+totals10.apply <- applySCE(sce, FUN=totalCount, multiplier=10)
+stopifnot(identical(totals10.apply, totals10.manual))
+```
+
+Now, one might consider just using `lapply()` in this case:
+
+```{r}
+totals10.lapply <- lapply(FUN=totalCount, multiplier=10,
+    list(sce, altExp(sce, "Spike"), altExp(sce, "Protein"), altExp(sce, "CRISPR")))
+stopifnot(identical(totals10.apply, totals10.lapply))
+```
+
+However, this runs into the opposite problem - it is no longer possible to specify _custom_ arguments for each call.
+For example, say we wanted to subset to a different set of features for each main and alternative Experiment.
+With `applySCE()`, this is still possible, by manually specifying the `which=` argument with Experiment-specific arguments:
+
+```{r}
+totals.custom <- applySCE(sce, FUN=totalCount, multiplier=10, 
+    which=list(MainExpInput(), # all rows
+        AltExpInput("Spike", subset.row=2), # 2nd row.
+        AltExpInput("Protein", subset.row=3:5), # rows 3-5.
+        AltExpInput("CRISPR") # all rows.
+    )
+)
+totals.custom
+```
+
+In cases where we have a mix between custom and common arguments, `applySCE()` provides a more convenient and flexible interface than manual calls or `lapply()`ing.
+
+# Simplifying to a `SingleCellExperiment`
+
+The other convenient aspect of `applySCE()` is that, if the specified `FUN=` returns a `SingleCellExperiment`, `applySCE()` will try to format the output as a `SingleCellExperiment`.
+To demonstrate, let's use the `head()` function to take the first few features for each main and alternative Experiment:
+
+```{r}
+head.sce <- applySCE(sce, FUN=head, n=5)
+head.sce
+```
+
+Rather than returning a list of `SingleCellExperiment`s, we can see that the output is neatly organized as a `SingleCellExperiment` with the specified `n=5` features.
+Moreover, each of the alternative Experiments is also truncated to its first 5 features (or fewer, if there weren't that many to begin with).
+This output mirrors, as much as possible, the format of the input `sce`, and is much more convenient to work with than a list of objects.
+
+```{r}
+altExp(head.sce)
+altExp(head.sce, "Protein")
+altExp(head.sce, "CRISPR")
+```
+
+To look under the hood, we can turn off simplification and see what happens.
+We see that the function indeed returns a list of `SingleCellExperiment` objects corresponding to the `head()` of each Experiment.
+When `SIMPLIFY=TRUE`, this list is passed through `simplifyToSCE()` to attempt the reorganization into a single object.
+
+```{r}
+head.sce.list <- applySCE(sce, FUN=head, n=5, SIMPLIFY=FALSE) 
+head.sce.list
+```
+
+For comparison, if we had to do this manually, it would be rather tedious and error-prone,
+e.g., if we forgot to set `n=` or if we re-assigned the output of `head()` to the wrong alternative Experiment.
+
+```{r}
+manual.head <- head(sce, n=5)
+altExp(manual.head, "Spike") <- head(altExp(sce, "Spike"), n=5)
+altExp(manual.head, "Protein") <- head(altExp(sce, "Protein"), n=5)
+altExp(manual.head, "CRISPR") <- head(altExp(sce, "CRISPR"), n=5)
+manual.head
+```
+
+Of course, this simplification is only possible when circumstances permit.
+It requires that `FUN=` returns a `SingleCellExperiment` at each call;
+that the objects in `which()` only refer to the main Experiment once;
+and that the objects in `which()` only refer to each alternative Experiment once.
+Failure to meet these conditions will result in a warning and a non-simplified output.
+Developers may prefer to set `SIMPLIFY=FALSE` and manually call `simplifyToSCE()`, possibly with `warn.level=3` to trigger an explicit error when simplification fails.
+
+# More on `SCEInput` objects
+
+The `SCEInput` class hierarchy determines what parts of the input `SingleCellExperiment` are of interest to `applySCE()`.
+By default, `applySCE()` will loop over the main and alternative Experiments and apply some function to them.
+As shown above, this can be more tightly controlled if we want to pass custom arguments to the function call for a specific alternative Experiment.
+We can also extract individual assays, e.g., to compute column sums:
+
+```{r}
+totals.redux <- applySCE(sce, colSums, which=list(
+    AssayInput(1), AltAssayInput("Spike", assay=1), 
+    AltAssayInput("Protein", assay=1), 
+    AltAssayInput("CRISPR", assay=1)))
+totals.redux
+```
+
+or even dimensionality reduction results, by passing in `ReducedDimInput` objects.
+These different types of `SCEInput` objects can be mixed together more or less freely in the `which=` argument,
+though obviously this requires that the supplied `FUN=` is capable of handling those different types of inputs.
+Many Bioconductor packages (e.g., `r Biocpkg("scater")`, `r Biocpkg("scran")`) will often be able to handle both raw matrices and `SummarizedExperiment` subclasses.
+
+# Session information {-}
+
+```{r}
+sessionInfo()
+```

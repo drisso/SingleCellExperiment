@@ -6,7 +6,7 @@ output:
   BiocStyle::html_document:
     toc_float: true
 vignette: >
-  %\VignetteIndexEntry{2. Developing around the SingleCellExperiment class}
+  %\VignetteIndexEntry{3. Developing around the SingleCellExperiment class}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -179,7 +179,7 @@ Switching to a `MultiAssayExperiment` introduces an additional layer of indirect
 Indeed, the methods of this class are largely unnecessary when the alternative Experiments contain data for the same samples. 
 By storing nested Experiments, we maintain the familiar `SummarizedExperiment` interface for better compatibility and ease of use.
 
-# Session information
+# Session information {-}
 
 ```{r}
 sessionInfo()
