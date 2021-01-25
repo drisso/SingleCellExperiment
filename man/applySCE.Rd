@@ -44,7 +44,7 @@ When these conditions are fulfilled, the results are collated into a single Sing
 
 When using this function inside other functions, developers should set \code{SIMPLIFY=FALSE} to guarantee consistent output for arbitrary \code{which}.
 If simplification is necessary, the output of this function can be explicitly passed to \code{\link{simplifyToSCE}},
-typically with \code{\link{warn.level=3}} to throw an error if simplification is not possible.
+typically with \code{warn.level=3} to throw an appropriate error if simplification is not possible.
 }
 
 \examples{
