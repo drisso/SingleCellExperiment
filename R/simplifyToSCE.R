@@ -71,6 +71,7 @@ simplifyToSCE <- function(results, which, x, warn.level=2) {
 
     # Checking that simplification is possible.
     ae.name <- rep(NA_character_, N)
+    names <- altExpNames(x)
 
     for (i in seq_len(N)) {
         curin <- which[[i]]

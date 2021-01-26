@@ -52,6 +52,11 @@ test_that("applySCE shorthand works as expected", {
     def <- applySCE(loaded, FUN=TESTFUN, which=list(MainExpInput(), AltExpInput(1)))
     short <- applySCE(loaded, FUN=TESTFUN, which=1)
     expect_identical(def, short)
+
+    # Check that the right names are pulled by simplifyToSCE.
+    def <- applySCE(loaded, FUN=identity)
+    short <- applySCE(loaded, FUN=identity, which=1:2)
+    expect_identical(def, short)
 })
 
 test_that("simplification works correctly", {
