@@ -5,7 +5,9 @@
 #' @param x A \linkS4class{SingleCellExperiment} object.
 #' @param which A list of \linkS4class{SCEInput} objects.
 #' Each entry may contain different arguments to pass to \code{FUN}.
-#' Defaults to all main and alternative Experiments in \code{x}.
+#' Defaults to loop over all main and alternative Experiments in \code{x}.
+#'
+#' Alternatively, a character or integer vector containing the names or positions of alternative Experiments - see details.
 #' @param FUN A function to apply to each piece of data extracted with \code{\link{getInput}}.
 #' @param ... Further (named) arguments to pass to \code{FUN}.
 #' @param SIMPLIFY Logical scalar indicating whether the output should be simplified.
@@ -25,6 +27,10 @@
 #'
 #' The \linkS4class{SCEInput} subclasses that can be used in \code{which} depend on what is supported by \code{FUN}.
 #' For example, if a function can accept both matrix and SingleCellExperiment inputs, it can be used with, e.g., both \linkS4class{MainExpInput} and \linkS4class{AssayInput} objects.
+#' 
+#' If \code{which} is a character or integer vector, it is assumed to contain the names or positional indices of alternative Experiments in \code{x}.
+#' The function will then proceed to loop over the main Experiment \emph{and} all alternative Experiments specified by \code{which}.
+#' This represents a convenient shorthand for setting \code{which} to a list containing a \linkS4class{MainExpInput} and the desired \linkS4class{AltExpInput}s.
 #'
 #' The default of \code{SIMPLIFY=TRUE} is intended as a user-level convenience when \code{FUN} returns a SingleCellExperiment with the same number of columns for all \code{which},
 #' and \code{which} itself contains no more than one reference to the main or each alternative Experiment in \code{x}.
@@ -66,6 +72,11 @@
 #' \code{\link{simplifyToSCE}}, which is used when \code{SIMPLIFY=TRUE}.
 #' @export
 applySCE <- function(x, FUN, which=makeAllExpInputs(x), ..., SIMPLIFY=TRUE) {
+    if (is.character(which) || is.numeric(which)) {
+        which <- lapply(which, AltExpInput)
+        which <- c(list(MainExpInput()), which)
+    }
+
     output <- which
     common <- list(...)
 
@@ -74,7 +85,12 @@ applySCE <- function(x, FUN, which=makeAllExpInputs(x), ..., SIMPLIFY=TRUE) {
         args <- c(inputArguments(current), common)
         args <- args[!duplicated(names(args))]
         all.args <- c(list(getInput(x, current)), args)
-        output[[i]] <- do.call(FUN, all.args)
+
+        tryCatch({
+            output[[i]] <- do.call(FUN, all.args)
+        }, error=function(err) {
+            stop("'FUN' failed on 'which[", i, "]':\n  ", conditionMessage(err))
+        })
     }
 
     if (SIMPLIFY) {

@@ -13,7 +13,9 @@ applySCE(x, FUN, which = makeAllExpInputs(x), ..., SIMPLIFY = TRUE)
 
 \item{which}{A list of \linkS4class{SCEInput} objects.
 Each entry may contain different arguments to pass to \code{FUN}.
-Defaults to all main and alternative Experiments in \code{x}.}
+Defaults to loop over all main and alternative Experiments in \code{x}.
+
+Alternatively, a character or integer vector containing the names or positions of alternative Experiments - see details.}
 
 \item{...}{Further (named) arguments to pass to \code{FUN}.}
 
@@ -35,6 +37,10 @@ This enables \code{FUN} to use data-specific arguments while retaining the conve
 
 The \linkS4class{SCEInput} subclasses that can be used in \code{which} depend on what is supported by \code{FUN}.
 For example, if a function can accept both matrix and SingleCellExperiment inputs, it can be used with, e.g., both \linkS4class{MainExpInput} and \linkS4class{AssayInput} objects.
+
+If \code{which} is a character or integer vector, it is assumed to contain the names or positional indices of alternative Experiments in \code{x}.
+The function will then proceed to loop over the main Experiment \emph{and} all alternative Experiments specified by \code{which}.
+This represents a convenient shorthand for setting \code{which} to a list containing a \linkS4class{MainExpInput} and the desired \linkS4class{AltExpInput}s.
 
 The default of \code{SIMPLIFY=TRUE} is intended as a user-level convenience when \code{FUN} returns a SingleCellExperiment with the same number of columns for all \code{which},
 and \code{which} itself contains no more than one reference to the main or each alternative Experiment in \code{x}.

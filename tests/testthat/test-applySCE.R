@@ -6,6 +6,13 @@ TESTFUN <- function(x, a=1, b=2, c=3) {
 }
 
 test_that("applySCE works as expected", {
+    def <- applySCE(loaded, FUN=TESTFUN)
+    expect_identical(def[[1]]$X, loaded)
+    expect_identical(def[[2]]$X, altExp(loaded, "Spike"))
+    expect_identical(def[[3]]$X, altExp(loaded, "Protein"))
+    expect_identical(unique(lapply(def, function(x) x$ARGS)), list(list(A=1, B=2, C=3)))
+
+    # Trying with custom args.
     out <- applySCE(loaded, FUN=TESTFUN, which=list(
         AssayInput(assay="logcounts", a=-1),
         ReducedDimInput(type=2, b=-2, c=-10),
@@ -30,6 +37,21 @@ test_that("applySCE retains names", {
     ), a=-100)
 
     expect_identical(names(out), c("helen", "sarah", "vanessa"))
+})
+
+test_that("applySCE errors out nicely", {
+    expect_error(out <- applySCE(loaded, FUN=function(x) stop("YAY")), "YAY")
+    expect_error(out <- applySCE(loaded, FUN=function(x) stop("YAY")), "failed on 'which[1]'", fixed=TRUE)
+})
+
+test_that("applySCE shorthand works as expected", {
+    def <- applySCE(loaded, FUN=TESTFUN)
+    short <- applySCE(loaded, FUN=TESTFUN, which=altExpNames(loaded))
+    expect_identical(def, short)
+
+    def <- applySCE(loaded, FUN=TESTFUN, which=list(MainExpInput(), AltExpInput(1)))
+    short <- applySCE(loaded, FUN=TESTFUN, which=1)
+    expect_identical(def, short)
 })
 
 test_that("simplification works correctly", {
