@@ -174,18 +174,3 @@ setGeneric("tpm<-", function(object, ..., value) standardGeneric("tpm<-"))
 
 #' @export
 setGeneric("weights<-", function(object, ..., value) standardGeneric("weights<-"))
-
-########################################
-# Input generics.
-
-#' @export
-setGeneric("getInput", function(x, input) standardGeneric("getInput"))
-
-#' @export
-setGeneric("isInputReducedDim", function(input) standardGeneric("isInputReducedDim"))
-
-#' @export
-setGeneric("isInputSameShape", function(input) standardGeneric("isInputSameShape"))
-
-#' @export
-setGeneric("isInputAltExp", function(input) standardGeneric("isInputAltExp"))

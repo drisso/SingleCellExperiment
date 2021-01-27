@@ -13,11 +13,7 @@
 It will also exchange the \code{colData} between the swapped experiments when \code{withColData=TRUE}.
 These changes assist in achieving reversibility of the output.
 
-\item Added \code{applySCE()} to conveniently apply a function to different parts of a SingleCellExperiment.
-
-\item Added the SCEInput class hierarchy to flexibly specify different parts of the SingleCellExperiment,
-typically for use in a function like \code{applySCE()}.
-Added associated generics and helper functions like \code{getInput()}.
+\item Added \code{applySCE()} to conveniently apply a function to the main and alternative Experiments.
 }}
 
 \section{Version 1.12.0}{\itemize{

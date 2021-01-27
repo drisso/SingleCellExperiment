@@ -11,97 +11,66 @@ test_that("applySCE works as expected", {
     expect_identical(def[[2]]$X, altExp(loaded, "Spike"))
     expect_identical(def[[3]]$X, altExp(loaded, "Protein"))
     expect_identical(unique(lapply(def, function(x) x$ARGS)), list(list(A=1, B=2, C=3)))
+    expect_identical(names(def), c("", "Spike", "Protein"))
 
     # Trying with custom args.
-    out <- applySCE(loaded, FUN=TESTFUN, which=list(
-        AssayInput(assay="logcounts", a=-1),
-        ReducedDimInput(type=2, b=-2, c=-10),
-        AltExpInput(experiment="Protein")
-    ), a=-100)
+    out <- applySCE(loaded, FUN=TESTFUN, MAIN.ARGS=list(a=-1),
+        ALT.ARGS=list(Spike=list(b=-2, c=-10)), a=-100)
 
-    expect_identical(out[[1]]$X, assay(loaded, "logcounts"))
-    expect_identical(out[[2]]$X, reducedDim(loaded, 2))
-    expect_identical(out[[3]]$X, altExp(loaded, "Protein"))
-
-    # Overriding done correctly.
     expect_identical(out[[1]]$ARGS, list(A=-1, B=2, C=3))
     expect_identical(out[[2]]$ARGS, list(A=-100, B=-2, C=-10))
     expect_identical(out[[3]]$ARGS, list(A=-100, B=2, C=3))
-})
 
-test_that("applySCE retains names", {
-    out <- applySCE(loaded, FUN=TESTFUN, which=list(
-        helen=AssayInput(assay="logcounts", a=-1),
-        sarah=ReducedDimInput(type=2, b=-2, c=-10),
-        vanessa=AltExpInput(experiment="Protein")
-    ), a=-100)
-
-    expect_identical(names(out), c("helen", "sarah", "vanessa"))
-})
-
-test_that("applySCE errors out nicely", {
-    expect_error(out <- applySCE(loaded, FUN=function(x) stop("YAY")), "YAY")
-    expect_error(out <- applySCE(loaded, FUN=function(x) stop("YAY")), "failed on 'which[1]'", fixed=TRUE)
-})
-
-test_that("applySCE shorthand works as expected", {
-    def <- applySCE(loaded, FUN=TESTFUN)
-    short <- applySCE(loaded, FUN=TESTFUN, which=altExpNames(loaded))
-    expect_identical(def, short)
-
-    def <- applySCE(loaded, FUN=TESTFUN, which=list(MainExpInput(), AltExpInput(1)))
-    short <- applySCE(loaded, FUN=TESTFUN, which=1)
+    # Other choices of WHICH work.
+    def <- applySCE(loaded, FUN=TESTFUN, WHICH="Spike")
+    short <- applySCE(loaded, FUN=TESTFUN, WHICH=1)
     expect_identical(def, short)
 
     # Check that the right names are pulled by simplifyToSCE.
     def <- applySCE(loaded, FUN=identity)
-    short <- applySCE(loaded, FUN=identity, which=1:2)
+    short <- applySCE(loaded, FUN=identity, WHICH=1:2)
     expect_identical(def, short)
 })
 
+test_that("applySCE errors out nicely", {
+    expect_error(out <- applySCE(loaded, FUN=function(x) stop("YAY")), "YAY")
+    expect_error(out <- applySCE(loaded, FUN=function(x) stop("YAY")), "failed on the main Experiment", fixed=TRUE)
+    expect_error(out <- applySCE(loaded, MAIN.ARGS=NULL, FUN=function(x) stop("YAY")), "failed on alternative Experiment", fixed=TRUE)
+})
+
 test_that("simplification works correctly", {
-    which <- list(MainExpInput(), AltExpInput("Spike"), AltExpInput("Protein"))
-    results <- applySCE(loaded, FUN=identity, which=which)
+    results <- applySCE(loaded, FUN=identity)
     expect_identical(results, loaded)
 
-    which <- list(MainExpInput(), AltExpInput("Spike"), AltExpInput("Spike"))
-    raw <- applySCE(loaded, FUN=identity, which=which, SIMPLIFY=FALSE)
-    expect_identical(raw, list(loaded, altExp(loaded), altExp(loaded)))
+    raw <- applySCE(loaded, FUN=identity, WHICH=c("Spike", "Spike"), SIMPLIFY=FALSE)
+    expect_identical(raw, list(loaded, Spike=altExp(loaded), Spike=altExp(loaded)))
 
-    which <- list(AltExpInput("Spike"), AltExpInput("Protein"))
-    raw <- applySCE(loaded, FUN=identity, which=which)
+    raw <- applySCE(loaded, FUN=identity, MAIN.ARGS=NULL)
     expect_identical(nrow(raw), 0L)
     expect_identical(altExps(raw), altExps(loaded)) 
 })
 
 test_that("simplification fails correctly", {
-    which <- list(MainExpInput(), AltExpInput("Spike"), AltExpInput("Spike"))
-    raw <- applySCE(loaded, FUN=identity, SIMPLIFY=FALSE, which=which)
-    expect_warning(results <- simplifyToSCE(raw, which, loaded), "multiple references.*Spike")
-    expect_error(results <- simplifyToSCE(raw, which, loaded, warn.level=3), "multiple references.*Spike")
+    raw <- applySCE(loaded, FUN=identity, SIMPLIFY=FALSE, WHICH=c("Spike", "Spike"))
+    expect_warning(results <- simplifyToSCE(raw), "multiple references.*Spike")
+    expect_error(results <- simplifyToSCE(raw, warn.level=3), "multiple references.*Spike")
     expect_null(results)
 
-    which <- list(MainExpInput(), MainExpInput())
-    raw <- applySCE(loaded, FUN=identity, SIMPLIFY=FALSE, which=which)
-    expect_warning(results <- simplifyToSCE(raw, which, loaded), "multiple references.*main")
-    expect_null(results)
+    expect_error(simplifyToSCE(raw, which.main=1:2), "length(which.main)", fixed=TRUE)
 
-    which <- list(MainExpInput(), AssayInput(1))
-    raw <- applySCE(loaded, FUN=identity, SIMPLIFY=FALSE, which=which)
-    expect_warning(results <- simplifyToSCE(raw, which, loaded, warn.level=1), NA)
-    expect_warning(results <- simplifyToSCE(raw, which, loaded), "not a SummarizedExperiment")
+    raw <- applySCE(loaded, FUN=function(x) 1, SIMPLIFY=FALSE, WHICH=1)
+    expect_warning(results <- simplifyToSCE(raw, warn.level=1), NA)
+    expect_warning(results <- simplifyToSCE(raw), "not a SummarizedExperiment")
     expect_null(results)
 
     set.seed(1000)
-    which <- list(MainExpInput(), AltExpInput("Spike"))
-    raw <- applySCE(loaded, FUN=function(x) { x[,sample(ncol(x), sample(ncol(x), 1))] }, SIMPLIFY=FALSE, which=which)
-    expect_warning(results <- simplifyToSCE(raw, which, loaded, warn.level=0), NA)
-    expect_warning(results <- simplifyToSCE(raw, which, loaded), "columns are different")
+    raw <- applySCE(loaded, FUN=function(x) { x[,sample(ncol(x), sample(ncol(x), 1))] }, SIMPLIFY=FALSE)
+    expect_warning(results <- simplifyToSCE(raw, warn.level=0), NA)
+    expect_warning(results <- simplifyToSCE(raw), "columns are different")
     expect_null(results)
 
-    which <- list(MainExpInput(), AltExpInput("Spike"))
-    raw <- applySCE(loaded, FUN=function(x) { as(x, "SummarizedExperiment") }, SIMPLIFY=FALSE, which=which)
-    expect_warning(results <- simplifyToSCE(raw, which, loaded, warn.level=1), NA)
-    expect_warning(results <- simplifyToSCE(raw, which, loaded), "not a SingleCellExperiment")
+    raw <- applySCE(loaded, FUN=function(x) { as(x, "SummarizedExperiment") }, SIMPLIFY=FALSE, WHICH=1)
+    expect_warning(results <- simplifyToSCE(raw, warn.level=1), NA)
+    expect_warning(results <- simplifyToSCE(raw), "not a SingleCellExperiment")
     expect_null(results)
 })

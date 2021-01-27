@@ -4,85 +4,101 @@
 \alias{applySCE}
 \title{Applying over parts of a SingleCellExperiment}
 \usage{
-applySCE(x, FUN, which = makeAllExpInputs(x), ..., SIMPLIFY = TRUE)
+applySCE(
+  X,
+  FUN,
+  WHICH = altExpNames(X),
+  ...,
+  MAIN.ARGS = list(),
+  ALT.ARGS = list(),
+  SIMPLIFY = TRUE
+)
 }
 \arguments{
-\item{x}{A \linkS4class{SingleCellExperiment} object.}
+\item{X}{A \linkS4class{SingleCellExperiment} object.}
 
-\item{FUN}{A function to apply to each piece of data extracted with \code{\link{getInput}}.}
+\item{FUN}{A function to apply to each Experiment.}
 
-\item{which}{A list of \linkS4class{SCEInput} objects.
-Each entry may contain different arguments to pass to \code{FUN}.
-Defaults to loop over all main and alternative Experiments in \code{x}.
+\item{WHICH}{A character or integer vector containing the names or positions of alternative Experiments to loop over.}
 
-Alternatively, a character or integer vector containing the names or positions of alternative Experiments - see details.}
+\item{...}{Further (named) arguments to pass to \code{FUN} for all Experiments.}
 
-\item{...}{Further (named) arguments to pass to \code{FUN}.}
+\item{MAIN.ARGS}{A named list of arguments to pass to \code{FUN} for the main Experiment only.
+Alternatively \code{NULL}, in which case the function is \emph{not} applied to the main Experiment.}
+
+\item{ALT.ARGS}{A named list where each entry is named after an alternative Experiment and contains named arguments to use in \code{FUN} for that Experiment.}
 
 \item{SIMPLIFY}{Logical scalar indicating whether the output should be simplified.}
 }
 \value{
-In most cases or when \code{SIMPLIFY=FALSE}, a list of the same length and names as \code{which} is returned,
-containing the output of \code{FUN} applied to each corresponding piece of data.
+In most cases or when \code{SIMPLIFY=FALSE}, a list is returned containing the output of \code{FUN} applied to each Experiment.
+If \code{MAIN.ARGS} is not \code{NULL}, the first entry corresponds to the result generated from the main Experiment;
+all other results are generated according to the entries specified in \code{WHICH} and are named accordingly.
 
 If \code{SIMPLIFY=TRUE} and certain conditions are fulfilled,
-a SingleCellExperiment is returned where the results for each \code{which} are mapped to the relevant main or alternative Experiments of the output.
+a SingleCellExperiment is returned where the results of \code{FUN} are mapped to the relevant main or alternative Experiments.
+This mirrors the organization of Experiments in \code{X}.
 }
 \description{
-Apply a function over different pieces of data extracted from a \linkS4class{SingleCellExperiment}.
+Apply a function over the main and alternative Experiments of a \linkS4class{SingleCellExperiment}.
 }
 \details{
-If any named arguments in \code{...} overlap with arguments in a given entry \code{which}, the latter are used.
-This enables \code{FUN} to use data-specific arguments while retaining the convenience of a single argument for globally applicable parameters.
+The behavior of this function is equivalent to creating a list containing \code{X} as the first entry and \code{\link{altExps}(X)} in the subsequent entries,
+and then looping over this list with \code{FUN} and the specified arguments.
+In this manner, users can easily apply the same function to all the Experiments (main and alternative) in a \linkS4class{SingleCellExperiment} object.
 
-The \linkS4class{SCEInput} subclasses that can be used in \code{which} depend on what is supported by \code{FUN}.
-For example, if a function can accept both matrix and SingleCellExperiment inputs, it can be used with, e.g., both \linkS4class{MainExpInput} and \linkS4class{AssayInput} objects.
+Arguments in \code{...} are passed to all calls to \code{FUN}.
+Arguments in \code{MAIN.ARGS} are only used in the call to \code{FUN} on the main Experiment.
+Arguments in \code{ALT.ARGS} are passed to the call to \code{FUN} on the alternative Experiment of the same name.
+For the last two, any arguments therein will override arguments of the same name in \code{...}.
 
-If \code{which} is a character or integer vector, it is assumed to contain the names or positional indices of alternative Experiments in \code{x}.
-The function will then proceed to loop over the main Experiment \emph{and} all alternative Experiments specified by \code{which}.
-This represents a convenient shorthand for setting \code{which} to a list containing a \linkS4class{MainExpInput} and the desired \linkS4class{AltExpInput}s.
+By default, looping is performed over all alternative Experiments, but the order and identities can be changed by setting \code{WHICH}.
+Values of \code{WHICH} should be unique if and simplification of the output is desired.
+If \code{MAIN.ARGS=NULL}, the main Experiment is ignored and the function is only applied to the alternative Experiments.
 
-The default of \code{SIMPLIFY=TRUE} is intended as a user-level convenience when \code{FUN} returns a SingleCellExperiment with the same number of columns for all \code{which},
-and \code{which} itself contains no more than one reference to the main or each alternative Experiment in \code{x}.
-When these conditions are fulfilled, the results are collated into a single SingleCellExperiment for easier downstream manipulation.
+The default of \code{SIMPLIFY=TRUE} is intended as a user-level convenience when \code{FUN} returns a SingleCellExperiment with the same number of columns for all \code{WHICH},
+and \code{WHICH} itself contains no more than one reference to each alternative Experiment in \code{x}.
+Under these conditions, the results are collated into a single SingleCellExperiment for easier downstream manipulation.
 }
 \section{Developer note}{
 
-When using this function inside other functions, developers should set \code{SIMPLIFY=FALSE} to guarantee consistent output for arbitrary \code{which}.
+When using this function inside other functions, developers should set \code{SIMPLIFY=FALSE} to guarantee consistent output for arbitrary \code{WHICH}.
 If simplification is necessary, the output of this function can be explicitly passed to \code{\link{simplifyToSCE}},
 typically with \code{warn.level=3} to throw an appropriate error if simplification is not possible.
 }
 
 \examples{
-ncells <- 100
-u <- matrix(rpois(20000, 5), ncol=ncells)
-pca <- matrix(runif(ncells*5), ncells)
-sce <- SingleCellExperiment(assays=list(counts=u),
-    reducedDims=SimpleList(PCA=pca))
-sce.copy <- SingleCellExperiment(assays=list(counts=u*10),
-    reducedDims=SimpleList(PCA=pca/10))
-altExp(sce, "BLAH") <- sce.copy
+ncells <- 10
+u <- matrix(rpois(200, 5), ncol=ncells)
+sce <- SingleCellExperiment(assays=list(counts=u))
+altExp(sce, "BLAH") <- SingleCellExperiment(assays=list(counts=u*10))
+altExp(sce, "WHEE") <- SingleCellExperiment(assays=list(counts=u/10))
 
 # Here, using a very simple function that just 
 # computes the mean of the input for each cell.
-FUN <- function(y, transposed=FALSE, multiplier=1) {
-    if (transposed) rowMeans(y) * multiplier
-    else colMeans(y) * multiplier
+FUN <- function(y, multiplier=1) {
+    colMeans(assay(y)) * multiplier
 }
 
 # Applying over all of the specified parts of 'sce'.
-applySCE(sce, FUN=FUN, which=list(
-    AssayInput(assay=1),
-    ReducedDimInput(type=1, transposed=TRUE),
-    AltAssayInput(experiment=1, assay="counts", multiplier=2),
-    AltReducedDimInput(experiment="BLAH", type="PCA", transposed=TRUE)
-), multiplier=1)
+applySCE(sce, FUN=FUN)
+
+# Adding general arguments.
+applySCE(sce, FUN=FUN, multiplier=5)
+
+# Adding custom arguments.
+applySCE(sce, FUN=FUN, MAIN.ARGS=list(multiplier=5))
+applySCE(sce, FUN=FUN, ALT.ARGS=list(BLAH=list(multiplier=5)))
+
+# Skipping Experiments.
+applySCE(sce, FUN=FUN, MAIN.ARGS=NULL) # skipping the main
+applySCE(sce, FUN=FUN, WHICH=NULL) # skipping the alternatives
 
 }
 \seealso{
-\linkS4class{SCEInput} and the related class hierarchy, to specify different parts of the SingleCellExperiment.
-
 \code{\link{simplifyToSCE}}, which is used when \code{SIMPLIFY=TRUE}.
+
+\code{\link{altExps}}, to manually extract the alternative Experiments for operations.
 }
 \author{
 Aaron Lun
