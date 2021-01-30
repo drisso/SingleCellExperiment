@@ -5,7 +5,8 @@
 #'
 #' @param results A named list of SummarizedExperiment or SingleCellExperiment objects.
 #' @param which.main Integer scalar specifying which entry of \code{results} contains the output generated from the main Experiment.
-#' Alternatively \code{NULL}, if the main Experiment was not used.
+#' If \code{NULL} or a vector of length zero, this indicates that no entry was generated from the main Experiment.
+#' Defaults to the unnamed entry of \code{results}.
 #' @param warn.level Integer scalar specifying the type of warnings that can be emitted.
 #'
 #' @return 
@@ -21,7 +22,7 @@
 #' @details
 #' Each entry of \code{results} should be a \linkS4class{SummarizedExperiment} with the same number and names of the columns.
 #' There should not be any duplicate entries in \code{names(results)}, as the names are used to represent the names of the alternative Experiments in the output.
-#' If \code{which.main} is not \code{NULL}, the corresponding entry of \code{results} should be a \linkS4class{SingleCellExperiment}.
+#' If \code{which.main} is a scalar, the corresponding entry of \code{results} should be a \linkS4class{SingleCellExperiment}.
 #' Failure to meet these conditions may result in a warning or error depending on \code{warn.level}.
 #'
 #' The type of warnings that are emitted can be controlled with \code{warn.level}.
@@ -48,7 +49,7 @@
 #' 
 #' @export
 #' @importFrom S4Vectors make_zero_col_DFrame
-simplifyToSCE <- function(results, which.main=1L, warn.level=2) {
+simplifyToSCE <- function(results, which.main, warn.level=2) {
     if (warn.level==3) {
         WTFUN <- stop
     } else if (warn.level==0) {
@@ -67,7 +68,15 @@ simplifyToSCE <- function(results, which.main=1L, warn.level=2) {
         } 
     }
 
-    stopifnot(length(which.main) <=1)
+    if (missing(which.main)) {
+        which.main <- which(names(results)=="")
+        if (is.null(names(results)) || length(which.main) > 1) {
+            stop("multiple entries in 'results' are unnamed")
+        }
+    } else {
+        stopifnot(length(which.main)<=1)
+    }
+
     if (dup <- anyDuplicated(names(results))) {
         WTFUN(paste(strwrap(paste0("could not simplify results due to multiple references to the '", names(results)[dup], "' alternative Experiment in 'results'")), collapse="\n"))
         return(NULL)

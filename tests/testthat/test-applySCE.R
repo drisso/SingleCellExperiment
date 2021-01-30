@@ -5,6 +5,10 @@ TESTFUN <- function(x, a=1, b=2, c=3) {
     list(X=x, ARGS=list(A=a, B=b, C=c))
 }
 
+identity2 <- function(x) {
+    if (is(x, "SingleCellExperiment")) removeAltExps(x) else x
+}
+
 test_that("applySCE works as expected", {
     def <- applySCE(loaded, FUN=TESTFUN)
     expect_identical(def[[1]]$X, loaded)
@@ -27,8 +31,8 @@ test_that("applySCE works as expected", {
     expect_identical(def, short)
 
     # Check that the right names are pulled by simplifyToSCE.
-    def <- applySCE(loaded, FUN=identity)
-    short <- applySCE(loaded, FUN=identity, WHICH=1:2)
+    def <- applySCE(loaded, FUN=identity2)
+    short <- applySCE(loaded, FUN=identity2, WHICH=1:2)
     expect_identical(def, short)
 })
 
@@ -39,24 +43,29 @@ test_that("applySCE errors out nicely", {
 })
 
 test_that("simplification works correctly", {
-    results <- applySCE(loaded, FUN=identity)
+    results <- applySCE(loaded, FUN=identity2)
     expect_identical(results, loaded)
 
-    raw <- applySCE(loaded, FUN=identity, WHICH=c("Spike", "Spike"), SIMPLIFY=FALSE)
-    expect_identical(raw, list(loaded, Spike=altExp(loaded), Spike=altExp(loaded)))
+    # Manual simplification works.
+    raw <- applySCE(loaded, FUN=identity2, WHICH=c("Spike", "Protein"), SIMPLIFY=FALSE)
+    expect_identical(raw, list(removeAltExps(loaded), Spike=altExp(loaded), Protein=altExp(loaded, 2)))
+    expect_identical(results, simplifyToSCE(raw)) # inference works correctly.
 
-    raw <- applySCE(loaded, FUN=identity, MAIN.ARGS=NULL)
+    # Simplifies even when main is absent.
+    raw <- applySCE(loaded, FUN=identity2, MAIN.ARGS=NULL)
     expect_identical(nrow(raw), 0L)
     expect_identical(altExps(raw), altExps(loaded)) 
 })
 
 test_that("simplification fails correctly", {
-    raw <- applySCE(loaded, FUN=identity, SIMPLIFY=FALSE, WHICH=c("Spike", "Spike"))
+    raw <- applySCE(loaded, FUN=identity2, SIMPLIFY=FALSE, WHICH=c("Spike", "Spike"))
     expect_warning(results <- simplifyToSCE(raw), "multiple references.*Spike")
     expect_error(results <- simplifyToSCE(raw, warn.level=3), "multiple references.*Spike")
     expect_null(results)
 
+    raw <- applySCE(loaded, FUN=identity2, SIMPLIFY=FALSE)
     expect_error(simplifyToSCE(raw, which.main=1:2), "length(which.main)", fixed=TRUE)
+    expect_error(simplifyToSCE(unname(raw)), "multiple")
 
     raw <- applySCE(loaded, FUN=function(x) 1, SIMPLIFY=FALSE, WHICH=1)
     expect_warning(results <- simplifyToSCE(raw, warn.level=1), NA)

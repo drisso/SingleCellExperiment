@@ -4,13 +4,14 @@
 \alias{simplifyToSCE}
 \title{Simplify a list to a single SingleCellExperiment}
 \usage{
-simplifyToSCE(results, which.main = 1L, warn.level = 2)
+simplifyToSCE(results, which.main, warn.level = 2)
 }
 \arguments{
 \item{results}{A named list of SummarizedExperiment or SingleCellExperiment objects.}
 
 \item{which.main}{Integer scalar specifying which entry of \code{results} contains the output generated from the main Experiment.
-Alternatively \code{NULL}, if the main Experiment was not used.}
+If \code{NULL} or a vector of length zero, this indicates that no entry was generated from the main Experiment.
+Defaults to the unnamed entry of \code{results}.}
 
 \item{warn.level}{Integer scalar specifying the type of warnings that can be emitted.}
 }
@@ -29,7 +30,7 @@ into a single SingleCellExperiment containing some of the results in its \code{\
 \details{
 Each entry of \code{results} should be a \linkS4class{SummarizedExperiment} with the same number and names of the columns.
 There should not be any duplicate entries in \code{names(results)}, as the names are used to represent the names of the alternative Experiments in the output.
-If \code{which.main} is not \code{NULL}, the corresponding entry of \code{results} should be a \linkS4class{SingleCellExperiment}.
+If \code{which.main} is a scalar, the corresponding entry of \code{results} should be a \linkS4class{SingleCellExperiment}.
 Failure to meet these conditions may result in a warning or error depending on \code{warn.level}.
 
 The type of warnings that are emitted can be controlled with \code{warn.level}.
