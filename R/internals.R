@@ -170,13 +170,15 @@ setMethod("rowData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
 }
 
 #' @importFrom methods as
-#' @importFrom S4Vectors DataFrame I
+#' @importFrom S4Vectors DataFrame I mcols mcols<- metadata metadata<- 
 .set_internal_all <- function(x, value, getfun, setfun, key, convertfun, xdimfun, vdimfun, funstr, xdimstr, vdimstr) {
     x <- updateObject(x)
 
     if (length(value) == 0L) {
         collected <- getfun(x)[, 0]
     } else {
+        original <- value
+
         if (!is.null(convertfun)) {
             value <- lapply(value, convertfun)
         }
@@ -189,6 +191,13 @@ setMethod("rowData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
 
         names(value) <- .clean_internal_names(names(value), N=length(value), msg="names(value)")
         collected <- do.call(DataFrame, c(lapply(value, I), list(row.names=NULL, check.names=FALSE)))
+
+        if (is(original, "Annotated")) {
+            metadata(collected) <- metadata(original)
+        }
+        if (is(original, "Vector")) {
+            mcols(collected) <- mcols(original)
+        }
     }
 
     tmp <- getfun(x)

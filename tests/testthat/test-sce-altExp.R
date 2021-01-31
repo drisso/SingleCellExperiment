@@ -70,6 +70,17 @@ test_that("altExps setters work correctly", {
     expect_identical(altExpNames(sce), c("first thing", "second thing"))
 })
 
+test_that("altExps getters/setters preserve mcols and metadata", {
+    stuff <- List(whee=se1, blah=se2)
+    mcols(stuff)$A <- c("one", "two")
+    metadata(stuff)$B <- "three"
+
+    altExps(sce) <- stuff
+    out <- altExps(sce)
+    expect_identical(mcols(out), mcols(stuff))
+    expect_identical(metadata(out), metadata(stuff))
+})
+
 test_that("altExpNames setters work correctly", {
     altExpNames(sce) <- c("A", "B")
     expect_identical(altExpNames(sce), c("A", "B"))

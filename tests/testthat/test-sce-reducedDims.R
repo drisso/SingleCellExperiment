@@ -95,6 +95,17 @@ test_that("getters/setters respond to dimnames", {
     expect_warning(reducedDim(named, "PCA") <- d1, NA)
 })
 
+test_that("reducedDims getters/setters preserve mcols and metadata", {
+    stuff <- List(PCA=d1, TSNE=d2)
+    mcols(stuff)$A <- c("one", "two")
+    metadata(stuff)$B <- "three"
+
+    reducedDims(sce) <- stuff
+    out <- reducedDims(sce)
+    expect_identical(mcols(out), mcols(stuff))
+    expect_identical(metadata(out), metadata(stuff))
+})
+
 test_that("reducedDim setter creates an unnamed redDim is none are present", {
     # In the absence of of redDim, create an unnamed one (like reducedDims does)
     reducedDim(sce) <- d1

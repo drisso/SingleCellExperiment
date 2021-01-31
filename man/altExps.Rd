@@ -105,6 +105,9 @@ If \code{value} is named, those names will be used to name the alternative Exper
 Otherwise, unnamed results are assigned default names prefixed with \code{"unnamed"}.
 
 If \code{value} is \code{NULL}, all alternative Experiments in \code{x} are removed.
+
+If \code{value} is a \linkS4class{Annotated} object, any \code{\link{metadata}} will be retained in \code{altExps(x)}.
+If \code{value} is a \linkS4class{Vector} object, any \code{\link{mcols}} will also be retained.
 }
 \item{\code{altExpNames(x) <- value}:}{
 Replaces all names for alternative Experiments in \code{x} with a character vector \code{value}.

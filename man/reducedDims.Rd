@@ -82,6 +82,9 @@ Otherwise, unnamed results are assigned default names prefixed with \code{"unnam
 
 If \code{value} is \code{NULL}, all dimensionality reduction results in \code{x} are removed.
 
+If \code{value} is a \linkS4class{Annotated} object, any \code{\link{metadata}} will be retained in \code{reducedDims(x)}.
+If \code{value} is a \linkS4class{Vector} object, any \code{\link{mcols}} will also be retained.
+
 If \code{withDimnames=TRUE}, any non-\code{NULL} row names in each entry of \code{value} is checked against \code{colnames(x)} and a warning is emitted if they are not the same.
 Otherwise, any differences in the row names are ignored. 
 }
