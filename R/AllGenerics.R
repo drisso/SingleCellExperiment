@@ -26,7 +26,7 @@ setGeneric("factorData<-", function(x, ..., value) standardGeneric("factorData<-
 setGeneric("reducedDim", function(x, type, ...) standardGeneric("reducedDim"))
 
 #' @export
-setGeneric("reducedDim<-", function(x, type, ..., value) standardGeneric("reducedDim<-"))
+setGeneric("reducedDim<-", function(x, type, withDimnames=TRUE, ..., value) standardGeneric("reducedDim<-"))
 
 #' @export
 setGeneric("reducedDimNames", function(x) standardGeneric("reducedDimNames"))
@@ -38,7 +38,7 @@ setGeneric("reducedDimNames<-", function(x, value) standardGeneric("reducedDimNa
 setGeneric("reducedDims", function(x, ...) standardGeneric("reducedDims"))
 
 #' @export
-setGeneric("reducedDims<-", function(x, value) standardGeneric("reducedDims<-"))
+setGeneric("reducedDims<-", function(x, withDimnames=TRUE, ..., value) standardGeneric("reducedDims<-"))
 
 ########################################
 # Hidden getter/setters for internal slots.

@@ -48,7 +48,7 @@ If \code{withDimnames=TRUE}, row names of each matrix are replaced with the colu
 
 \section{Single-result setter}{
 
-\code{reducedDim(x, type) <- value} will add or replace a dimensionality reduction result
+\code{reducedDim(x, type, withDimnames=TRUE) <- value} will add or replace a dimensionality reduction result
 in a \linkS4class{SingleCellExperiment} object \code{x}.
 The value of \code{type} determines how the result is added or replaced:
 \itemize{
@@ -61,13 +61,18 @@ Otherwise a new result with this name is append to the existing list of results.
 
 \code{value} is expected to be a matrix or matrix-like object with number of rows equal to \code{ncol(x)}.
 Alternatively, if \code{value} is \code{NULL}, the result corresponding to \code{type} is removed from the object.
+
+If \code{withDimnames=TRUE}, any non-\code{NULL} \code{rownames(value)} is checked against \code{colnames(x)} and a warning is emitted if they are not the same.
+Otherwise, any differences in the row names are ignored. 
+This is inspired by the argument of the same name in \code{\link{assay<-}} but is more relaxed for practicality's sake - 
+it raises a warning rather than an error and allows \code{NULL} rownames to pass through without complaints.
 }
 
 \section{Other setters}{
 
 In the following examples, \code{x} is a \linkS4class{SingleCellExperiment} object.
 \describe{
-\item{\code{reducedDims(x) <- value}:}{
+\item{\code{reducedDims(x, withDimnames=TRUE) <- value}:}{
 Replaces all dimensionality reduction results in \code{x} with those in \code{value}.
 The latter should be a list-like object containing any number of matrices or matrix-like objects
 with number of rows equal to \code{ncol(x)}.
@@ -76,6 +81,9 @@ If \code{value} is named, those names will be used to name the dimensionality re
 Otherwise, unnamed results are assigned default names prefixed with \code{"unnamed"}.
 
 If \code{value} is \code{NULL}, all dimensionality reduction results in \code{x} are removed.
+
+If \code{withDimnames=TRUE}, any non-\code{NULL} row names in each entry of \code{value} is checked against \code{colnames(x)} and a warning is emitted if they are not the same.
+Otherwise, any differences in the row names are ignored. 
 }
 \item{\code{reducedDimNames(x) <- value}:}{
 Replaces all names for dimensionality reduction results in \code{x} with a character vector \code{value}.

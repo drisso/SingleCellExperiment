@@ -25,7 +25,7 @@
 #' }
 #'
 #' @section Single-result setter:
-#' \code{reducedDim(x, type) <- value} will add or replace a dimensionality reduction result
+#' \code{reducedDim(x, type, withDimnames=TRUE) <- value} will add or replace a dimensionality reduction result
 #' in a \linkS4class{SingleCellExperiment} object \code{x}.
 #' The value of \code{type} determines how the result is added or replaced:
 #' \itemize{
@@ -39,10 +39,15 @@
 #' \code{value} is expected to be a matrix or matrix-like object with number of rows equal to \code{ncol(x)}.
 #' Alternatively, if \code{value} is \code{NULL}, the result corresponding to \code{type} is removed from the object.
 #'
+#' If \code{withDimnames=TRUE}, any non-\code{NULL} \code{rownames(value)} is checked against \code{colnames(x)} and a warning is emitted if they are not the same.
+#' Otherwise, any differences in the row names are ignored. 
+#' This is inspired by the argument of the same name in \code{\link{assay<-}} but is more relaxed for practicality's sake - 
+#' it raises a warning rather than an error and allows \code{NULL} rownames to pass through without complaints.
+#'
 #' @section Other setters:
 #' In the following examples, \code{x} is a \linkS4class{SingleCellExperiment} object.
 #' \describe{
-#' \item{\code{reducedDims(x) <- value}:}{
+#' \item{\code{reducedDims(x, withDimnames=TRUE) <- value}:}{
 #' Replaces all dimensionality reduction results in \code{x} with those in \code{value}.
 #' The latter should be a list-like object containing any number of matrices or matrix-like objects
 #' with number of rows equal to \code{ncol(x)}.
@@ -51,6 +56,9 @@
 #' Otherwise, unnamed results are assigned default names prefixed with \code{"unnamed"}.
 #'
 #' If \code{value} is \code{NULL}, all dimensionality reduction results in \code{x} are removed.
+#'
+#' If \code{withDimnames=TRUE}, any non-\code{NULL} row names in each entry of \code{value} is checked against \code{colnames(x)} and a warning is emitted if they are not the same.
+#' Otherwise, any differences in the row names are ignored. 
 #' }
 #' \item{\code{reducedDimNames(x) <- value}:}{
 #' Replaces all names for dimensionality reduction results in \code{x} with a character vector \code{value}.
@@ -106,7 +114,13 @@ setMethod("reducedDims", "SingleCellExperiment", function(x, withDimnames=TRUE) 
 })
 
 #' @export
-setReplaceMethod("reducedDims", "SingleCellExperiment", function(x, value) {
+setReplaceMethod("reducedDims", "SingleCellExperiment", function(x, withDimnames=TRUE, ..., value) {
+    if (withDimnames) {
+        for (v in seq_along(value)) {
+            .check_reddim_names(colnames(x), rownames(value[[v]]), withDimnames=TRUE, fun='reducedDims')
+        }
+    }
+
     .set_internal_all(x, value, 
         getfun=int_colData,
         setfun=`int_colData<-`,
@@ -174,8 +188,18 @@ setMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type
     out
 })
 
+.check_reddim_names <- function(reference, incoming, withDimnames, fun='reducedDim') {
+    if (withDimnames && !is.null(incoming)) {
+        if (!identical(reference, incoming)) {
+            warning("non-NULL rownames in 'value' are not the same as 'colnames(x)' for '", fun, "<-'")
+        }
+    }
+}
+
 #' @export
-setReplaceMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x, type, ..., value) {
+setReplaceMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x, type, withDimnames=TRUE, ..., value) {
+    .check_reddim_names(colnames(x), rownames(value), withDimnames)
+
     .set_internal_missing(x, value,
         basefun=`reducedDim<-`,
         namefun=reducedDimNames
@@ -183,7 +207,9 @@ setReplaceMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x,
 })
 
 #' @export
-setReplaceMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, type, ..., value) {
+setReplaceMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, type, withDimnames=TRUE, ..., value) {
+    .check_reddim_names(colnames(x), rownames(value), withDimnames)
+
     .set_internal_numeric(x, type, value,
         getfun=int_colData,
         setfun=`int_colData<-`,
@@ -198,7 +224,9 @@ setReplaceMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x,
 })
 
 #' @export
-setReplaceMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type, ..., value) {
+setReplaceMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type, withDimnames=TRUE, ..., value) {
+    .check_reddim_names(colnames(x), rownames(value), withDimnames)
+
     .set_internal_character(x, type, value, 
         getfun=int_colData,
         setfun=`int_colData<-`,

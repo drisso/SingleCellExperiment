@@ -66,8 +66,8 @@ test_that("getters/setters respond to dimnames", {
     named <- sce
     colnames(named) <- paste0("Cell", sample(ncol(named)))
 
-    reducedDim(named, "PCA") <- d1
-    reducedDim(named, "tSNE") <- d2
+    expect_warning(reducedDim(named, "PCA") <- d1, NA)
+    expect_warning(reducedDim(named, "tSNE") <- d2, NA)
     expect_identical(rownames(reducedDim(named)), colnames(named))
     expect_identical(rownames(reducedDim(named, 2)), colnames(named))
     expect_identical(rownames(reducedDim(named, withDimnames=FALSE)), NULL)
@@ -78,6 +78,21 @@ test_that("getters/setters respond to dimnames", {
     out <- reducedDims(named, withDimnames=FALSE)
     expect_identical(rownames(out[[1]]), NULL)
     expect_identical(rownames(out[[2]]), NULL)
+
+    # withDimnames works on the left hand side.
+    rownames(reducedDim(named, "PCA", withDimnames=FALSE)) <- toupper(colnames(named))
+    expect_identical(rownames(reducedDim(named)), colnames(named))
+    expect_identical(rownames(reducedDim(named, withDimnames=FALSE)), toupper(colnames(named)))
+
+    names(reducedDims(named, withDimnames=FALSE)) <- c("alpha", "bravo")
+    expect_identical(rownames(reducedDim(named, withDimnames=FALSE)), toupper(colnames(named)))
+
+    # withDimnames raises warnings on non-identity.
+    d1.2 <- d1
+    rownames(d1.2) <- toupper(colnames(named))
+    expect_warning(reducedDim(named, "PCA") <- d1.2, "not the same")
+    expect_warning(reducedDims(named) <- list(PCA=d1.2), "not the same")
+    expect_warning(reducedDim(named, "PCA") <- d1, NA)
 })
 
 test_that("reducedDim setter creates an unnamed redDim is none are present", {
