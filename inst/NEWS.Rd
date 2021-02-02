@@ -14,6 +14,13 @@ It will also exchange the \code{colData} between the swapped experiments when \c
 These changes assist in achieving reversibility of the output.
 
 \item Added \code{applySCE()} to conveniently apply a function to the main and alternative Experiments.
+
+\item Added \code{withDimnames=} to \code{reducedDim<-()} and \code{reducedDims<-()}. 
+If \code{TRUE}, these methods now emit warnings on observing incompatible row names in \code{value}.
+
+\item Respect any metadata passed in with \code{value} in \code{reducedDims<-()} and \code{altExps<-()}.
+
+\item Added the reduced.dim.matrix class to preserve attributes inside the \code{reducedDims} during subsetting/combining.
 }}
 
 \section{Version 1.12.0}{\itemize{
