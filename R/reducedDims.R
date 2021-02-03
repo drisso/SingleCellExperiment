@@ -10,7 +10,8 @@
 #' \item{\code{reducedDim(x, type, withDimnames=TRUE)}:}{
 #' Retrieves a matrix (or matrix-like object) containing reduced dimension coordinates for cells (rows) and dimensions (columns).
 #' \code{type} is either a string specifying the name of the dimensionality reduction result in \code{x} to retrieve,
-#' or a numeric scalar specifying the index of the desired result.
+#' or a numeric scalar specifying the index of the desired result, defaulting to the first entry if missing.
+#'
 #' If \code{withDimnames=TRUE}, row names of the output matrix are replaced with the column names of \code{x}.
 #' }
 #' \item{\code{reducedDimNames(x)}:}{
@@ -19,7 +20,8 @@
 #' }
 #' \item{\code{reducedDims(x, withDimnames=TRUE)}:}{
 #' Returns a named \linkS4class{List} of matrices containing one or more dimensionality reduction results.
-#' Each result is a matrix (or matrix-like object) with the same number of rows.
+#' Each result is a matrix (or matrix-like object) with the same number of rows as \code{ncol(x)}.
+#'
 #' If \code{withDimnames=TRUE}, row names of each matrix are replaced with the column names of \code{x}.
 #' }
 #' }
@@ -139,7 +141,8 @@ setMethod("reducedDims", "SingleCellExperiment", function(x, withDimnames=TRUE) 
 setReplaceMethod("reducedDims", "SingleCellExperiment", function(x, withDimnames=TRUE, ..., value) {
     if (withDimnames) {
         for (v in seq_along(value)) {
-            .check_reddim_names(colnames(x), rownames(value[[v]]), withDimnames=TRUE, fun='reducedDims')
+            .check_reddim_names(x, value[[v]], withDimnames=TRUE, 
+                vname=sprintf("value[[%s]]", v), fun='reducedDims')
         }
     }
 
@@ -210,19 +213,25 @@ setMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type
     out
 })
 
-.check_reddim_names <- function(reference, incoming, withDimnames, fun='reducedDim') {
-    if (withDimnames && !is.null(incoming)) {
-        if (!identical(reference, incoming)) {
-            warning("non-NULL rownames in 'value' are not the same as 'colnames(x)' for '", fun, "<-'")
+.check_reddim_names <- function(reference, incoming, withDimnames, fun='reducedDim', vname='value') {
+    if (!is.null(incoming)) {
+        rni <- rownames(incoming)
+        rnr <- rownames(reference)
+        if (withDimnames && !is.null(rni)) {
+            if (!identical(rnr, rni)) {
+                msg <- paste0("non-NULL 'rownames(", vname, ")' should be the same as 'colnames(x)' for '", 
+                    fun, "<-'. This will be an error in the next release of Bioconductor.")
+                warning(paste(strwrap(msg), collapse="\n"))
+            }
         }
     }
+    incoming
 }
 
 #' @export
 setReplaceMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x, type, withDimnames=TRUE, ..., value) {
-    .check_reddim_names(colnames(x), rownames(value), withDimnames)
-
     .set_internal_missing(x, value,
+        withDimnames=withDimnames,
         basefun=`reducedDim<-`,
         namefun=reducedDimNames
     )
@@ -230,7 +239,7 @@ setReplaceMethod("reducedDim", c("SingleCellExperiment", "missing"), function(x,
 
 #' @export
 setReplaceMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x, type, withDimnames=TRUE, ..., value) {
-    .check_reddim_names(colnames(x), rownames(value), withDimnames)
+    .check_reddim_names(x, value, withDimnames)
 
     .set_internal_numeric(x, type, value,
         getfun=int_colData,
@@ -247,7 +256,7 @@ setReplaceMethod("reducedDim", c("SingleCellExperiment", "numeric"), function(x,
 
 #' @export
 setReplaceMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type, withDimnames=TRUE, ..., value) {
-    .check_reddim_names(colnames(x), rownames(value), withDimnames)
+    .check_reddim_names(x, value, withDimnames)
 
     .set_internal_character(x, type, value, 
         getfun=int_colData,

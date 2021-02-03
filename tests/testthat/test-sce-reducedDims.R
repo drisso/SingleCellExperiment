@@ -90,8 +90,8 @@ test_that("getters/setters respond to dimnames", {
     # withDimnames raises warnings on non-identity.
     d1.2 <- d1
     rownames(d1.2) <- toupper(colnames(named))
-    expect_warning(reducedDim(named, "PCA") <- d1.2, "not the same")
-    expect_warning(reducedDims(named) <- list(PCA=d1.2), "not the same")
+    expect_warning(reducedDim(named, "PCA") <- d1.2, "should be the same")
+    expect_warning(reducedDims(named) <- list(PCA=d1.2), "should be the same")
     expect_warning(reducedDim(named, "PCA") <- d1, NA)
 })
 

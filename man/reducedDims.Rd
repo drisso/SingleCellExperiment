@@ -31,7 +31,8 @@ In the following examples, \code{x} is a \linkS4class{SingleCellExperiment} obje
 \item{\code{reducedDim(x, type, withDimnames=TRUE)}:}{
 Retrieves a matrix (or matrix-like object) containing reduced dimension coordinates for cells (rows) and dimensions (columns).
 \code{type} is either a string specifying the name of the dimensionality reduction result in \code{x} to retrieve,
-or a numeric scalar specifying the index of the desired result.
+or a numeric scalar specifying the index of the desired result, defaulting to the first entry if missing.
+
 If \code{withDimnames=TRUE}, row names of the output matrix are replaced with the column names of \code{x}.
 }
 \item{\code{reducedDimNames(x)}:}{
@@ -40,7 +41,8 @@ This is guaranteed to be of the same length as the number of results, though the
 }
 \item{\code{reducedDims(x, withDimnames=TRUE)}:}{
 Returns a named \linkS4class{List} of matrices containing one or more dimensionality reduction results.
-Each result is a matrix (or matrix-like object) with the same number of rows.
+Each result is a matrix (or matrix-like object) with the same number of rows as \code{ncol(x)}.
+
 If \code{withDimnames=TRUE}, row names of each matrix are replaced with the column names of \code{x}.
 }
 }
