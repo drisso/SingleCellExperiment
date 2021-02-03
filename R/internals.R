@@ -260,13 +260,13 @@ setMethod("rowData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
     })
 }
 
-.set_internal_missing <- function(x, value, basefun, namefun) {
+.set_internal_missing <- function(x, value, ..., basefun, namefun) {
     if (length(namefun(x))){
         type <- 1L
     } else {
         type <- paste0(.unnamed, 1L)
     }
-    basefun(x, type, value=value)
+    basefun(x, type, ..., value=value)
 }
 
 .set_internal_numeric <- function(x, type, value, getfun, setfun, key, 

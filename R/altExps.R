@@ -15,25 +15,29 @@
 #' @section Getters:
 #' In the following examples, \code{x} is a \linkS4class{SingleCellExperiment} object.
 #' \describe{
-#' \item{\code{altExp(x, e, withColData=FALSE)}:}{
+#' \item{\code{altExp(x, e, withDimnames=TRUE, withColData=FALSE)}:}{
 #' Retrieves a \linkS4class{SummarizedExperiment} containing alternative features (rows) for all cells (columns) in \code{x}.
-#' \code{e} is either a string specifying the name of the alternative Experiment in \code{x} to retrieve,
-#' or a numeric scalar specifying the index of the desired Experiment.
-#' If \code{withColData=TRUE}, the column metadata of the output object is set to \code{\link{colData}(x)}.
+#' \code{e} should either be a string specifying the name of the alternative Experiment in \code{x} to retrieve,
+#' or a numeric scalar specifying the index of the desired Experiment, defaulting to the first Experiment is missing.
+#'
+#' If \code{withDimnames=TRUE}, the column names of the output object are set to \code{colnames(x)}.
+#' In addition, if \code{withColData=TRUE}, \code{\link{colData}(x)} is \code{cbind}ed to the column data of the output object.
 #' }
 #' \item{\code{altExpNames(x)}:}{
 #' Returns a character vector containing the names of all alternative Experiments in \code{x}.
 #' This is guaranteed to be of the same length as the number of results, though the names may not be unique.
 #' }
-#' \item{\code{altExps(x, withColData=FALSE)}:}{
+#' \item{\code{altExps(x, withDimnames=TRUE, withColData=FALSE)}:}{
 #' Returns a named \linkS4class{List} of matrices containing one or more \linkS4class{SummarizedExperiment} objects.
-#' Each object has the same number of columns.
-#' If \code{withColData=TRUE}, the column metadata of each output object is set to \code{\link{colData}(x)}.
+#' Each object is guaranteed to have the same number of columns, in a 1:1 correspondence to those in \code{x}.
+#'
+#' If \code{withDimnames=TRUE}, the column names of each output object are set to \code{colnames(x)}.
+#' In addition, if \code{withColData=TRUE}, \code{\link{colData}(x)} is \code{cbind}ed to the column data of each output object.
 #' }
 #' }
 #'
 #' @section Single-object setter:
-#' \code{altExp(x, e) <- value} will add or replace an alternative Experiment
+#' \code{altExp(x, e, withDimnames=TRUE, withColData=FALSE) <- value} will add or replace an alternative Experiment
 #' in a \linkS4class{SingleCellExperiment} object \code{x}.
 #' The value of \code{e} determines how the result is added or replaced:
 #' \itemize{
@@ -47,10 +51,18 @@
 #' \code{value} is expected to be a SummarizedExperiment object with number of columns equal to \code{ncol(x)}.
 #' Alternatively, if \code{value} is \code{NULL}, the alternative Experiment at \code{e} is removed from the object.
 #'
+#' If \code{withDimnames=TRUE}, the column names of \code{value} are checked against those of \code{x}.
+#' A warning is raised if these are not identical, with the only exception being when \code{value=NULL}.
+#' This is inspired by the argument of the same name in \code{\link{assay<-}}.
+#'
+#' If \code{withColData=TRUE}, we assume that the right-most columns of \code{colData(value)} are identical to \code{colData(x)}.
+#' If so, these columns are removed, effectively reversing the \code{withColData=TRUE} setting for the \code{altExp} getter.
+#' Otherwise, a warning is raised.
+#'
 #' @section Other setters:
 #' In the following examples, \code{x} is a \linkS4class{SingleCellExperiment} object.
 #' \describe{
-#' \item{\code{altExps(x) <- value}:}{
+#' \item{\code{altExps(x, withDimnames=TRUE, withColData=FALSE) <- value}:}{
 #' Replaces all alterrnative Experiments in \code{x} with those in \code{value}.
 #' The latter should be a list-like object containing any number of SummarizedExperiment objects
 #' with number of columns equal to \code{ncol(x)}.
@@ -62,6 +74,13 @@
 #'
 #' If \code{value} is a \linkS4class{Annotated} object, any \code{\link{metadata}} will be retained in \code{altExps(x)}.
 #' If \code{value} is a \linkS4class{Vector} object, any \code{\link{mcols}} will also be retained.
+#'
+#' If \code{withDimnames=TRUE}, the column names of each entry of \code{value} are checked against those of \code{x}.
+#' A warning is raised if these are not identical.
+#'
+#' If \code{withColData=TRUE}, we assume that the right-most columns of the \code{colData} for each entry of \code{value} are identical to \code{colData(x)}.
+#' If so, these columns are removed, effectively reversing the \code{withColData=TRUE} setting for the \code{altExps} getter.
+#' Otherwise, a warning is raised.
 #' }
 #' \item{\code{altExpNames(x) <- value}:}{
 #' Replaces all names for alternative Experiments in \code{x} with a character vector \code{value}.
@@ -163,19 +182,22 @@ setMethod("altExpNames", "SingleCellExperiment", function(x) {
 
 #' @export
 #' @importFrom S4Vectors endoapply
-setMethod("altExps", "SingleCellExperiment", function(x, withColData=FALSE) {
+#' @importFrom SummarizedExperiment colData colData<-
+setMethod("altExps", "SingleCellExperiment", function(x, withDimnames=TRUE, withColData=FALSE) {
     value <- .get_internal_all(x, 
         getfun=int_colData, 
         key=.alt_key)
 
     value <- endoapply(value, .get_se)
-    if (withColData) {
-        for (i in seq_along(value)) {
-            colData(value[[i]]) <- colData(x)
-        }
-    } else {
+
+    if (withDimnames) {
         for (i in seq_along(value)) {
             colnames(value[[i]]) <- colnames(x)
+        }
+    }
+    if (withColData) {
+        for (i in seq_along(value)) {
+            colData(value[[i]]) <- cbind(colData(value[[i]]), colData(x))
         }
     }
 
@@ -183,16 +205,18 @@ setMethod("altExps", "SingleCellExperiment", function(x, withColData=FALSE) {
 })
 
 #' @export
-setMethod("altExp", c("SingleCellExperiment", "missing"), function(x, e, withColData=FALSE) {
+setMethod("altExp", c("SingleCellExperiment", "missing"), function(x, e, withDimnames=TRUE, withColData=FALSE) {
     .get_internal_missing(x, 
         basefun=altExp, 
         namefun=altExpNames, 
         funstr="altExp",
+        withDimnames=withDimnames,
         withColData=withColData)
 })
 
 #' @export
-setMethod("altExp", c("SingleCellExperiment", "numeric"), function(x, e, withColData=FALSE) {
+#' @importFrom SummarizedExperiment colData colData<-
+setMethod("altExp", c("SingleCellExperiment", "numeric"), function(x, e, withDimnames=TRUE, withColData=FALSE) {
     out <- .get_internal_integer(x, e,
         getfun=int_colData,
         key=.alt_key,
@@ -200,17 +224,20 @@ setMethod("altExp", c("SingleCellExperiment", "numeric"), function(x, e, withCol
         substr="e")
 
     out <- .get_se(out)
-    if (withColData) {
-        colData(out) <- colData(x)
-    } else {
+
+    if (withDimnames) {
         colnames(out) <- colnames(x)
     }
+    if (withColData) {
+        colData(out) <- cbind(colData(out), colData(x))
+    } 
 
     out
 })
 
 #' @export
-setMethod("altExp", c("SingleCellExperiment", "character"), function(x, e, withColData=FALSE) {
+#' @importFrom SummarizedExperiment colData colData<-
+setMethod("altExp", c("SingleCellExperiment", "character"), function(x, e, withDimnames=TRUE, withColData=FALSE) {
     out <- .get_internal_character(x, e,
         getfun=int_colData,
         key=.alt_key,
@@ -219,10 +246,12 @@ setMethod("altExp", c("SingleCellExperiment", "character"), function(x, e, withC
         namestr="altExpNames")
 
     out <- .get_se(out)
-    if (withColData) {
-        colData(out) <- colData(x)
-    } else {
+
+    if (withDimnames) {
         colnames(out) <- colnames(x)
+    }
+    if (withColData) {
+        colData(out) <- cbind(colData(out), colData(x))
     }
 
     out
@@ -236,9 +265,46 @@ setReplaceMethod("altExpNames", c("SingleCellExperiment", "character"), function
         key=.alt_key)
 })
 
+#' @importFrom SummarizedExperiment colData colData<-
+.check_altexp_columns <- function(main, alt, withDimnames, withColData, fun='altExp', vname="value") {
+    if (!is.null(alt)) {
+        if (withDimnames) {
+            if (!identical(colnames(main), colnames(alt))) {
+                msg <- paste0("'colnames(", vname, ")' are not the same as 'colnames(x)' for '", 
+                    fun, "<-'. This will be an error in the next release of Bioconductor.")
+                warning(paste(strwrap(msg), collapse="\n"))
+            }
+        }
+
+        if (withColData) {
+            main.cd <- colData(main)
+            ncd <- ncol(main.cd)
+            alt.cd <- colData(alt)
+            acd <- ncol(alt.cd)
+            keep <- seq_len(acd) > acd - ncd
+
+            if (acd < ncd || !identical(alt.cd[,keep,drop=FALSE], main.cd)) {
+                warning("right-most columns of 'colData(", vname, ")' should be the same as 'colData(x)' when 'withColData=TRUE'")
+            } else {
+                colData(alt) <- colData(alt)[,!keep,drop=FALSE]
+            }
+        }
+    }
+
+    alt
+}
+
 #' @export
 #' @importClassesFrom S4Vectors SimpleList
-setReplaceMethod("altExps", "SingleCellExperiment", function(x, value) {
+setReplaceMethod("altExps", "SingleCellExperiment", function(x, withDimnames=TRUE, withColData=FALSE, ..., value) {
+    if (withDimnames || withColData) {
+        for (v in seq_along(value)) {
+            value[[v]] <- .check_altexp_columns(x, value[[v]], 
+                withDimnames=withDimnames, withColData=withColData, 
+                fun='altExps', vname=sprintf("value[[%s]]", v))
+        }
+    }
+
     .set_internal_all(x, value, 
         getfun=int_colData,
         setfun=`int_colData<-`,
@@ -258,14 +324,18 @@ removeAltExps <- function(x) {
 }
 
 #' @export
-setReplaceMethod("altExp", c("SingleCellExperiment", "missing"), function(x, e, ..., value) {
+setReplaceMethod("altExp", c("SingleCellExperiment", "missing"), function(x, e, withDimnames=TRUE, withColData=FALSE, ..., value) {
     .set_internal_missing(x, value,
+        withDimnames=withDimnames,
+        withColData=withColData,
         basefun=`altExp<-`,
         namefun=altExpNames)
 })
 
 #' @export
-setReplaceMethod("altExp", c("SingleCellExperiment", "numeric"), function(x, e, ..., value) {
+setReplaceMethod("altExp", c("SingleCellExperiment", "numeric"), function(x, e, withDimnames=TRUE, withColData=FALSE, ..., value) {
+    value <- .check_altexp_columns(x, value, withDimnames=withDimnames, withColData=withColData)
+
     .set_internal_numeric(x, e, value,
         getfun=int_colData,
         setfun=`int_colData<-`,
@@ -280,7 +350,9 @@ setReplaceMethod("altExp", c("SingleCellExperiment", "numeric"), function(x, e, 
 })
 
 #' @export
-setReplaceMethod("altExp", c("SingleCellExperiment", "character"), function(x, e, ..., value) {
+setReplaceMethod("altExp", c("SingleCellExperiment", "character"), function(x, e, withDimnames=TRUE, withColData=FALSE, ..., value) {
+    value <- .check_altexp_columns(x, value, withDimnames=withDimnames, withColData=withColData)
+
     .set_internal_character(x, e, value, 
         getfun=int_colData,
         setfun=`int_colData<-`,

@@ -11,6 +11,12 @@ test_that("altExp getters work correctly", {
     expect_identical(altExps(sce, withColData=FALSE), List(Spike=se1, Protein=se2))
     expect_identical(altExpNames(sce), c("Spike", "Protein"))
 
+    # Carries over column names.
+    copy <- sce
+    colnames(copy) <- seq_len(ncol(copy))
+    expect_identical(colnames(altExp(copy)), colnames(copy))
+    expect_null(colnames(altExp(copy, withDimnames=FALSE)))
+
     # Carries over colData.
     colData(sce)$stuff <- runif(ncol(sce))
     expect_identical(sce$stuff, altExp(sce, withColData=TRUE)$stuff)
@@ -49,6 +55,38 @@ test_that("altExp setters work correctly", {
     expect_error(altExp(sce, 5) <- se3, "out of bounds")
 })
 
+test_that("altExp setter handles name mismatches", {
+    colnames(se2) <- seq_len(ncol(se2))
+    expect_warning(altExp(sce, 2) <- se2, "not the same")
+    expect_warning(altExp(sce, 2, withDimnames=FALSE) <- se2, NA)
+})
+
+test_that("altExp setter correctly removes cloned colData.", {
+    copy <- altExp(sce, 2, withColData=TRUE)
+
+    # Attempt 1:
+    expect_warning(altExp(sce, 2) <- copy, NA)
+    expect_false(is.null(altExp(sce, 2)$sizeFactor))
+
+    # Attempt 2:
+    expect_warning(altExp(sce, 2, withColData=TRUE) <- copy, NA)
+    expect_null(altExp(sce, 2)$sizeFactor)
+
+    # Attempt 3:
+    expect_warning(altExp(sce, 2, withColData=TRUE) <- se2, "right-most")
+    expect_null(altExp(sce, 2)$sizeFactor)
+
+    # Attempt 4:
+    colData(copy) <- cbind(X=runif(ncol(copy)), colData(copy))
+    expect_warning(altExp(sce, 2, withColData=TRUE) <- copy, NA)
+    expect_null(altExp(sce, 2)$sizeFactor)
+    expect_false(is.null(altExp(sce, 2)$X))
+
+    # Attempt 5:
+    expect_warning(rownames(altExp(sce, 2, withColData=TRUE)) <- 1:5, NA)
+    expect_null(altExp(sce, 2)$sizeFactor)
+})
+
 test_that("altExps setters work correctly", {
     altExps(sce) <- NULL
     expect_identical(unname(altExps(sce)), List())
@@ -68,6 +106,25 @@ test_that("altExps setters work correctly", {
     # Handles non-syntactical names.
     altExps(sce) <- list(`first thing`=se1, `second thing`=se2)
     expect_identical(altExpNames(sce), c("first thing", "second thing"))
+})
+
+test_that("altExps setter responds to withDimnames=", {
+    colnames(se2) <- seq_len(ncol(se2))
+    expect_warning(altExps(sce) <- list(YAY=se2), "not the same")
+    expect_warning(altExps(sce, withDimnames=FALSE) <- list(YAY=se2), NA)
+})
+
+test_that("altExps setter responds to withColData=", {
+    copy <- altExps(sce, withColData=TRUE)
+    expect_warning(altExps(sce) <- copy, NA)
+    expect_false(is.null(altExp(sce)$sizeFactor))
+
+    expect_warning(altExps(sce, withColData=TRUE) <- copy, NA)
+    expect_null(altExp(sce)$sizeFactor)
+
+    copy[[2]]$stuff <- runif(ncol(sce))
+    expect_warning(altExps(sce, withColData=TRUE) <- copy, "right-most")
+    expect_false(is.null(altExp(sce, 2)$stuff))
 })
 
 test_that("altExps getters/setters preserve mcols and metadata", {

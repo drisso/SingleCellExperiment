@@ -92,10 +92,10 @@ setGeneric("altExps", function(x, ...) standardGeneric("altExps"))
 setGeneric("altExpNames", function(x, ...) standardGeneric("altExpNames"))
 
 #' @export
-setGeneric("altExp<-", function(x, e, ..., value) standardGeneric("altExp<-"))
+setGeneric("altExp<-", function(x, e, withDimnames=TRUE, withColData=FALSE, ..., value) standardGeneric("altExp<-"))
 
 #' @export
-setGeneric("altExps<-", function(x, ..., value) standardGeneric("altExps<-"))
+setGeneric("altExps<-", function(x, withDimnames=TRUE, withColData=FALSE, ..., value) standardGeneric("altExps<-"))
 
 #' @export
 setGeneric("altExpNames<-", function(x, ..., value) standardGeneric("altExpNames<-"))
