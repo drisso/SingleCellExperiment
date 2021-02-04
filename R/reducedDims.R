@@ -216,9 +216,9 @@ setMethod("reducedDim", c("SingleCellExperiment", "character"), function(x, type
 .check_reddim_names <- function(reference, incoming, withDimnames, fun='reducedDim', vname='value') {
     if (!is.null(incoming)) {
         rni <- rownames(incoming)
-        rnr <- rownames(reference)
+        cnr <- colnames(reference)
         if (withDimnames && !is.null(rni)) {
-            if (!identical(rnr, rni)) {
+            if (!identical(cnr, rni)) {
                 msg <- paste0("non-NULL 'rownames(", vname, ")' should be the same as 'colnames(x)' for '", 
                     fun, "<-'. This will be an error in the next release of Bioconductor.")
                 warning(paste(strwrap(msg), collapse="\n"))

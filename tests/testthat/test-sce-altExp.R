@@ -59,6 +59,9 @@ test_that("altExp setter handles name mismatches", {
     colnames(se2) <- seq_len(ncol(se2))
     expect_warning(altExp(sce, 2) <- se2, "not the same")
     expect_warning(altExp(sce, 2, withDimnames=FALSE) <- se2, NA)
+
+    colnames(sce) <- colnames(se2) <- seq_len(ncol(se2))
+    expect_warning(altExp(sce, 2) <- se2, NA)
 })
 
 test_that("altExp setter correctly removes cloned colData.", {
@@ -112,6 +115,9 @@ test_that("altExps setter responds to withDimnames=", {
     colnames(se2) <- seq_len(ncol(se2))
     expect_warning(altExps(sce) <- list(YAY=se2), "not the same")
     expect_warning(altExps(sce, withDimnames=FALSE) <- list(YAY=se2), NA)
+
+    colnames(sce) <- colnames(se2) <- seq_len(ncol(se2))
+    expect_warning(altExps(sce) <- list(YAY=se2), NA)
 })
 
 test_that("altExps setter responds to withColData=", {

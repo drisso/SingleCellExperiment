@@ -87,6 +87,11 @@ test_that("getters/setters respond to dimnames", {
     names(reducedDims(named, withDimnames=FALSE)) <- c("alpha", "bravo")
     expect_identical(rownames(reducedDim(named, withDimnames=FALSE)), toupper(colnames(named)))
 
+    # No warning when names are the same.
+    d1.2 <- d1
+    rownames(d1.2) <- colnames(named)
+    expect_warning(reducedDim(named) <- d1.2, NA)
+
     # withDimnames raises warnings on non-identity.
     d1.2 <- d1
     rownames(d1.2) <- toupper(colnames(named))
