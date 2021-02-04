@@ -8,7 +8,7 @@ test_that("altExp getters work correctly", {
     expect_identical(altExp(sce, 2), se2)
     expect_identical(altExp(sce, "Protein"), se2)
 
-    expect_identical(altExps(sce, withColData=FALSE), List(Spike=se1, Protein=se2))
+    expect_identical(altExps(sce), List(Spike=se1, Protein=se2))
     expect_identical(altExpNames(sce), c("Spike", "Protein"))
 
     # Carries over column names.
@@ -18,13 +18,19 @@ test_that("altExp getters work correctly", {
     expect_null(colnames(altExp(copy, withDimnames=FALSE)))
 
     # Carries over colData.
-    colData(sce)$stuff <- runif(ncol(sce))
-    expect_identical(sce$stuff, altExp(sce, withColData=TRUE)$stuff)
-    expect_identical(sce$stuff, altExp(sce, "Protein", withColData=TRUE)$stuff)
-    expect_identical(NULL, altExp(sce, withColData=FALSE)$stuff)
+    expect_identical(sce$sizeFactor, altExp(sce, withColData=TRUE)$sizeFactor)
+    expect_identical(sce$sizeFactor, altExp(sce, "Protein", withColData=TRUE)$sizeFactor)
+    expect_identical(NULL, altExp(sce, withColData=FALSE)$sizeFactor)
 
-    expect_identical(sce$stuff, altExps(sce, withColData=TRUE)[[1]]$stuff)
-    expect_identical(NULL, altExps(sce, withColData=FALSE)[[1]]$stuff)
+    expect_identical(sce$sizeFactor, altExps(sce, withColData=TRUE)[[1]]$sizeFactor)
+    expect_identical(NULL, altExps(sce, withColData=FALSE)[[1]]$sizeFactor)
+
+    # Prepends colData properly.
+    copy <- sce
+    u <- runif(ncol(sce))
+    altExp(copy)$BLAH <- u
+    expect_identical(colData(altExp(copy, withColData=TRUE)), cbind(colData(sce), colData(altExp(copy))))
+    expect_identical(colData(altExp(copy)), DataFrame(BLAH=u))
 })
 
 test_that("altExp setters work correctly", {
@@ -76,11 +82,11 @@ test_that("altExp setter correctly removes cloned colData.", {
     expect_null(altExp(sce, 2)$sizeFactor)
 
     # Attempt 3:
-    expect_warning(altExp(sce, 2, withColData=TRUE) <- se2, "right-most")
+    expect_warning(altExp(sce, 2, withColData=TRUE) <- se2, "left-most")
     expect_null(altExp(sce, 2)$sizeFactor)
 
     # Attempt 4:
-    colData(copy) <- cbind(X=runif(ncol(copy)), colData(copy))
+    colData(copy) <- cbind(colData(copy), X=runif(ncol(copy)))
     expect_warning(altExp(sce, 2, withColData=TRUE) <- copy, NA)
     expect_null(altExp(sce, 2)$sizeFactor)
     expect_false(is.null(altExp(sce, 2)$X))
@@ -88,6 +94,11 @@ test_that("altExp setter correctly removes cloned colData.", {
     # Attempt 5:
     expect_warning(rownames(altExp(sce, 2, withColData=TRUE)) <- 1:5, NA)
     expect_null(altExp(sce, 2)$sizeFactor)
+
+    # Attempt 6:
+    expect_warning(altExp(sce, 2, withColData=TRUE)$stuff <- 2, NA)
+    expect_null(altExp(sce, 2)$sizeFactor)
+    expect_true(all(altExp(sce, 2)$stuff==2))
 })
 
 test_that("altExps setters work correctly", {
@@ -128,8 +139,8 @@ test_that("altExps setter responds to withColData=", {
     expect_warning(altExps(sce, withColData=TRUE) <- copy, NA)
     expect_null(altExp(sce)$sizeFactor)
 
-    copy[[2]]$stuff <- runif(ncol(sce))
-    expect_warning(altExps(sce, withColData=TRUE) <- copy, "right-most")
+    colData(copy[[2]]) <- cbind(stuff=runif(ncol(sce)), colData(copy[[2]]))
+    expect_warning(altExps(sce, withColData=TRUE) <- copy, "left-most")
     expect_false(is.null(altExp(sce, 2)$stuff))
 })
 

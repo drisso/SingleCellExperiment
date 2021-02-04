@@ -21,7 +21,7 @@
 #' or a numeric scalar specifying the index of the desired Experiment, defaulting to the first Experiment is missing.
 #'
 #' If \code{withDimnames=TRUE}, the column names of the output object are set to \code{colnames(x)}.
-#' In addition, if \code{withColData=TRUE}, \code{\link{colData}(x)} is \code{cbind}ed to the column data of the output object.
+#' In addition, if \code{withColData=TRUE}, \code{\link{colData}(x)} is \code{cbind}ed to the front of the column data of the output object.
 #' }
 #' \item{\code{altExpNames(x)}:}{
 #' Returns a character vector containing the names of all alternative Experiments in \code{x}.
@@ -32,7 +32,7 @@
 #' Each object is guaranteed to have the same number of columns, in a 1:1 correspondence to those in \code{x}.
 #'
 #' If \code{withDimnames=TRUE}, the column names of each output object are set to \code{colnames(x)}.
-#' In addition, if \code{withColData=TRUE}, \code{\link{colData}(x)} is \code{cbind}ed to the column data of each output object.
+#' In addition, if \code{withColData=TRUE}, \code{\link{colData}(x)} is \code{cbind}ed to the front of the column data of each output object.
 #' }
 #' }
 #'
@@ -55,7 +55,7 @@
 #' A warning is raised if these are not identical, with the only exception being when \code{value=NULL}.
 #' This is inspired by the argument of the same name in \code{\link{assay<-}}.
 #'
-#' If \code{withColData=TRUE}, we assume that the right-most columns of \code{colData(value)} are identical to \code{colData(x)}.
+#' If \code{withColData=TRUE}, we assume that the left-most columns of \code{colData(value)} are identical to \code{colData(x)}.
 #' If so, these columns are removed, effectively reversing the \code{withColData=TRUE} setting for the \code{altExp} getter.
 #' Otherwise, a warning is raised.
 #'
@@ -78,7 +78,7 @@
 #' If \code{withDimnames=TRUE}, the column names of each entry of \code{value} are checked against those of \code{x}.
 #' A warning is raised if these are not identical.
 #'
-#' If \code{withColData=TRUE}, we assume that the right-most columns of the \code{colData} for each entry of \code{value} are identical to \code{colData(x)}.
+#' If \code{withColData=TRUE}, we assume that the left-most columns of the \code{colData} for each entry of \code{value} are identical to \code{colData(x)}.
 #' If so, these columns are removed, effectively reversing the \code{withColData=TRUE} setting for the \code{altExps} getter.
 #' Otherwise, a warning is raised.
 #' }
@@ -182,7 +182,6 @@ setMethod("altExpNames", "SingleCellExperiment", function(x) {
 
 #' @export
 #' @importFrom S4Vectors endoapply
-#' @importFrom SummarizedExperiment colData colData<-
 setMethod("altExps", "SingleCellExperiment", function(x, withDimnames=TRUE, withColData=FALSE) {
     value <- .get_internal_all(x, 
         getfun=int_colData, 
@@ -190,19 +189,34 @@ setMethod("altExps", "SingleCellExperiment", function(x, withDimnames=TRUE, with
 
     value <- endoapply(value, .get_se)
 
-    if (withDimnames) {
+    if (withDimnames || withColData) {
         for (i in seq_along(value)) {
-            colnames(value[[i]]) <- colnames(x)
-        }
-    }
-    if (withColData) {
-        for (i in seq_along(value)) {
-            colData(value[[i]]) <- cbind(colData(value[[i]]), colData(x))
+            value[[i]] <- .fill_altexps_info(x, value[[i]], 
+                withDimnames=withDimnames, withColData=withColData)
         }
     }
 
     value
 })
+
+#' @importFrom BiocGenerics cbind
+#' @importFrom SummarizedExperiment colData colData<-
+.fill_altexps_info <- function(x, out, withDimnames, withColData) {
+    if (withDimnames) {
+        colnames(out) <- colnames(x)
+    }
+
+    if (withColData) {
+        # We prepend to make it easier to reverse this operation in the setters.
+        # Any new colData fields are added to the right side, so we just have
+        # to check the harder-to-modify left side when reversing.
+        prep <- cbind(colData(x), colData(out))
+        rownames(prep) <- colnames(out)
+        colData(out) <- prep
+    }
+
+    out
+}
 
 #' @export
 setMethod("altExp", c("SingleCellExperiment", "missing"), function(x, e, withDimnames=TRUE, withColData=FALSE) {
@@ -215,7 +229,6 @@ setMethod("altExp", c("SingleCellExperiment", "missing"), function(x, e, withDim
 })
 
 #' @export
-#' @importFrom SummarizedExperiment colData colData<-
 setMethod("altExp", c("SingleCellExperiment", "numeric"), function(x, e, withDimnames=TRUE, withColData=FALSE) {
     out <- .get_internal_integer(x, e,
         getfun=int_colData,
@@ -225,18 +238,10 @@ setMethod("altExp", c("SingleCellExperiment", "numeric"), function(x, e, withDim
 
     out <- .get_se(out)
 
-    if (withDimnames) {
-        colnames(out) <- colnames(x)
-    }
-    if (withColData) {
-        colData(out) <- cbind(colData(out), colData(x))
-    } 
-
-    out
+    .fill_altexps_info(x, out, withDimnames=withDimnames, withColData=withColData)
 })
 
 #' @export
-#' @importFrom SummarizedExperiment colData colData<-
 setMethod("altExp", c("SingleCellExperiment", "character"), function(x, e, withDimnames=TRUE, withColData=FALSE) {
     out <- .get_internal_character(x, e,
         getfun=int_colData,
@@ -247,14 +252,7 @@ setMethod("altExp", c("SingleCellExperiment", "character"), function(x, e, withD
 
     out <- .get_se(out)
 
-    if (withDimnames) {
-        colnames(out) <- colnames(x)
-    }
-    if (withColData) {
-        colData(out) <- cbind(colData(out), colData(x))
-    }
-
-    out
+    .fill_altexps_info(x, out, withDimnames=withDimnames, withColData=withColData)
 })
 
 #' @export
@@ -281,12 +279,12 @@ setReplaceMethod("altExpNames", c("SingleCellExperiment", "character"), function
             ncd <- ncol(main.cd)
             alt.cd <- colData(alt)
             acd <- ncol(alt.cd)
-            keep <- seq_len(acd) > acd - ncd
+            keep <- seq_len(acd) <= ncd
 
             if (acd < ncd || !identical(alt.cd[,keep,drop=FALSE], main.cd)) {
-                warning("right-most columns of 'colData(", vname, ")' should be the same as 'colData(x)' when 'withColData=TRUE'")
+                warning("left-most columns of 'colData(", vname, ")' should be the same as 'colData(x)' when 'withColData=TRUE'")
             } else {
-                colData(alt) <- colData(alt)[,!keep,drop=FALSE]
+                colData(alt) <- alt.cd[,!keep,drop=FALSE]
             }
         }
     }

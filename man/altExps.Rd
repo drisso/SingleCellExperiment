@@ -63,7 +63,7 @@ Retrieves a \linkS4class{SummarizedExperiment} containing alternative features (
 or a numeric scalar specifying the index of the desired Experiment, defaulting to the first Experiment is missing.
 
 If \code{withDimnames=TRUE}, the column names of the output object are set to \code{colnames(x)}.
-In addition, if \code{withColData=TRUE}, \code{\link{colData}(x)} is \code{cbind}ed to the column data of the output object.
+In addition, if \code{withColData=TRUE}, \code{\link{colData}(x)} is \code{cbind}ed to the front of the column data of the output object.
 }
 \item{\code{altExpNames(x)}:}{
 Returns a character vector containing the names of all alternative Experiments in \code{x}.
@@ -74,7 +74,7 @@ Returns a named \linkS4class{List} of matrices containing one or more \linkS4cla
 Each object is guaranteed to have the same number of columns, in a 1:1 correspondence to those in \code{x}.
 
 If \code{withDimnames=TRUE}, the column names of each output object are set to \code{colnames(x)}.
-In addition, if \code{withColData=TRUE}, \code{\link{colData}(x)} is \code{cbind}ed to the column data of each output object.
+In addition, if \code{withColData=TRUE}, \code{\link{colData}(x)} is \code{cbind}ed to the front of the column data of each output object.
 }
 }
 }
@@ -99,7 +99,7 @@ If \code{withDimnames=TRUE}, the column names of \code{value} are checked agains
 A warning is raised if these are not identical, with the only exception being when \code{value=NULL}.
 This is inspired by the argument of the same name in \code{\link{assay<-}}.
 
-If \code{withColData=TRUE}, we assume that the right-most columns of \code{colData(value)} are identical to \code{colData(x)}.
+If \code{withColData=TRUE}, we assume that the left-most columns of \code{colData(value)} are identical to \code{colData(x)}.
 If so, these columns are removed, effectively reversing the \code{withColData=TRUE} setting for the \code{altExp} getter.
 Otherwise, a warning is raised.
 }
@@ -124,7 +124,7 @@ If \code{value} is a \linkS4class{Vector} object, any \code{\link{mcols}} will a
 If \code{withDimnames=TRUE}, the column names of each entry of \code{value} are checked against those of \code{x}.
 A warning is raised if these are not identical.
 
-If \code{withColData=TRUE}, we assume that the right-most columns of the \code{colData} for each entry of \code{value} are identical to \code{colData(x)}.
+If \code{withColData=TRUE}, we assume that the left-most columns of the \code{colData} for each entry of \code{value} are identical to \code{colData(x)}.
 If so, these columns are removed, effectively reversing the \code{withColData=TRUE} setting for the \code{altExps} getter.
 Otherwise, a warning is raised.
 }
