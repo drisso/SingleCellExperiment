@@ -21,6 +21,13 @@ If \code{TRUE}, these methods now emit warnings on observing incompatible row na
 \item Respect any metadata passed in with \code{value} in \code{reducedDims<-()} and \code{altExps<-()}.
 
 \item Added the reduced.dim.matrix class to preserve attributes inside the \code{reducedDims} during subsetting/combining.
+
+\item Setting \code{withColData=TRUE} in \code{altExp()} and \code{altExps()} will now prepend \code{colData(x)} to the output \code{colData}.
+
+\item Added \code{withDimnames=} to \code{altExp<-()} and \code{altExps<-()}. 
+If \code{TRUE}, these methods now emit warnings on observing incompatible column names in \code{value}.
+Also added \code{withColData=}, which will now reverse the prepending in the getter if the left-most columns are the same as \code{colData(x)}.
+(If not the same, a warning is emitted.)
 }}
 
 \section{Version 1.12.0}{\itemize{
