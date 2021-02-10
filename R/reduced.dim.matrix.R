@@ -56,10 +56,12 @@ NULL
 
 #' @export
 reduced.dim.matrix <- function(x, ...) {
-    class(x) <- "reduced.dim.matrix"
+    class(x) <- c("reduced.dim.matrix", "matrix")
     mostattributes(x) <- c(attributes(x), list(...))
     x
 }
+
+setOldClass(c("reduced.dim.matrix", "matrix"))
 
 #' @export
 `[.reduced.dim.matrix` <- function(x, i, j, ..., drop=FALSE) {

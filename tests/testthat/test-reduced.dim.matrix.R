@@ -13,6 +13,9 @@ test_that("reduced.dim.matrix construction works as expected", {
     stuff <- paste0("GENE_", seq_len(nrow(pc)))
     rownames(rd.pc) <- stuff
     expect_identical(rownames(rd.pc), stuff)
+
+    expect_true(is.matrix(rd.pc))
+    expect_true(is(rd.pc, "matrix"))
 })
 
 test_that("reduced.dim.matrix subsetting retains attributes", {
