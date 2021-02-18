@@ -2,6 +2,7 @@
 % Please edit documentation in R/reduced.dim.matrix.R
 \name{reduced.dim.matrix}
 \alias{reduced.dim.matrix}
+\alias{reduced.dim.matrix-class}
 \alias{[.reduced.dim.matrix}
 \alias{cbind.reduced.dim.matrix}
 \alias{rbind.reduced.dim.matrix}

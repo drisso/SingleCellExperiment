@@ -47,6 +47,7 @@
 #'
 #' @aliases
 #' reduced.dim.matrix
+#' reduced.dim.matrix-class
 #' [.reduced.dim.matrix
 #' cbind.reduced.dim.matrix
 #' rbind.reduced.dim.matrix
@@ -61,6 +62,7 @@ reduced.dim.matrix <- function(x, ...) {
     x
 }
 
+#' @rawNamespace exportClasses(reduced.dim.matrix)
 setOldClass(c("reduced.dim.matrix", "matrix"))
 
 #' @export
