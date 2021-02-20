@@ -70,6 +70,7 @@ unsplitAltExps <- function(sce, prefix.rows=TRUE, prefix.cols=TRUE, delayed=TRUE
     do.call(SingleCellExperiment, args)
 }
 
+#' @importFrom DelayedArray DelayedArray ConstantArray
 #' @importFrom BiocGenerics rbind
 #' @importFrom SummarizedExperiment assayNames assay
 .unsplit_assays <- function(all.se, delayed) {
@@ -89,7 +90,7 @@ unsplitAltExps <- function(sce, prefix.rows=TRUE, prefix.cols=TRUE, delayed=TRUE
                 }
                 current[[s]] <- mat
             } else {
-                mat <- ConstantMatrix(dim(cur.se), value=NA)
+                mat <- ConstantArray(dim(cur.se), value=NA)
                 if (!delayed) {
                     mat <- as.matrix(mat)
                 }
