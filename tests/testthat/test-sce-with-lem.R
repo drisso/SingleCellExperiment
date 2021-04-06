@@ -73,7 +73,10 @@ test_that("cbind works correctly", {
 
     sce.err <- sce
     reducedDim(sce.err, "PCA") <- sampleFactors(reducedDim(sce.err, "PCA"))
-    expect_error(cbind(sce.err, sce), "no method for coercing this S4 class to a vector")
-    expect_error(cbind(sce, sce.err), "no method for coercing this S4 class to a vector")
+    # trying to make this robust to line breaks in the error message
+    text <- "no method for coercing this S4 class to a vector"
+    regexp <- gsub(" ", "[ \n]*", text, fixed=TRUE)
+    expect_error(cbind(sce.err, sce), regexp)
+    expect_error(cbind(sce, sce.err), regexp)
 
 })
