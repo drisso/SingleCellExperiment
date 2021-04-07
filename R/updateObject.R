@@ -92,5 +92,5 @@ setMethod("updateObject", "SingleCellExperiment", function(object, ..., verbose=
     }
 
     int_metadata(object)$version <- packageVersion("SingleCellExperiment")
-    object
+    callNextMethod()
 })
