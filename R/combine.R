@@ -187,3 +187,130 @@ setMethod("rbind", "SingleCellExperiment", function(..., deparse.level=1) {
     SummarizedExperiment(rowData=int_elementMetadata(x))
 }
 
+#' @export
+setMethod("combineCols", "SingleCellExperiment", function(x, ..., delayed=TRUE, fill=NA, use.names=TRUE) {
+    old <- S4Vectors:::disableValidity()
+    if (!isTRUE(old)) {
+        S4Vectors:::disableValidity(TRUE)
+        on.exit(S4Vectors:::disableValidity(old))
+    }
+    ans <- callNextMethod()
+
+    args <- list(x, ...)
+    args <- lapply(args, updateObject)
+    new.int_m <- do.call(c, unname(lapply(args, int_metadata)))
+
+    # Merging everything but the alternative experiments and reduced dimensions.
+    all.int_cd <- lapply(args, int_colData)
+    all.altexp <- all.reddim <- all.colp <- vector("list", length(all.int_cd))
+    for (i in seq_along(all.int_cd)) {
+        all.altexp[i] <- list(all.int_cd[[i]][[.alt_key]])
+        all.reddim[i] <- list(all.int_cd[[i]][[.red_key]])
+        all.colp[i] <- list(all.int_cd[[i]][[.colp_key]])
+        all.int_cd[[i]][[.alt_key]] <- NULL
+        all.int_cd[[i]][[.red_key]] <- NULL
+        all.int_cd[[i]][[.colp_key]] <- NULL
+    }
+    new.int_cd <- do.call(combineRows, all.int_cd)
+
+    # Reduced dimensions need a bit more care.
+    all.reddim.names <- Reduce(union, lapply(all.reddim, colnames))
+    new.reddim <- new.int_cd[,0]
+
+    for (i in all.reddim.names) {
+        collated <- vector("list", length(all.reddim))
+        first <- NULL
+
+        for (j in seq_along(collated)) {
+            if (i %in% names(all.reddim[[j]])) {
+                collated[[j]] <- all.reddim[[j]][[i]]
+                if (is.null(first)) {
+                    first <- collated[[j]]
+                }
+            }
+        }
+
+        for (j in seq_along(collated)) {
+            if (is.null(collated[[j]])) {
+                collated[[j]] <- matrix(NA_real_, ncol(args[[j]]), ncol(first))
+            }
+        }
+
+        tryCatch({
+            new.reddim[[i]] <- do.call(rbind, collated)
+        }, error=function(e) {
+            warning(wmsg("failed to combine '", i, "' for the 'reducedDims': ", conditionMessage(e)))
+        })
+    }
+
+    new.int_cd[[.red_key]] <- new.reddim
+
+    # Alternative experiments need a bit more care.
+    all.altexp.names <- Reduce(union, lapply(all.altexp, colnames))
+    new.altexps <- new.int_cd[,0]
+
+    for (i in all.altexp.names) {
+        collated <- vector("list", length(all.altexp))
+        first <- NULL
+
+        for (j in seq_along(collated)) {
+            if (i %in% names(all.altexp[[j]])) {
+                collated[[j]] <- all.altexp[[j]][[i]]@se
+                if (is.null(first)) {
+                    first <- collated[[j]]
+                }
+            }
+        }
+
+        for (j in seq_along(collated)) {
+            if (is.null(collated[[j]])) {
+                collated[[j]] <- first[0,] # probably not the best placeholder, but whatever.
+            }
+        }
+
+        tryCatch({
+            new.altexps[[i]] <- SummarizedExperimentByColumn(do.call(combineCols, collated))
+        }, error=function(e) {
+            warning(wmsg("failed to combine '", i, "' for the 'altExps': ", conditionMessage(e)))
+        })
+    }
+
+    new.int_cd[[.alt_key]] <- new.altexps
+
+    # As do the colPairs.
+    all.colp.names <- Reduce(union, lapply(all.colp, colnames))
+    new.colp <- new.int_cd[,0]
+
+    for (i in all.colp.names) {
+        collated <- vector("list", length(all.colp))
+        first <- NULL
+
+        for (j in seq_along(collated)) {
+            if (i %in% names(all.colp[[j]])) {
+                collated[[j]] <- all.colp[[j]][[i]]@hits
+            }
+        }
+
+        for (j in seq_along(collated)) {
+            if (is.null(collated[[j]])) {
+                collated[[j]] <- SelfHits(integer(0), integer(0), nnode=ncol(args[[j]]))
+            }
+        }
+
+        tryCatch({
+            new.colp[[i]] <- DualSubset(do.call(c, collated))
+        }, error=function(e) {
+            warning(wmsg("failed to combine '", i, "' for the 'colPairs': ", conditionMessage(e)))
+        })
+    }
+
+    new.int_cd[[.colp_key]] <- new.colp
+
+    # 
+    all.int_ed <- lapply(args, int_elementMetadata)
+    new.int_ed <- do.call(combineUniqueCols, c(all.int_ed, list(use.names=use.names)))
+
+    ans <- as(ans, "SingleCellExperiment")
+    BiocGenerics:::replaceSlots(ans, int_colData=new.int_cd, int_elementMetadata=new.int_ed,
+        int_metadata=new.int_m, check=FALSE)
+})
