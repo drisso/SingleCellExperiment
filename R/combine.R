@@ -37,6 +37,30 @@
 #' }
 #' }
 #'
+#' In the following code snippets, \code{x} is a SingleCellExperiment and \code{...} contains multiple SingleCellExperiment objects.
+#' \describe{
+#' \item{\code{combineCols(x, ..., delayed=TRUE, fill=NA, use.names=TRUE)}:}{
+#' Returns a SingleCellExperiment where all objects are flexibly combined by column.
+#' The assays and \code{\link{colData}} are combined as described in \code{?"\link{combineCols,SummarizedExperiment-method}"},
+#' where assays or DataFrame columns missing in any given object are filled in with missing values before combining.
+#'
+#' Entries of the \code{\link{reducedDims}} with the same name across objects are combined by row.
+#' If a dimensionality reduction result is not present for a particular SingleCellExperiment, it is represented by a matrix of \code{NA} values instead.
+#' If corresponding \code{\link{reducedDim}} entries cannot be combined, e.g., due to inconsistent dimensions, they are omitted from the \code{\link{reducedDims}} of the output object with a warning.
+#'
+#' Entries of the \code{\link{altExps}} with the same name across objects are combined by column using the relevant \code{\link{combineCols}} method.
+#' If a named entry is not present for a particular SingleCellExperiment, it is represented by a SummarizedExperiment with a single assay full of \code{fill} values.
+#' If entries cannot be combined, e.g., due to inconsistent dimensions, they are omitted from the \code{\link{altExps}} of the output object with a warning.
+#'
+#' Entries of the \code{\link{colPairs}} with the same name across objects are concatenated together after adjusting the indices for each column's new position in the combined object.
+#' If a named entry is not present for a particular SingleCellExperiments, it is assumed to contribute no column pairings and is ignored.
+#' 
+#' Entries of the \code{\link{rowPairs}} with the same name should be identical across objects if \code{use.names=FALSE}.
+#' If \code{use.names=TRUE}, we attempt to merge together entries with the same name by taking the union of all column pairings.
+#' However, if the same cell has a different set of pairings across objects, a warning is raised and we fall back to the \code{\link{rowPair}} entry from the first object.
+#' }
+#' }
+#'
 #' @section Subsetting:
 #' In the following code snippets, \code{x} is a \linkS4class{SingleCellExperiment} object.
 #' \describe{
@@ -92,6 +116,7 @@
 #' @aliases
 #' cbind,SingleCellExperiment-method
 #' rbind,SingleCellExperiment-method
+#' combineCols,SingleCellExperiment-method
 #' [,SingleCellExperiment,ANY-method
 #' [,SingleCellExperiment,ANY,ANY-method
 #' [,SingleCellExperiment,ANY,ANY,ANY-method
