@@ -188,6 +188,7 @@ setMethod("rbind", "SingleCellExperiment", function(..., deparse.level=1) {
 }
 
 #' @export
+#' @importFrom DelayedArray ConstantArray
 setMethod("combineCols", "SingleCellExperiment", function(x, ..., delayed=TRUE, fill=NA, use.names=TRUE) {
     old <- S4Vectors:::disableValidity()
     if (!isTRUE(old)) {
@@ -201,16 +202,25 @@ setMethod("combineCols", "SingleCellExperiment", function(x, ..., delayed=TRUE, 
     new.int_m <- do.call(c, unname(lapply(args, int_metadata)))
 
     # Merging everything but the alternative experiments and reduced dimensions.
-    all.int_cd <- lapply(args, int_colData)
-    all.altexp <- all.reddim <- all.colp <- vector("list", length(all.int_cd))
+    all.int_cd <- all.int_ed <- all.altexp <- all.reddim <- all.colp <- all.rowp <- vector("list", length(args))
     for (i in seq_along(all.int_cd)) {
-        all.altexp[i] <- list(all.int_cd[[i]][[.alt_key]])
-        all.reddim[i] <- list(all.int_cd[[i]][[.red_key]])
-        all.colp[i] <- list(all.int_cd[[i]][[.colp_key]])
-        all.int_cd[[i]][[.alt_key]] <- NULL
-        all.int_cd[[i]][[.red_key]] <- NULL
-        all.int_cd[[i]][[.colp_key]] <- NULL
+        current.int_cd <- int_colData(args[[i]])
+        current.int_ed <- int_elementMetadata(args[[i]])
+
+        all.altexp[i] <- list(current.int_cd[[.alt_key]])
+        all.reddim[i] <- list(current.int_cd[[.red_key]])
+        all.colp[i] <- list(current.int_cd[[.colp_key]])
+        all.rowp[i] <- list(current.int_ed[[.rowp_key]])
+
+        current.int_cd[[.alt_key]] <- NULL
+        current.int_cd[[.red_key]] <- NULL
+        current.int_cd[[.colp_key]] <- NULL
+        current.int_ed[[.rowp_key]] <- NULL
+
+        all.int_cd[[i]] <- current.int_cd
+        all.int_ed[[i]] <- current.int_ed
     }
+
     new.int_cd <- do.call(combineRows, all.int_cd)
 
     # Reduced dimensions need a bit more care.
@@ -264,12 +274,15 @@ setMethod("combineCols", "SingleCellExperiment", function(x, ..., delayed=TRUE, 
 
         for (j in seq_along(collated)) {
             if (is.null(collated[[j]])) {
-                collated[[j]] <- first[0,] # probably not the best placeholder, but whatever.
+                dummy.assay <- assays(first)[1]
+                dummy.assay[[1]] <- ConstantArray(c(nrow(first), ncol(args[[j]])), fill)
+                dummy <- SummarizedExperiment(dummy.assay, rowData=rowData(first)[,0], colData=colData(args[[j]])[,0])
+                collated[[j]] <- as(dummy, class(first)) # probably not the best placeholder, but whatever.
             }
         }
 
         tryCatch({
-            new.altexps[[i]] <- SummarizedExperimentByColumn(do.call(combineCols, collated))
+            new.altexps[[i]] <- SummarizedExperimentByColumn(do.call(combineCols, c(collated, list(use.names=use.names))))
         }, error=function(e) {
             warning(wmsg("failed to combine '", i, "' for the 'altExps': ", conditionMessage(e)))
         })
@@ -287,18 +300,18 @@ setMethod("combineCols", "SingleCellExperiment", function(x, ..., delayed=TRUE, 
 
         for (j in seq_along(collated)) {
             if (i %in% names(all.colp[[j]])) {
-                collated[[j]] <- all.colp[[j]][[i]]@hits
+                collated[[j]] <- all.colp[[j]][[i]]
             }
         }
 
         for (j in seq_along(collated)) {
             if (is.null(collated[[j]])) {
-                collated[[j]] <- SelfHits(integer(0), integer(0), nnode=ncol(args[[j]]))
+                collated[[j]] <- DualSubset(SelfHits(integer(0), integer(0), nnode=ncol(args[[j]])))
             }
         }
 
         tryCatch({
-            new.colp[[i]] <- DualSubset(do.call(c, collated))
+            new.colp[[i]] <- do.call(c, collated)
         }, error=function(e) {
             warning(wmsg("failed to combine '", i, "' for the 'colPairs': ", conditionMessage(e)))
         })
@@ -306,9 +319,16 @@ setMethod("combineCols", "SingleCellExperiment", function(x, ..., delayed=TRUE, 
 
     new.int_cd[[.colp_key]] <- new.colp
 
-    # 
-    all.int_ed <- lapply(args, int_elementMetadata)
+    # As do the rowPairs.
+    for (i in seq_along(all.rowp)) {
+        rn <- rownames(args[[i]])
+        rownames(all.int_ed[[i]]) <- rn
+        rownames(all.rowp[[i]]) <- rn
+    }
+    new.rowp <- do.call(combineUniqueCols, c(all.rowp, list(use.names=use.names)))
     new.int_ed <- do.call(combineUniqueCols, c(all.int_ed, list(use.names=use.names)))
+    rownames(new.rowp) <- rownames(new.int_ed) <- NULL
+    new.int_ed[[.rowp_key]] <- new.rowp
 
     ans <- as(ans, "SingleCellExperiment")
     BiocGenerics:::replaceSlots(ans, int_colData=new.int_cd, int_elementMetadata=new.int_ed,

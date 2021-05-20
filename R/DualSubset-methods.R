@@ -12,7 +12,12 @@ setMethod("length", "DualSubset", function(x) nnode(.get_hits(x)))
 #' SelfHits normalizeSingleBracketSubscript
 setMethod("[", "DualSubset", function(x, i, j, ..., drop=FALSE) {
     p <- .get_hits(x)
-    i <- normalizeSingleBracketSubscript(i, x)
+
+    if (anyNA(i) && is.numeric(i)) {
+        i <- as.integer(i)
+    } else {
+        i <- normalizeSingleBracketSubscript(i, x)
+    }
 
     mq <- findMatches(i, queryHits(p))
     ms <- findMatches(i, subjectHits(p))
