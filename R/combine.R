@@ -214,6 +214,7 @@ setMethod("rbind", "SingleCellExperiment", function(..., deparse.level=1) {
 
 #' @export
 #' @importFrom DelayedArray ConstantArray
+#' @importFrom S4Vectors combineCols combineRows combineUniqueCols
 setMethod("combineCols", "SingleCellExperiment", function(x, ..., delayed=TRUE, fill=NA, use.names=TRUE) {
     old <- S4Vectors:::disableValidity()
     if (!isTRUE(old)) {
