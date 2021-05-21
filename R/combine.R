@@ -275,7 +275,7 @@ setMethod("combineCols", "SingleCellExperiment", function(x, ..., delayed=TRUE, 
         tryCatch({
             new.reddim[[i]] <- do.call(rbind, collated)
         }, error=function(e) {
-            warning(wmsg("failed to combine '", i, "' for the 'reducedDims': ", conditionMessage(e)))
+            warning("failed to combine '", i, "' in 'reducedDims(<", class(ans), ">)':\n  ", conditionMessage(e))
         })
     }
 
@@ -310,7 +310,7 @@ setMethod("combineCols", "SingleCellExperiment", function(x, ..., delayed=TRUE, 
         tryCatch({
             new.altexps[[i]] <- SummarizedExperimentByColumn(do.call(combineCols, c(collated, list(use.names=use.names))))
         }, error=function(e) {
-            warning(wmsg("failed to combine '", i, "' for the 'altExps': ", conditionMessage(e)))
+            warning("failed to combine '", i, "' in 'altExps(<", class(ans), ">)':\n  ", conditionMessage(e))
         })
     }
 
@@ -339,7 +339,7 @@ setMethod("combineCols", "SingleCellExperiment", function(x, ..., delayed=TRUE, 
         tryCatch({
             new.colp[[i]] <- do.call(c, collated)
         }, error=function(e) {
-            warning(wmsg("failed to combine '", i, "' for the 'colPairs': ", conditionMessage(e)))
+            warning("failed to combine '", i, "' in 'colPairs(<", class(ans), ">)':\n  ", conditionMessage(e))
         })
     }
 
