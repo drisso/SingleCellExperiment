@@ -74,17 +74,17 @@ unsplitAltExps <- function(sce, prefix.rows=TRUE, prefix.cols=TRUE, delayed=TRUE
 #' @importFrom BiocGenerics rbind
 #' @importFrom SummarizedExperiment assayNames assay
 .unsplit_assays <- function(all.se, delayed) {
-    all.assays <- unique(unlist(lapply(all.se, assayNames)))
-    combined <- vector("list", length(all.assays))
-    names(combined) <- all.assays
+    all_assay_names <- unique(unlist(lapply(all.se, assayNames)))
+    combined <- vector("list", length(all_assay_names))
+    names(combined) <- all_assay_names
 
-    for (a in all.assays) {
+    for (assay_name in all_assay_names) {
         current <- vector("list", length(all.se))
 
         for (s in seq_along(all.se)) {
             cur.se <- all.se[[s]]
-            if (a %in% assayNames(cur.se)) {
-                mat <- assay(cur.se, a, withDimnames=FALSE)
+            if (assay_name %in% assayNames(cur.se)) {
+                mat <- assay(cur.se, assay_name, withDimnames=FALSE)
                 if (delayed) {
                     mat <- DelayedArray(mat)
                 }
@@ -97,7 +97,9 @@ unsplitAltExps <- function(sce, prefix.rows=TRUE, prefix.cols=TRUE, delayed=TRUE
                 current[[s]] <- mat
             }
         }
-        combined[[a]] <- do.call(rbind, current)
+        a <- do.call(rbind, current)
+        rownames(a) <- NULL
+        combined[[assay_name]] <- a
     }
 
     combined
