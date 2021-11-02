@@ -1,6 +1,6 @@
 Package: SingleCellExperiment
-Version: 1.17.0
-Date: 2021-08-21
+Version: 1.17.1
+Date: 2021-11-01
 Title: S4 Classes for Single Cell Data
 Authors@R: c(
         person("Aaron", "Lun", role=c("aut", "cph"), email="infinite.monkeys.with.keyboards@gmail.com"),
@@ -22,7 +22,7 @@ Suggests:
     knitr, 
     rmarkdown, 
     Matrix,
-    scRNAseq, 
+    scRNAseq (>= 2.9.1),
     Rtsne
 biocViews: ImmunoOncology, DataRepresentation, DataImport, Infrastructure, SingleCell
 Description: Defines a S4 class for storing data from single-cell
