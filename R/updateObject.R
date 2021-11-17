@@ -40,8 +40,13 @@ setMethod("updateObject", "SingleCellExperiment", function(object, ..., verbose=
         on.exit(S4Vectors:::disableValidity(old))
     }
 
-    # Update possibly outdated DataFrame object.
-    object@int_colData <- updateObject(object@int_colData, ..., verbose=verbose)
+    # Update possibly outdated DataFrame instances.
+    if (.hasSlot(object, "int_elementMetadata"))
+        object@int_elementMetadata <-
+            updateObject(object@int_elementMetadata, ..., verbose=verbose)
+    if (.hasSlot(object, "int_colData"))
+        object@int_colData <-
+            updateObject(object@int_colData, ..., verbose=verbose)
 
     if (old.ver < "1.7.1") {
         # Need this to avoid a circular recursion when calling reducedDims()<-.
