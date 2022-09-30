@@ -170,6 +170,7 @@ setMethod("rowData", "SingleCellExperiment", function(x, ..., internal=FALSE) {
 }
 
 #' @importFrom methods as
+#' @importFrom BiocGenerics lapply
 #' @importFrom S4Vectors DataFrame I mcols mcols<- metadata metadata<- 
 .set_internal_all <- function(x, value, getfun, setfun, key, convertfun, xdimfun, vdimfun, funstr, xdimstr, vdimstr) {
     x <- updateObject(x)
