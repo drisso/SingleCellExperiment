@@ -308,7 +308,7 @@ setMethod("combineCols", "SingleCellExperiment", function(x, ..., delayed=TRUE, 
         }
 
         tryCatch({
-            new.altexps[[i]] <- SummarizedExperimentByColumn(do.call(combineCols, c(collated, list(use.names=use.names))))
+            new.altexps[[i]] <- SummarizedExperimentByColumn(do.call(combineCols, c(collated, list(use.names=use.names, delayed=delayed, fill=fill))))
         }, error=function(e) {
             warning("failed to combine '", i, "' in 'altExps(<", class(ans), ">)':\n  ", conditionMessage(e))
         })

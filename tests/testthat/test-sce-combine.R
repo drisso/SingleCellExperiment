@@ -105,3 +105,35 @@ test_that("cbind handles errors in the internal fields correctly", {
     sce4 <- rbind(A=sce, B=sce) 
     expect_identical(objectVersion(sce4), objectVersion(sce))
 })
+
+test_that("combineCols passes on delay when combining altExps", {
+    sce.combined <- combineCols(sce, sce, use.names=FALSE, delayed=FALSE)
+    expect_is(assay(altExp(sce.combined)), "matrix")
+
+    sce.combined2 <- combineCols(sce, sce, use.names=FALSE, delayed=TRUE)
+    expect_is(assay(altExp(sce.combined2)), "DelayedMatrix")
+})
+
+test_that("combineCols passes on fill when combining altExps", {
+    sce1 <- sce[1:6, 1:10]
+    rownames(sce1) <- LETTERS[seq_len(nrow(sce1))]
+    colnames(sce1) <- letters[seq_len(ncol(sce1))]
+    altExp(sce1) <- altExp(sce1)[1:6, ]
+
+    sce2 <- sce[1:14, 11:20]
+    rownames(sce2) <- LETTERS[1:14]
+    colnames(sce2) <- letters[seq_len(ncol(sce2)) + ncol(sce1)]
+    altExp(sce2) <- altExp(sce2)[4:7, ]
+
+    sce.combined1 <- combineCols(sce1, sce2, use.names=TRUE)
+    expect_true(anyNA(assay(sce.combined1)))
+
+    sce.combined2 <- combineCols(sce1, sce2, use.names=TRUE, fill = -1)
+    expect_true(any(assay(sce.combined2) == -1))
+
+    sce.combined3 <- combineCols(sce1, sce2, use.names=TRUE)
+    expect_true(anyNA(assay(altExp(sce.combined3))))
+
+    sce.combined4 <- combineCols(sce1, sce2, use.names=TRUE, fill = -1)
+    expect_true(any(assay(sce.combined4) == -1))
+})
