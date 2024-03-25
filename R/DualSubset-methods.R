@@ -8,7 +8,7 @@ DualSubset <- function(hits) new("DualSubset", hits=sort(hits))
 #' @importFrom S4Vectors nnode
 setMethod("length", "DualSubset", function(x) nnode(.get_hits(x)))
 
-#' @importFrom S4Vectors mcols mcols<- findMatches queryHits subjectHits 
+#' @importFrom S4Vectors mcols mcols<- findMatches queryHits subjectHits
 #' SelfHits normalizeSingleBracketSubscript
 setMethod("[", "DualSubset", function(x, i, j, ..., drop=FALSE) {
     p <- .get_hits(x)
@@ -56,8 +56,8 @@ setReplaceMethod("[", "DualSubset", function(x, i, j, ..., value) {
     initialize(x, hits=hits2)
 })
 
-#' @importFrom utils tail 
-#' @importFrom S4Vectors queryHits subjectHits SelfHits mcols mcols<- 
+#' @importFrom utils tail
+#' @importFrom S4Vectors queryHits subjectHits SelfHits mcols mcols<-
 setMethod("c", "DualSubset", function(x, ...) {
     everything <- list(x, ...)
     shift <- 0L
@@ -80,22 +80,23 @@ setMethod("c", "DualSubset", function(x, ...) {
 #' @importFrom S4Vectors queryHits subjectHits mcols
 .hits2mat <- function(p) {
     m <- mcols(p)
-    if (ncol(m)) {
+    if (!is.null(m) && ncol(m)) {
         x <- m[,1]
         if (!is.logical(x) && !is.numeric(x) && !is.complex(x)) {
             stop("values of type '", typeof(x), "' are not supported in sparse matrices")
         }
     } else {
+        warning("no values found in hits object, filling with TRUE")
         x <- rep(TRUE, length(p))
     }
 
-    Matrix::sparseMatrix(i=queryHits(p), j=subjectHits(p), x=x, 
+    Matrix::sparseMatrix(i=queryHits(p), j=subjectHits(p), x=x,
         dims=rep(nnode(p), 2L), use.last.ij=TRUE)
 }
 
 #' @importFrom BiocGenerics which
-#' @importFrom S4Vectors SelfHits 
+#' @importFrom S4Vectors SelfHits
 .mat2hits <- function(mat) {
-    i <- which(mat!=0, arr.ind=TRUE) 
+    i <- which(mat!=0, arr.ind=TRUE)
     SelfHits(i[,1], i[,2], nnode=nrow(mat), x=mat[i])
 }
