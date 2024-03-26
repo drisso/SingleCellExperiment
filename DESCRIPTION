@@ -6,7 +6,8 @@ Authors@R: c(
         person("Aaron", "Lun", role=c("aut", "cph"), email="infinite.monkeys.with.keyboards@gmail.com"),
         person("Davide","Risso", role=c("aut","cre", "cph"), email="risso.davide@gmail.com"),
         person("Keegan", "Korthauer", role="ctb"),
-        person("Kevin", "Rue-Albrecht", role="ctb"))
+        person("Kevin", "Rue-Albrecht", role="ctb"),
+        person("Luke", "Zappia", role = "ctb", comment = c(ORCID = "0000-0001-7744-8565", github = "lazappi")))
 Depends: SummarizedExperiment
 Imports: 
     methods,
