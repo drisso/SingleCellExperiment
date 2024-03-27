@@ -80,12 +80,13 @@ setMethod("c", "DualSubset", function(x, ...) {
 #' @importFrom S4Vectors queryHits subjectHits mcols
 .hits2mat <- function(p) {
     m <- mcols(p)
-    if (ncol(m)) {
+    if (!is.null(m) && ncol(m)) {
         x <- m[,1]
         if (!is.logical(x) && !is.numeric(x) && !is.complex(x)) {
             stop("values of type '", typeof(x), "' are not supported in sparse matrices")
         }
     } else {
+        warning("no values found in 'mcols(<", class(p)[1], ">)', filling matrix with TRUE instead")
         x <- rep(TRUE, length(p))
     }
 

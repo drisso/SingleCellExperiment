@@ -112,6 +112,13 @@ test_that("rowPair getters/setters work with matrices", {
 
     colnames(mcols(rhits)) <- "x"
     expect_identical(rowPair(sce, 2), rhits)
+
+    # What happens when there aren't any metadata fields?
+    empty <- rhits
+    mcols(empty) <- NULL
+    rowPair(sce) <- empty
+    expect_warning(emptymat <- rowPair(sce, asSparse=TRUE), "filling matrix")
+    expect_identical(emptymat, mat != 0)
 })
 
 test_that("rowPairNames getters/setters work correctly", {
