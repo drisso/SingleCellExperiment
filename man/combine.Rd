@@ -87,7 +87,7 @@ Either can be missing, in which case subsetting is only performed in the specifi
 If both are missing, no subsetting is performed.
 
 Arguments in \code{...} and \code{drop} are passed to to \code{\link{[,SummarizedExperiment-method}}.}
-\item{\code{x[i, j, ...] <- value}:}{Replaces all data for rows \code{i} and columns {j}
+\item{\code{x[i, j, ...] <- value}:}{Replaces all data for rows \code{i} and columns \code{j}
 with the corresponding fields in a SingleCellExperiment \code{value}.
 
 \code{i} and \code{j} can be a logical, integer or character vector of subscripts,
