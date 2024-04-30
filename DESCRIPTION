@@ -1,5 +1,5 @@
 Package: SingleCellExperiment
-Version: 1.26.0
+Version: 1.27.0
 Date: 2024-03-25
 Title: S4 Classes for Single Cell Data
 Authors@R: c(
