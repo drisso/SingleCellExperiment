@@ -2,6 +2,12 @@
 \title{SingleCellExperiment News}
 \encoding{UTF-8}
 
+\section{Version 1.28.0}{\itemize{
+\item Added a \code{coerce()} method for converting a SingleCellExperiment object to its RangedSummarizedExperiment base.
+Note that conversion to a SummarizedExperiment is still not possible due to arcane S4 issues
+(see \url{https://github.com/Bioconductor/SummarizedExperiment/issues/29} for more details).
+}}
+
 \section{Version 1.14.0}{\itemize{
 \item Added the \code{unsplitAltExps()} function to reverse the effect of splitting alternative experiments.
 

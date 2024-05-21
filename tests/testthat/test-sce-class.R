@@ -41,6 +41,29 @@ test_that("coercion from other classes works correctly", {
     expect_true(validObject(sce3))
 })
 
+test_that("coercion to other classes works correctly", {
+    # Coercion to RangedSummarizedExperiment
+    ranges <- GRanges(rep(c("chr1", "chr2"), c(50, 150)),
+                      IRanges(floor(runif(200, 1e5, 1e6)), width=100),
+                      strand=sample(c("+", "-"), 200, TRUE))
+    mcols(ranges) <- rd
+    names(ranges) <- sprintf("GENE_%i", seq_along(ranges))
+
+    sce <- SingleCellExperiment(assay=list(counts=u, exprs=v), 
+                                rowRanges=ranges, 
+                                colData=cd, 
+                                metadata=list(foo="bar"))
+    expect_identical(rownames(sce), names(ranges))
+
+    rse <- as(sce, "RangedSummarizedExperiment")
+    expected <- SummarizedExperiment(assay=list(counts=u, exprs=v), rowRanges=ranges, colData=cd, metadata=list(foo="bar"))
+    expect_identical(rse, expected)
+    expect_identical(rownames(rse), names(ranges))
+
+    # Coercion to SummarizedExperiment doesn't work because of our
+    # old nemesis https://github.com/Bioconductor/SummarizedExperiment/issues/29.
+})
+
 test_that("manipulation of SE metadata is correct", {
     sce <- SingleCellExperiment(u, rowData=rd, colData=cd)
 

@@ -6,6 +6,7 @@
 \alias{SingleCellExperiment}
 \alias{coerce,SummarizedExperiment,SingleCellExperiment-method}
 \alias{coerce,RangedSummarizedExperiment,SingleCellExperiment-method}
+\alias{coerce,SingleCellExperiment,RangedSummarizedExperiment-method}
 \title{The SingleCellExperiment class}
 \usage{
 SingleCellExperiment(
@@ -76,6 +77,13 @@ sce
 ## coercion from SummarizedExperiment
 se <- SummarizedExperiment(assays=list(counts=u, logcounts=v))
 as(se, "SingleCellExperiment")
+
+## coercion from RangedSummarizedExperiment
+rse <- as(se, "RangedSummarizedExperiment")
+as(rse, "SingleCellExperiment")
+
+# coercion to a RangedSummarizedExperiment
+as(sce, "RangedSummarizedExperiment")
 
 }
 \seealso{
