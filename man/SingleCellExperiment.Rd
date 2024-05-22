@@ -6,7 +6,6 @@
 \alias{SingleCellExperiment}
 \alias{coerce,SummarizedExperiment,SingleCellExperiment-method}
 \alias{coerce,RangedSummarizedExperiment,SingleCellExperiment-method}
-\alias{coerce,SingleCellExperiment,RangedSummarizedExperiment-method}
 \title{The SingleCellExperiment class}
 \usage{
 SingleCellExperiment(
@@ -84,6 +83,10 @@ as(rse, "SingleCellExperiment")
 
 # coercion to a RangedSummarizedExperiment
 as(sce, "RangedSummarizedExperiment")
+
+# coercion to a SummarizedExperiment is slightly buggy right now
+# and requires a little workaround:
+as(as(sce, "RangedSummarizedExperiment"), "SummarizedExperiment")
 
 }
 \seealso{

@@ -77,12 +77,15 @@
 #' 
 #' # coercion to a RangedSummarizedExperiment
 #' as(sce, "RangedSummarizedExperiment")
+#'
+#' # coercion to a SummarizedExperiment is slightly buggy right now
+#' # and requires a little workaround:
+#' as(as(sce, "RangedSummarizedExperiment"), "SummarizedExperiment")
 #' 
 #' @docType class
 #' @aliases
 #' coerce,SummarizedExperiment,SingleCellExperiment-method
 #' coerce,RangedSummarizedExperiment,SingleCellExperiment-method
-#' coerce,SingleCellExperiment,RangedSummarizedExperiment-method
 #' @export
 #' @importFrom S4Vectors SimpleList 
 #' @importFrom methods is as
@@ -130,13 +133,4 @@ setAs("RangedSummarizedExperiment", "SingleCellExperiment", function(from) {
 #' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment SummarizedExperiment
 setAs("SummarizedExperiment", "SingleCellExperiment", function(from) {
     .rse_to_sce(as(from, "RangedSummarizedExperiment"))
-})
-
-#' @exportMethod coerce
-#' @importClassesFrom SummarizedExperiment RangedSummarizedExperiment
-setAs("SingleCellExperiment", "RangedSummarizedExperiment", function(from) {
-    expected <- slotNames("RangedSummarizedExperiment")
-    args <- lapply(expected, slot, object=from)
-    names(args) <- expected
-    do.call(new, c(list(Class="RangedSummarizedExperiment"), args))
 })
