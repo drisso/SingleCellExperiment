@@ -2,6 +2,10 @@
 \title{SingleCellExperiment News}
 \encoding{UTF-8}
 
+\section{Version 1.28.0}{\itemize{
+\item Minor optimization to \code{updateObject()} to return early if the object is more recent than the package version.
+}}
+
 \section{Version 1.14.0}{\itemize{
 \item Added the \code{unsplitAltExps()} function to reverse the effect of splitting alternative experiments.
 
