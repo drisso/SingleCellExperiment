@@ -32,6 +32,11 @@
 #' @importFrom utils packageVersion
 setMethod("updateObject", "SingleCellExperiment", function(object, ..., verbose=FALSE) {
     old.ver <- objectVersion(object)
+    new.ver <- packageVersion("SingleCellExperiment")
+    if (old.ver >= new.ver) {
+        return(object)
+    }
+
     triggered <- FALSE
 
     old <- S4Vectors:::disableValidity()
@@ -41,12 +46,12 @@ setMethod("updateObject", "SingleCellExperiment", function(object, ..., verbose=
     }
 
     # Update possibly outdated DataFrame instances.
-    if (.hasSlot(object, "int_elementMetadata"))
-        object@int_elementMetadata <-
-            updateObject(object@int_elementMetadata, ..., verbose=verbose)
-    if (.hasSlot(object, "int_colData"))
-        object@int_colData <-
-            updateObject(object@int_colData, ..., verbose=verbose)
+    if (.hasSlot(object, "int_elementMetadata")) {
+        object@int_elementMetadata <- updateObject(object@int_elementMetadata, ..., verbose=verbose)
+    }
+    if (.hasSlot(object, "int_colData")) {
+        object@int_colData <- updateObject(object@int_colData, ..., verbose=verbose)
+    }
 
     if (old.ver < "1.7.1") {
         # Need this to avoid a circular recursion when calling reducedDims()<-.
@@ -99,6 +104,6 @@ setMethod("updateObject", "SingleCellExperiment", function(object, ..., verbose=
             old.ver, ". ", "Updating it ...\n", appendLF = FALSE)
     }
 
-    int_metadata(object)$version <- packageVersion("SingleCellExperiment")
+    int_metadata(object)$version <- new.ver
     callNextMethod()
 })
