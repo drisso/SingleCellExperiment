@@ -33,4 +33,4 @@ Description: Defines a S4 class for storing data from single-cell
         usual metadata for genes and libraries.
 License: GPL-3
 VignetteBuilder: knitr
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
