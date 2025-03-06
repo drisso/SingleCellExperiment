@@ -8,7 +8,7 @@ DualSubset <- function(hits) new("DualSubset", hits=sort(hits))
 #' @importFrom S4Vectors nnode
 setMethod("length", "DualSubset", function(x) nnode(.get_hits(x)))
 
-#' @importFrom S4Vectors mcols mcols<- findMatches queryHits subjectHits
+#' @importFrom S4Vectors mcols mcols<- findMatches queryHits subjectHits 
 #' SelfHits normalizeSingleBracketSubscript
 setMethod("[", "DualSubset", function(x, i, j, ..., drop=FALSE) {
     p <- .get_hits(x)
@@ -56,8 +56,8 @@ setReplaceMethod("[", "DualSubset", function(x, i, j, ..., value) {
     initialize(x, hits=hits2)
 })
 
-#' @importFrom utils tail
-#' @importFrom S4Vectors queryHits subjectHits SelfHits mcols mcols<-
+#' @importFrom utils tail 
+#' @importFrom S4Vectors queryHits subjectHits SelfHits mcols mcols<- 
 setMethod("c", "DualSubset", function(x, ...) {
     everything <- list(x, ...)
     shift <- 0L
@@ -90,12 +90,12 @@ setMethod("c", "DualSubset", function(x, ...) {
         x <- rep(TRUE, length(p))
     }
 
-    Matrix::sparseMatrix(i=queryHits(p), j=subjectHits(p), x=x,
+    Matrix::sparseMatrix(i=queryHits(p), j=subjectHits(p), x=x, 
         dims=rep(nnode(p), 2L), use.last.ij=TRUE)
 }
 
 #' @importFrom DelayedArray nzwhich
-#' @importFrom S4Vectors SelfHits
+#' @importFrom S4Vectors SelfHits 
 .mat2hits <- function(mat) {
     i <- nzwhich(mat, arr.ind=TRUE)
     SelfHits(i[,1], i[,2], nnode=nrow(mat), x=mat[i])
