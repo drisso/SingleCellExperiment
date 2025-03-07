@@ -94,9 +94,9 @@ setMethod("c", "DualSubset", function(x, ...) {
         dims=rep(nnode(p), 2L), use.last.ij=TRUE)
 }
 
-#' @importFrom BiocGenerics which
+#' @importFrom DelayedArray nzwhich
 #' @importFrom S4Vectors SelfHits 
 .mat2hits <- function(mat) {
-    i <- which(mat!=0, arr.ind=TRUE) 
+    i <- nzwhich(mat, arr.ind=TRUE)
     SelfHits(i[,1], i[,2], nnode=nrow(mat), x=mat[i])
 }
