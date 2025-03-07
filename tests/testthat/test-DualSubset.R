@@ -138,5 +138,10 @@ test_that("SelfHits conversion to/from matrix works correctly", {
     mat2 <- SingleCellExperiment:::.hits2mat(p)
     expect_type(as.vector(mat2[0,0]), "logical")
     expect_equal(sum(mat2), length(p)) 
-})
 
+    # Conversion respects NAs.
+    copy <- mat
+    copy[1,1] <- NA
+    converted <- sort(SingleCellExperiment:::.mat2hits(copy))
+    expect_true(is.na(mcols(converted)$x[1]))
+})
