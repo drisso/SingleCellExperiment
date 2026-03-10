@@ -124,6 +124,10 @@ test_that("assay getters/setters work", {
     counts(sce) <- NULL
     expect_equivalent(logcounts(sce), v3)
     expect_error(counts(sce), "invalid subscript")
+
+    expect_warning(out <- logcounts(sce, i = 1), "ignoring non-NULL")
+    expect_equal(out, v3)
+    expect_warning(logcounts(sce, i = 1) <- v3, "ignoring non-NULL")
 })
 
 test_that("assay getters/setters respect withDimnames", {

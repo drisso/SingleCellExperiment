@@ -2,6 +2,11 @@
 \title{SingleCellExperiment News}
 \encoding{UTF-8}
 
+\section{Version 1.34.0}{\itemize{
+\item \code{counts()}, \code{logcounts()} and other named getters/setters will now raise a warning if \code{i=} is specified,
+rather than silently treating it as the next argument to \code{assay()} (usually \code{withDimnames=}). 
+}}
+
 \section{Version 1.30.0}{\itemize{
 \item Preserve NAs in the input matrices to \code{rowPairs()} and \code{colPairs()} converting them to SelfHits. 
 }}

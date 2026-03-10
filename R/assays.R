@@ -35,6 +35,10 @@
 #' Get or set a matrix of weights, e.g., observational weights to be used in differential expression analysis.
 #' }
 #' }
+#'
+#' If \code{i} is in \code{...}, it will be ignored and a warning will be raised.
+#' For each method described above, the name of the assay in \code{x} is always the same as the function name,
+#' e.g., \code{counts(x)} will retrieve the assay named \code{"counts"}. 
 #' 
 #' @author
 #' Aaron Lun
@@ -89,14 +93,20 @@ NULL
 
 GET_FUN <- function(exprs_values, ...) {
     (exprs_values) # To ensure evaluation
-    function(object, ...) {
+    function(object, i=NULL, ...) {
+        if (!is.null(i)) {
+            warning(sprintf("ignoring non-NULL value for 'i' in '%s()'", exprs_values))
+        }
         assay(object, i=exprs_values, ...)
     }
 }
 
 SET_FUN <- function(exprs_values, ...) {
     (exprs_values) # To ensure evaluation
-    function(object, ..., value) {
+    function(object, i=NULL, ..., value) {
+        if (!is.null(i)) {
+            warning(sprintf("ignoring non-NULL value for 'i' in '%s()'", exprs_values))
+        }
         assay(object, i=exprs_values, ...) <- value
         object
     }

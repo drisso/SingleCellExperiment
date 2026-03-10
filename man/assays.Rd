@@ -63,6 +63,10 @@ This is the number of transcripts for each gene in each cell, divided by the tot
 Get or set a matrix of weights, e.g., observational weights to be used in differential expression analysis.
 }
 }
+
+If \code{i} is in \code{...}, it will be ignored and a warning will be raised.
+For each method described above, the name of the assay in \code{x} is always the same as the function name,
+e.g., \code{counts(x)} will retrieve the assay named \code{"counts"}.
 }
 
 \examples{
