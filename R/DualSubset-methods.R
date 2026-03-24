@@ -90,8 +90,14 @@ setMethod("c", "DualSubset", function(x, ...) {
         x <- rep(TRUE, length(p))
     }
 
-    Matrix::sparseMatrix(i=queryHits(p), j=subjectHits(p), x=x, 
-        dims=rep(nnode(p), 2L), use.last.ij=TRUE)
+    Matrix::sparseMatrix(
+        i=queryHits(p),
+        j=subjectHits(p),
+        x=x, 
+        dims=rep(nnode(p), 2L),
+        repr="T",
+        use.last.ij=TRUE
+    )
 }
 
 #' @importFrom DelayedArray nzwhich
