@@ -1,6 +1,6 @@
 Package: SingleCellExperiment
-Version: 1.35.0
-Date: 2026-04-24
+Version: 1.35.1
+Date: 2026-05-14
 Title: S4 Classes for Single Cell Data
 Authors@R: c(
         person("Aaron", "Lun", role=c("aut", "cph"), email="infinite.monkeys.with.keyboards@gmail.com"),
@@ -31,6 +31,8 @@ Description: Defines a S4 class for storing data from single-cell
         retrieve spike-in information, dimensionality reduction
         coordinates and size factors for each cell, along with the
         usual metadata for genes and libraries.
-License: GPL-3
+License: GPL-2 | GPL-3
+URL: https://github.com/drisso/SingleCellExperiment
+BugReports: https://github.com/drisso/SingleCellExperiment/issues
 VignetteBuilder: knitr
 RoxygenNote: 7.3.3
