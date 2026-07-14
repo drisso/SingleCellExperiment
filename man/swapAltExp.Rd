@@ -17,7 +17,8 @@ If \code{NULL}, the original is not saved.}
 \item{withColData}{Logical scalar specifying whether the column metadata of \code{x} should be preserved in the output.}
 }
 \value{
-A SingleCellExperiment derived from \code{altExp(x, name)}.
+An object derived from \code{altExp(x, name)} and upgraded to
+\linkS4class{SingleCellExperiment} if not already a subclass thereof.
 This contains all alternative Experiments in \code{altExps(x)}, excluding the one that was promoted to the main Experiment.
 An additional alternative Experiment containing \code{x} may be included if \code{saved} is specified.
 }

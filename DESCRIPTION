@@ -35,4 +35,4 @@ License: GPL-2 | GPL-3
 URL: https://github.com/drisso/SingleCellExperiment
 BugReports: https://github.com/drisso/SingleCellExperiment/issues
 VignetteBuilder: knitr
-RoxygenNote: 7.3.3
+Config/roxygen2/version: 8.0.0
