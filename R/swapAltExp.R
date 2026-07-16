@@ -8,7 +8,7 @@
 #' If \code{NULL}, the original is not saved.
 #' @param withColData Logical scalar specifying whether the column metadata of \code{x} should be preserved in the output.
 #'
-#' @return A SingleCellExperiment derived from \code{altExp(x, name)}.
+#' @return A \linkS4class{SingleCellExperiment} object created from \code{altExp(x, name)}.
 #' This contains all alternative Experiments in \code{altExps(x)}, excluding the one that was promoted to the main Experiment.
 #' An additional alternative Experiment containing \code{x} may be included if \code{saved} is specified.
 #' 
@@ -54,7 +54,9 @@
 #' @export
 swapAltExp <- function(x, name, saved=mainExpName(x), withColData=TRUE) {
     y <- altExp(x, name, withColData=withColData)
-    y <- as(y, "SingleCellExperiment")
+    if (!is(y, "SingleCellExperiment")) {
+        y <- as(y, "SingleCellExperiment")
+    }
 
     all.ae <- altExps(x, withColData=FALSE)
     altExps(y) <- all.ae[setdiff(names(all.ae), name)]
